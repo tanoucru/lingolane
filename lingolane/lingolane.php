@@ -25,6 +25,8 @@ add_action( 'init', function () {
 }, 0 );
 
 require_once LINGOLANE_DIR . 'includes/class-lingolane-languages.php';
+require_once LINGOLANE_DIR . 'includes/class-lingolane-catalog.php';
+require_once LINGOLANE_DIR . 'includes/class-lingolane-packs.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-install.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-shared.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-elements.php';
@@ -47,6 +49,7 @@ Lingolane_Switcher::init();
 Lingolane_SEO::init();
 Lingolane_Links::init();
 Lingolane_Strings::init();
+Lingolane_Packs::init();
 
 if ( ! defined( 'LINGOLANE_NO_LEGACY' ) ) { require_once LINGOLANE_DIR . 'includes/compat-legacy.php'; }
 

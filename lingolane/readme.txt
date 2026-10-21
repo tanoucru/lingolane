@@ -14,6 +14,7 @@ Lightweight multilingual: translate posts, pages and strings, with language URLs
 
 Lingolane lets you run one WordPress site in several languages without a heavy toolchain.
 
+* Any of the 130+ languages WordPress is translated into. Only the languages you add are downloaded: their WordPress, theme and plugin translations, kept up to date by WordPress's translation updates.
 * Translation groups for posts, pages and terms. Create a translation with one click: content, images, custom fields and terms are copied to a new draft.
 * The default language has no URL prefix; other languages live in their own directory (for example /vi/).
 * Untranslated pages open the original with a notice instead of a 404.
@@ -36,6 +37,9 @@ Not yet. Version 1.0 supports single sites.
 
 = Does it work with page builders and WooCommerce? =
 Content created with the block editor and the classic editor is supported. Other integrations are being tested; see the compatibility notes in the project repository.
+
+= Does the plugin connect to external services? =
+Only to WordPress.org, the same way WordPress itself does: the Languages screen reads the list of available translations from api.wordpress.org, and adding a language downloads its translation packs from downloads.wordpress.org. No personal data is sent. Without a connection, a built-in list of common languages is shown.
 
 = What happens to my data if I uninstall? =
 Translation relationships and settings are kept so nothing is lost by accident.

@@ -163,6 +163,7 @@ fieldset.lingolane-field small { color: var(--lingolane-muted); }
 .lingolane-langs__actions { width: 1%; white-space: nowrap; text-align: right; }
 .lingolane-langs__actions > * { display: inline-block; margin-left: 6px; vertical-align: middle; }
 .lingolane-langs__actions .button-link-delete:disabled { color: #a7aaad !important; cursor: not-allowed; }
+.lingolane-inline-form { display: inline-block; margin-left: 6px; vertical-align: middle; }
 .lingolane-popover { position: relative; }
 .lingolane-popover > summary { list-style: none; cursor: pointer; }
 .lingolane-popover > summary::-webkit-details-marker { display: none; }

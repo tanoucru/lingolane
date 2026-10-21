@@ -15,6 +15,7 @@ class Lingolane_Admin {
         add_action( 'admin_post_lingolane_add_language', array( __CLASS__, 'add_language' ) );
         add_action( 'admin_post_lingolane_update_language', array( __CLASS__, 'update_language' ) );
         add_action( 'admin_post_lingolane_delete_language', array( __CLASS__, 'delete_language' ) );
+        add_action( 'admin_post_lingolane_install_pack', array( __CLASS__, 'install_pack' ) );
         add_action( 'admin_post_lingolane_save_full_settings', array( __CLASS__, 'save_full_settings' ) );
         add_action( 'admin_post_lingolane_flush_cache', array( __CLASS__, 'flush_cache' ) );
         add_action( 'admin_post_lingolane_scan_theme_strings', array( __CLASS__, 'scan_theme_strings' ) );
@@ -157,16 +158,23 @@ class Lingolane_Admin {
         ) );
     }
 
-    /** Common languages for the "add language" picker: code => [name, WordPress locale]. */
+    /** Every language of the catalog for the "add language" picker: code => [name, WordPress locale]. */
     public static function presets() {
-        return array(
-            'en' => array( 'English', 'en_US' ), 'vi' => array( 'Tiếng Việt', 'vi' ), 'fr' => array( 'Français', 'fr_FR' ),
-            'de' => array( 'Deutsch', 'de_DE' ), 'es' => array( 'Español', 'es_ES' ), 'it' => array( 'Italiano', 'it_IT' ),
-            'pt' => array( 'Português', 'pt_PT' ), 'ru' => array( 'Русский', 'ru_RU' ), 'ja' => array( '日本語', 'ja' ),
-            'ko' => array( '한국어', 'ko_KR' ), 'zh' => array( '中文 (简体)', 'zh_CN' ), 'zh-tw' => array( '中文 (繁體)', 'zh_TW' ),
-            'th' => array( 'ไทย', 'th' ), 'id' => array( 'Bahasa Indonesia', 'id_ID' ), 'ms' => array( 'Bahasa Melayu', 'ms_MY' ),
-            'hi' => array( 'हिन्दी', 'hi_IN' ), 'ar' => array( 'العربية', 'ar' ), 'nl' => array( 'Nederlands', 'nl_NL' ),
-        );
+        $presets = array();
+        foreach ( Lingolane_Catalog::all() as $code => $item ) {
+            $presets[ $code ] = array( $item['name'], $item['locale'] );
+        }
+        return $presets;
+    }
+
+    /** Notice for the outcome of a language pack download. */
+    private static function pack_notice( $name, $result ) {
+        if ( is_wp_error( $result ) ) {
+            /* translators: 1: language name, 2: error message */
+            return array( 'warning', sprintf( __( 'Translations for %1$s were not downloaded: %2$s', 'lingolane' ), $name, $result->get_error_message() ) );
+        }
+        /* translators: %s: language name */
+        return array( 'success', sprintf( __( 'Downloaded the WordPress, theme and plugin translations available for %s.', 'lingolane' ), $name ) );
     }
 
     /* ------------------------------------------------------------------ actions */
@@ -194,23 +202,22 @@ class Lingolane_Admin {
         return (bool) preg_match( '/^[a-z]{2,3}(?:_[A-Z]{2})?(?:_[A-Za-z0-9]+)?$/', $locale );
     }
 
-    public static function add_language() {
-        self::guard( 'lingolane_add_language' );
-        $code   = strtolower( self::post_text( 'lang_code' ) );
-        $name   = self::post_text( 'lang_name' );
-        $locale = self::post_text( 'lang_locale' );
+    /**
+     * Adds a language to the settings and downloads its translations.
+     *
+     * @return array|WP_Error [notice type, message] on success.
+     */
+    public static function insert_language( $code, $name, $locale ) {
+        $code = strtolower( $code );
         if ( ! preg_match( '/^[a-z]{2,3}(?:-[a-z]{2,4})?$/D', $code ) ) {
-            self::flash( 'error', __( 'The language code is 2–3 lowercase letters, optionally with a region (for example ja, fr, zh-tw).', 'lingolane' ) );
-            self::redirect( 'languages' );
+            return new WP_Error( 'lingolane_code', __( 'The language code is 2–3 lowercase letters, optionally with a region (for example ja, fr, zh-tw).', 'lingolane' ) );
         }
         if ( '' === $name || ! self::valid_locale( $locale ) ) {
-            self::flash( 'error', __( 'A display name and a valid WordPress locale are required (for example fr_FR, ja).', 'lingolane' ) );
-            self::redirect( 'languages' );
+            return new WP_Error( 'lingolane_locale', __( 'A display name and a valid WordPress locale are required (for example fr_FR, ja).', 'lingolane' ) );
         }
         if ( Lingolane_Languages::is_valid( $code ) ) {
             /* translators: %s: language code */
-            self::flash( 'error', sprintf( __( 'The code “%s” is already in the list.', 'lingolane' ), $code ) );
-            self::redirect( 'languages' );
+            return new WP_Error( 'lingolane_exists', sprintf( __( 'The code “%s” is already in the list.', 'lingolane' ), $code ) );
         }
         $settings = self::settings();
         $settings['languages'] = Lingolane_Languages::all();
@@ -218,7 +225,32 @@ class Lingolane_Admin {
         update_option( 'lingolane_settings', $settings );
         Lingolane_Stats::flush_strings();
         /* translators: 1: language name, 2: URL prefix */
-        self::flash( 'success', sprintf( __( 'Added %1$s. Its pages have URLs starting with %2$s; create translations in the Posts & pages tab.', 'lingolane' ), $name, '/' . $code . '/' ) );
+        $added = sprintf( __( 'Added %1$s. Its pages have URLs starting with %2$s; create translations in the Posts & pages tab.', 'lingolane' ), $name, '/' . $code . '/' );
+        $pack = self::pack_notice( $name, Lingolane_Packs::install( $locale ) );
+        return array( $pack[0], $added . ' ' . $pack[1] );
+    }
+
+    public static function add_language() {
+        self::guard( 'lingolane_add_language' );
+        $result = self::insert_language( self::post_text( 'lang_code' ), self::post_text( 'lang_name' ), self::post_text( 'lang_locale' ) );
+        if ( is_wp_error( $result ) ) {
+            self::flash( 'error', $result->get_error_message() );
+        } else {
+            self::flash( $result[0], $result[1] );
+        }
+        self::redirect( 'languages' );
+    }
+
+    /** Downloads (again) the translations of a language that is already on the site. */
+    public static function install_pack() {
+        self::guard( 'lingolane_install_pack' );
+        $code = sanitize_key( self::post_text( 'lang_code' ) );
+        if ( ! Lingolane_Languages::is_valid( $code ) ) {
+            self::flash( 'error', __( 'The selected language is not in the list.', 'lingolane' ) );
+            self::redirect( 'languages' );
+        }
+        $notice = self::pack_notice( Lingolane_Languages::name( $code ), Lingolane_Packs::install( Lingolane_Languages::locale( $code ) ) );
+        self::flash( $notice[0], $notice[1] );
         self::redirect( 'languages' );
     }
 
@@ -240,7 +272,13 @@ class Lingolane_Admin {
         $settings['languages'] = $languages;
         update_option( 'lingolane_settings', $settings );
         /* translators: %s: language name */
-        self::flash( 'success', sprintf( __( 'Updated %s.', 'lingolane' ), $name ) );
+        $updated = sprintf( __( 'Updated %s.', 'lingolane' ), $name );
+        if ( Lingolane_Packs::installed( $locale ) ) {
+            self::flash( 'success', $updated );
+        } else {
+            $pack = self::pack_notice( $name, Lingolane_Packs::install( $locale ) );
+            self::flash( $pack[0], $updated . ' ' . $pack[1] );
+        }
         self::redirect( 'languages' );
     }
 
@@ -781,6 +819,7 @@ class Lingolane_Admin {
                             <th scope="col"><?php esc_html_e( 'URL', 'lingolane' ); ?></th>
                             <th scope="col"><?php esc_html_e( 'Locale', 'lingolane' ); ?></th>
                             <th scope="col"><?php esc_html_e( 'Linked content', 'lingolane' ); ?></th>
+                            <th scope="col"><?php esc_html_e( 'Translations', 'lingolane' ); ?></th>
                             <th scope="col"><span class="screen-reader-text"><?php esc_html_e( 'Actions', 'lingolane' ); ?></span></th>
                         </tr>
                     </thead>
@@ -800,6 +839,20 @@ class Lingolane_Admin {
                             <td><code><?php echo esc_html( $is_default ? '/' : '/' . $code . '/' ); ?></code></td>
                             <td><code><?php echo esc_html( $language['locale'] ); ?></code></td>
                             <td><?php echo esc_html( number_format_i18n( $count ) ); ?></td>
+                            <td>
+                                <?php if ( 'en_US' === $language['locale'] ) : ?>
+                                    <?php echo self::chip( __( 'Built in', 'lingolane' ), 'ok', __( 'WordPress is written in English; nothing to download', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                <?php else :
+                                    $installed = Lingolane_Packs::installed( $language['locale'] ); ?>
+                                    <?php echo $installed ? self::chip( __( 'Installed', 'lingolane' ), 'ok' ) : self::chip( __( 'Not installed', 'lingolane' ), 'warn', __( 'WordPress, theme and plugin text shows in English for this language', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="lingolane-inline-form">
+                                        <input type="hidden" name="action" value="lingolane_install_pack">
+                                        <input type="hidden" name="lang_code" value="<?php echo esc_attr( $code ); ?>">
+                                        <?php wp_nonce_field( 'lingolane_install_pack' ); ?>
+                                        <button type="submit" class="button button-small"><?php echo esc_html( $installed ? __( 'Update', 'lingolane' ) : __( 'Download', 'lingolane' ) ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
                             <td class="lingolane-langs__actions">
                                 <details class="lingolane-popover">
                                     <summary class="button button-small"><?php esc_html_e( 'Edit', 'lingolane' ); ?></summary>
@@ -842,17 +895,29 @@ class Lingolane_Admin {
 
         <section class="lingolane-card">
             <h2 class="lingolane-card__title"><?php esc_html_e( 'Add a language', 'lingolane' ); ?></h2>
-            <p class="lingolane-card__desc"><?php esc_html_e( 'Pick from the list to prefill, or type your own. After adding, create translations for each page in the Posts & pages tab.', 'lingolane' ); ?></p>
+            <p class="lingolane-card__desc"><?php esc_html_e( 'Pick a language to prefill, or type your own. Only the translations of the languages you add are downloaded from WordPress.org (WordPress, themes and plugins). After adding, create translations for each page in the Posts & pages tab.', 'lingolane' ); ?></p>
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="lingolane-form-grid">
                 <input type="hidden" name="action" value="lingolane_add_language">
                 <?php wp_nonce_field( 'lingolane_add_language' ); ?>
                 <div class="lingolane-field">
-                    <label for="lingolane-preset"><?php esc_html_e( 'Common languages', 'lingolane' ); ?></label>
+                    <label for="lingolane-preset"><?php esc_html_e( 'Language', 'lingolane' ); ?></label>
                     <select id="lingolane-preset" data-lingolane-preset>
                         <option value=""><?php esc_html_e( '— Select to prefill —', 'lingolane' ); ?></option>
-                        <?php foreach ( self::presets() as $code => $preset ) :
-                            if ( Lingolane_Languages::is_valid( $code ) ) { continue; } ?>
-                            <option value="<?php echo esc_attr( $code ); ?>"><?php echo esc_html( $preset[0] . ' (' . $code . ')' ); ?></option>
+                        <?php
+                        $used = array_column( $languages, 'locale' );
+                        $groups = array( 'popular' => array(), 'other' => array() );
+                        foreach ( Lingolane_Catalog::all() as $item ) {
+                            if ( Lingolane_Languages::is_valid( $item['code'] ) || in_array( $item['locale'], $used, true ) ) { continue; }
+                            $groups[ $item['popular'] ? 'popular' : 'other' ][] = $item;
+                        }
+                        $labels = array( 'popular' => __( 'Popular', 'lingolane' ), 'other' => __( 'All languages', 'lingolane' ) );
+                        foreach ( $groups as $group => $items ) :
+                            if ( ! $items ) { continue; } ?>
+                            <optgroup label="<?php echo esc_attr( $labels[ $group ] ); ?>">
+                            <?php foreach ( $items as $item ) : ?>
+                                <option value="<?php echo esc_attr( $item['code'] ); ?>"><?php echo esc_html( $item['name'] === $item['english'] ? $item['name'] . ' (' . $item['code'] . ')' : $item['name'] . ' — ' . $item['english'] . ' (' . $item['code'] . ')' ); ?></option>
+                            <?php endforeach; ?>
+                            </optgroup>
                         <?php endforeach; ?>
                     </select>
                 </div>

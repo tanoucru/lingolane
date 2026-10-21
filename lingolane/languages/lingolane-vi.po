@@ -552,12 +552,6 @@ msgstr "Còn nội dung liên kết, không thể gỡ"
 msgid "Remove language"
 msgstr "Gỡ ngôn ngữ"
 
-msgid "Pick from the list to prefill, or type your own. After adding, create translations for each page in the Posts & pages tab."
-msgstr "Chọn từ danh sách để điền sẵn, hoặc tự nhập. Sau khi thêm, tạo bản dịch cho từng trang ở tab Bài & trang."
-
-msgid "Common languages"
-msgstr "Ngôn ngữ phổ biến"
-
 msgid "— Select to prefill —"
 msgstr "— Chọn để điền nhanh —"
 
@@ -809,3 +803,48 @@ msgstr "Đa ngôn ngữ nhẹ cho WordPress: nhóm bản dịch cho bài viết 
 
 msgid "Locale"
 msgstr "Locale"
+
+msgid "Built in"
+msgstr "Có sẵn"
+
+msgid "Download"
+msgstr "Tải về"
+
+msgid "Downloaded the WordPress, theme and plugin translations available for %s."
+msgstr "Đã tải các bản dịch WordPress, theme và plugin hiện có cho %s."
+
+msgid "Installed"
+msgstr "Đã cài"
+
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+msgid "Not installed"
+msgstr "Chưa cài"
+
+msgid "Pick a language to prefill, or type your own. Only the translations of the languages you add are downloaded from WordPress.org (WordPress, themes and plugins). After adding, create translations for each page in the Posts & pages tab."
+msgstr "Chọn một ngôn ngữ để điền sẵn, hoặc tự nhập. Chỉ bản dịch của các ngôn ngữ bạn thêm mới được tải từ WordPress.org (WordPress, theme và plugin). Sau khi thêm, hãy tạo bản dịch cho từng trang ở thẻ Bài & trang."
+
+msgid "Popular"
+msgstr "Phổ biến"
+
+msgid "Translations for %1$s were not downloaded: %2$s"
+msgstr "Chưa tải được bản dịch cho %1$s: %2$s"
+
+msgid "Update"
+msgstr "Cập nhật"
+
+msgid "WordPress cannot write translation files on this server (file permissions or DISALLOW_FILE_MODS). Translations will be installed by the next automatic update if possible, or from Dashboard > Updates."
+msgstr "WordPress không ghi được tệp bản dịch trên máy chủ này (quyền tệp hoặc DISALLOW_FILE_MODS). Bản dịch sẽ được cài ở lần cập nhật tự động tới nếu có thể, hoặc từ Bảng tin > Cập nhật."
+
+msgid "WordPress is written in English; nothing to download"
+msgstr "WordPress viết bằng tiếng Anh, không cần tải"
+
+msgid "WordPress, theme and plugin text shows in English for this language"
+msgstr "Chữ của WordPress, theme và plugin đang hiện bằng tiếng Anh ở ngôn ngữ này"
+
+msgid "WordPress.org has no translation for %s, or it could not be downloaded. Check the locale or try again later."
+msgstr "WordPress.org không có bản dịch cho %s, hoặc không tải được. Hãy kiểm tra locale hoặc thử lại sau."
+
+msgid "Your account cannot install translations. An administrator can install them in Dashboard > Updates."
+msgstr "Tài khoản của bạn không được cài bản dịch. Quản trị viên có thể cài ở Bảng tin > Cập nhật."
