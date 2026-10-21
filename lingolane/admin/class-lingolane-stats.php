@@ -19,12 +19,6 @@ class Lingolane_Stats {
         } ) );
     }
 
-    private static function in_list( $values ) {
-        global $wpdb;
-        if ( ! $values ) { return "''"; }
-        return $wpdb->prepare( implode( ',', array_fill( 0, count( $values ), '%s' ) ), array_values( $values ) );
-    }
-
     /**
      * FROM/WHERE for source items: items in the default language (or not yet assigned) of the given types.
      * Joins the item's own translation row as `s`.
@@ -33,11 +27,16 @@ class Lingolane_Stats {
         global $wpdb;
         $table = $wpdb->prefix . 'lingolane_translations';
         $type_sql = Lingolane_Query::type_sql( 'post_', 'p.post_type' );
-        $ids = implode( ',', array_merge( array( 0 ), Lingolane_Shared::page_ids() ) );
-        return $wpdb->prepare(
+        $ids = implode( ',', array_map( 'intval', array_merge( array( 0 ), Lingolane_Shared::page_ids() ) ) );
+        $types = $types ? array_values( (array) $types ) : array( '' );
+        $statuses = $statuses ? array_values( (array) $statuses ) : array( '' );
+        $type_in = implode( ',', array_fill( 0, count( $types ), '%s' ) );
+        $status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+        // $table, $type_sql and $ids come from $wpdb->prefix, literals, a validated collation and integers; every value uses a %s placeholder.
+        return $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             "FROM {$wpdb->posts} p LEFT JOIN $table s ON s.element_type = $type_sql AND s.element_id = p.ID
-            WHERE p.post_type IN (" . self::in_list( $types ) . ') AND p.post_status IN (' . self::in_list( $statuses ) . ") AND p.ID NOT IN ($ids) AND (s.id IS NULL OR s.language_code = %s)",
-            Lingolane_Languages::source_code()
+            WHERE p.post_type IN ($type_in) AND p.post_status IN ($status_in) AND p.ID NOT IN ($ids) AND (s.id IS NULL OR s.language_code = %s)",
+            array_merge( $types, $statuses, array( Lingolane_Languages::source_code() ) )
         );
     }
 
@@ -54,11 +53,13 @@ class Lingolane_Stats {
         $types = self::editorial_types();
         if ( ! $types ) { return array( 'total' => 0, 'published' => 0, 'drafts' => 0, 'missing' => 0 ); }
         $table = $wpdb->prefix . 'lingolane_translations';
-        $row = $wpdb->get_row( $wpdb->prepare(
+        $src = self::source_sql( $types, array( 'publish' ) );
+        // $src is a prepared fragment; $table comes from $wpdb->prefix.
+        $row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             "SELECT COUNT(*) AS total,
                 SUM(CASE WHEN px.post_status = 'publish' THEN 1 ELSE 0 END) AS published,
                 SUM(CASE WHEN px.ID IS NOT NULL AND px.post_status <> 'publish' THEN 1 ELSE 0 END) AS drafts
-            FROM (SELECT p.ID, s.trid " . self::source_sql( $types, array( 'publish' ) ) . ") src
+            FROM (SELECT p.ID, s.trid $src) src
             LEFT JOIN $table x ON x.trid = src.trid AND x.language_code = %s
             LEFT JOIN {$wpdb->posts} px ON px.ID = x.element_id AND px.post_status NOT IN ('trash','auto-draft','inherit')",
             $lang
@@ -73,7 +74,8 @@ class Lingolane_Stats {
         global $wpdb;
         $types = array_values( array_intersect( Lingolane_Shared::post_types(), Lingolane_Query::post_types() ) );
         if ( ! $types ) { return 0; }
-        return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type IN (" . self::in_list( $types ) . ')' );
+        $in = implode( ',', array_fill( 0, count( $types ), '%s' ) );
+        return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type IN ($in)", $types ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $in is a list of %s placeholders.
     }
 
     /** Linked rows per language code (content and terms). */

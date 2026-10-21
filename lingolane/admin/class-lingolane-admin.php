@@ -536,9 +536,11 @@ class Lingolane_Admin {
     private static function render_recent() {
         global $wpdb;
         $default = Lingolane_Languages::source_code();
-        $rows = $wpdb->get_results( $wpdb->prepare(
+        $type_sql = Lingolane_Query::type_sql( 'post_', 'p.post_type' );
+        // $type_sql is built from a literal prefix, a column name and a validated collation; the language uses a placeholder.
+        $rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             "SELECT p.ID, p.post_title, p.post_status, p.post_modified, t.language_code FROM {$wpdb->prefix}lingolane_translations t
-            INNER JOIN {$wpdb->posts} p ON p.ID = t.element_id AND t.element_type = " . Lingolane_Query::type_sql( 'post_', 'p.post_type' ) . "
+            INNER JOIN {$wpdb->posts} p ON p.ID = t.element_id AND t.element_type = $type_sql
             WHERE t.language_code <> %s AND p.post_status NOT IN ('trash','auto-draft','inherit') ORDER BY p.post_modified DESC LIMIT 6",
             $default
         ) );

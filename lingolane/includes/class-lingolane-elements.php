@@ -57,11 +57,11 @@ class Lingolane_Elements {
                 if ( $conflict ) { return new WP_Error( 'lingolane_group_conflict', __( 'The group already has a translation or belongs to a different content type.', 'lingolane' ) ); }
             }
             if ( $source === null ) {
-                $sql = $wpdb->prepare( "INSERT INTO $table (element_type, element_id, trid, language_code, source_language_code) VALUES (%s, %d, %d, %s, NULL) ON DUPLICATE KEY UPDATE trid = VALUES(trid), language_code = VALUES(language_code), source_language_code = NULL", $type, $id, $trid, $lang );
+                $written = $wpdb->query( $wpdb->prepare( "INSERT INTO $table (element_type, element_id, trid, language_code, source_language_code) VALUES (%s, %d, %d, %s, NULL) ON DUPLICATE KEY UPDATE trid = VALUES(trid), language_code = VALUES(language_code), source_language_code = NULL", $type, $id, $trid, $lang ) );
             } else {
-                $sql = $wpdb->prepare( "INSERT INTO $table (element_type, element_id, trid, language_code, source_language_code) VALUES (%s, %d, %d, %s, %s) ON DUPLICATE KEY UPDATE trid = VALUES(trid), language_code = VALUES(language_code), source_language_code = VALUES(source_language_code)", $type, $id, $trid, $lang, $source );
+                $written = $wpdb->query( $wpdb->prepare( "INSERT INTO $table (element_type, element_id, trid, language_code, source_language_code) VALUES (%s, %d, %d, %s, %s) ON DUPLICATE KEY UPDATE trid = VALUES(trid), language_code = VALUES(language_code), source_language_code = VALUES(source_language_code)", $type, $id, $trid, $lang, $source ) );
             }
-            if ( false === $wpdb->query( $sql ) ) { return new WP_Error( 'lingolane_write_failed', __( 'Could not save the translation group.', 'lingolane' ) ); }
+            if ( false === $written ) { return new WP_Error( 'lingolane_write_failed', __( 'Could not save the translation group.', 'lingolane' ) ); }
             self::invalidate( $type, $id, $trid );
             if ( $old ) { self::invalidate( $type, $id, $old['trid'] ); }
             return $trid;
