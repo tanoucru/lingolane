@@ -6,7 +6,7 @@ $lingolane_saved_query = $GLOBALS['wp_query'];
 $lingolane_saved_language = Lingolane_Languages::current();
 $lingolane_ids = array();
 $lingolane_failures = 0;
-$lingolane_defaults = function () { return Lingolane_Languages::defaults(); };
+$lingolane_defaults = function () { return array( 'default' => 'vi', 'languages' => array( array( 'code' => 'vi', 'locale' => 'vi', 'name' => 'Tiếng Việt' ), array( 'code' => 'en', 'locale' => 'en_US', 'name' => 'English' ) ), 'url_mode' => 'directory' ); };
 $lingolane_check = function ( $label, $actual, $expected ) use ( &$lingolane_failures ) {
     $pass = $actual === $expected;
     echo ( $pass ? 'PASS ' : 'FAIL ' ) . $label . "\n";

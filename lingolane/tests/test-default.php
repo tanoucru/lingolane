@@ -3,7 +3,7 @@
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI || ! wp_parse_url( get_option( 'home' ), PHP_URL_HOST ) || ! preg_match( '/\.(local|test)$/', wp_parse_url( get_option( 'home' ), PHP_URL_HOST ) ) ) { exit; }
 $failures = 0; $ids = array(); $uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null; $previous = Lingolane_Languages::current();
 $check = function ( $label, $ok ) use ( &$failures ) { echo ( $ok ? 'PASS ' : 'FAIL ' ) . $label . "\n"; if ( ! $ok ) { $failures++; } };
-$settings = function () { $s = Lingolane_Languages::defaults(); $s['default'] = 'en'; $s['source'] = 'vi'; return $s; };
+$settings = function () { $s = array( 'default' => 'vi', 'languages' => array( array( 'code' => 'vi', 'locale' => 'vi', 'name' => 'Tiếng Việt' ), array( 'code' => 'en', 'locale' => 'en_US', 'name' => 'English' ) ), 'url_mode' => 'directory' ); $s['default'] = 'en'; $s['source'] = 'vi'; return $s; };
 add_filter( 'pre_option_lingolane_settings', $settings );
 Lingolane_Strings::reset_config();
 $home = rtrim( get_option( 'home' ), '/' );

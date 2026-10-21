@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 if ( ! class_exists( 'Lingolane_Strings' ) || is_admin() ) { throw new RuntimeException( 'Activate Lingolane; use frontend context.' ); }
 global $wpdb;
 $lingolane_saved_language = Lingolane_Languages::current();
-$lingolane_defaults = function () { return Lingolane_Languages::defaults(); };
+$lingolane_defaults = function () { return array( 'default' => 'vi', 'languages' => array( array( 'code' => 'vi', 'locale' => 'vi', 'name' => 'Tiếng Việt' ), array( 'code' => 'en', 'locale' => 'en_US', 'name' => 'English' ) ), 'url_mode' => 'directory' ); };
 $lingolane_domain = 'lingolane-test-' . wp_generate_uuid4();
 $lingolane_source = 'Lingolane greeting';
 $lingolane_reads = 0;

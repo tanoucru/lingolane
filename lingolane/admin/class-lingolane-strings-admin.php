@@ -162,7 +162,7 @@ class Lingolane_Strings_Admin {
                 if ( count( $cells ) !== count( $header ) ) { return $error( sprintf( __( 'Dòng %d có số cột không khớp tiêu đề. Chưa có dữ liệu nào được ghi.', 'lingolane' ), $line ) ); }
                 foreach ( $cells as &$cell ) {
                     /* translators: %d: line number */
-                    if ( ! is_string( $cell ) || strpos( $cell, "\0" ) !== false || ! seems_utf8( $cell ) ) { return $error( sprintf( __( 'Dòng %d không phải văn bản UTF-8 hợp lệ. Lưu file với mã hoá UTF-8 rồi thử lại.', 'lingolane' ), $line ) ); }
+                    if ( ! is_string( $cell ) || strpos( $cell, "\0" ) !== false || 1 !== preg_match( '//u', $cell ) ) { return $error( sprintf( __( 'Dòng %d không phải văn bản UTF-8 hợp lệ. Lưu file với mã hoá UTF-8 rồi thử lại.', 'lingolane' ), $line ) ); }
                     if ( preg_match( "/^'(?:['=+@\\-\\t\\r\\n]|\\s+[=+@\\-])/", $cell ) ) { $cell = substr( $cell, 1 ); }
                 }
                 unset( $cell );

@@ -4,6 +4,19 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI || ! wp_parse_url( get_option( 'home' ), 
 add_filter( 'lingolane_shared_post_types', function () { return array( 'listing', 'science', 'language' ); } );
 add_filter( 'lingolane_shared_taxonomies', function () { return array( 'listing_categories', 'locations' ); } );
 add_filter( 'lingolane_gated_post_types', function () { return array( 'listing', 'science', 'language' ); } );
+add_filter( 'lingolane_translatable_post_types', function ( $types ) { return array_unique( array_merge( $types, array( 'listing', 'science', 'language' ) ) ); } );
+add_filter( 'lingolane_translatable_taxonomies', function ( $taxes ) { return array_unique( array_merge( $taxes, array( 'listing_categories', 'locations' ) ) ); } );
+add_filter( 'pre_option_lingolane_settings', function () { return array( 'default' => 'vi', 'languages' => array( array( 'code' => 'vi', 'locale' => 'vi', 'name' => 'Tiếng Việt' ), array( 'code' => 'en', 'locale' => 'en_US', 'name' => 'English' ) ), 'url_mode' => 'directory' ); } );
+$lingolane_fixtures = function () {
+    foreach ( array( 'listing', 'science', 'language' ) as $lingolane_type ) {
+        if ( ! post_type_exists( $lingolane_type ) ) { register_post_type( $lingolane_type, array( 'public' => true, 'label' => $lingolane_type ) ); }
+    }
+    foreach ( array( 'listing_categories', 'locations' ) as $lingolane_tax ) {
+        if ( ! taxonomy_exists( $lingolane_tax ) ) { register_taxonomy( $lingolane_tax, array( 'listing', 'science', 'language' ), array( 'public' => true, 'label' => $lingolane_tax ) ); }
+    }
+};
+add_action( 'init', $lingolane_fixtures, 1 );
+if ( did_action( 'init' ) ) { $lingolane_fixtures(); }
 require_once ABSPATH . 'wp-admin/includes/admin.php';
 foreach ( array( 'stats', 'admin', 'strings-admin', 'metabox', 'columns' ) as $lingolane_file ) { require_once LINGOLANE_DIR . 'admin/class-lingolane-' . $lingolane_file . '.php'; }
 $ids = array(); $failures = 0; $previous = Lingolane_Languages::current(); $saved_post = $_POST;

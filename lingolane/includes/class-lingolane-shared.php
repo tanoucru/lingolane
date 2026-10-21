@@ -58,6 +58,7 @@ class Lingolane_Shared {
         if ( is_array( $cached ) ) { return $ids = array_map( 'intval', $cached ); }
         global $wpdb;
         $slugs = self::page_slugs();
+        if ( ! $slugs ) { return $ids = array(); }
         $placeholders = implode( ',', array_fill( 0, count( $slugs ), '%s' ) );
         $found = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'page' AND post_status = 'publish' AND post_parent = 0 AND post_name IN ($placeholders)", $slugs ) );
         $ids = array_map( 'intval', (array) $found );

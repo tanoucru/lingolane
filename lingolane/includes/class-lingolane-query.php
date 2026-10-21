@@ -87,7 +87,7 @@ class Lingolane_Query {
         $condition = self::condition( $type_sql, "{$wpdb->posts}.ID", $lang );
         // Unassigned application records are shared; a registered translation of another language never is.
         $shared_types = Lingolane_Shared::post_types();
-        $shared_list = $wpdb->prepare( implode( ',', array_fill( 0, count( $shared_types ), '%s' ) ), $shared_types );
+        $shared_list = $shared_types ? $wpdb->prepare( implode( ',', array_fill( 0, count( $shared_types ), '%s' ) ), $shared_types ) : "''";
         $shared_ids = implode( ',', array_merge( array( 0 ), Lingolane_Shared::page_ids() ) );
         $table = $wpdb->prefix . 'lingolane_translations';
         $condition = "($condition OR (({$wpdb->posts}.post_type IN ($shared_list) OR {$wpdb->posts}.ID IN ($shared_ids)) AND NOT EXISTS (SELECT 1 FROM $table shared WHERE shared.element_id = {$wpdb->posts}.ID AND shared.element_type = $type_sql)))";

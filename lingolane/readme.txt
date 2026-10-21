@@ -8,7 +8,7 @@ Stable tag: 1.0.0-dev
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Lightweight multilingual for WordPress: translate posts, pages and terms, translate interface strings, language URLs, hreflang and a language switcher.
+Lightweight multilingual: translate posts, pages and strings, with language URLs, hreflang and a language switcher.
 
 == Description ==
 

@@ -7,7 +7,7 @@ $lingolane_language = Lingolane_Languages::current();
 $lingolane_settings = get_option( 'lingolane_settings' );
 $lingolane_failures = 0;
 // Supply deterministic settings in memory; never change the database.
-$lingolane_defaults = function () { return Lingolane_Languages::defaults(); };
+$lingolane_defaults = function () { return array( 'default' => 'vi', 'languages' => array( array( 'code' => 'vi', 'locale' => 'vi', 'name' => 'Tiếng Việt' ), array( 'code' => 'en', 'locale' => 'en_US', 'name' => 'English' ) ), 'url_mode' => 'directory' ); };
 add_filter( 'pre_option_lingolane_settings', $lingolane_defaults );
 $lingolane_base = rtrim( (string) wp_parse_url( get_option( 'home' ), PHP_URL_PATH ), '/' );
 $lingolane_check = function ( $name, $actual, $expected ) use ( &$lingolane_failures ) {
