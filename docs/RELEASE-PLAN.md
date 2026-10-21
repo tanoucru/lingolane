@@ -1,6 +1,6 @@
-# Kế hoạch phát hành TML Multilingual 1.0 (chạy được trên website bất kỳ)
+# Kế hoạch phát hành Lingolane 1.0 (chạy được trên website bất kỳ)
 
-Ngày rà soát: 2026-10-21. Phạm vi: `tml-multilingual/` (~3.500 dòng PHP, 7 file test thủ công).
+Ngày rà soát: 2026-10-21. Phạm vi: `lingolane/` (~3.500 dòng PHP, 7 file test thủ công).
 
 ## 1. Hiện trạng (đã rà bằng mã nguồn)
 
@@ -24,7 +24,7 @@ R1 Multisite (không có mã xử lý). R2 Site cài trong thư mục con, perma
 
 ## 2. Quyết định cần Tan (chặn M0)
 1. **Kênh phân phối:** WordPress.org (miễn phí, GPL, duyệt thủ công 1–4 tuần) · bán/phát hành riêng trên site (GPL, tự cập nhật qua GitHub Releases) · cả hai (bản lite + bản trả phí).
-2. **Tên thương hiệu và slug cuối** ("TML Multilingual" là tên nội bộ; cần kiểm trùng tên). Nếu đổi prefix `tml_` thành ≥4 ký tự, làm **trước** khi có người dùng ngoài.
+2. **Tên thương hiệu và slug cuối** ("Lingolane" là tên nội bộ; cần kiểm trùng tên). Nếu đổi prefix `tml_` thành ≥4 ký tự, làm **trước** khi có người dùng ngoài.
 3. **Phạm vi 1.0:** đơn site, không multisite (khuyến nghị) · hỗ trợ Yoast + Rank Math + sitemap lõi (khuyến nghị) · WooCommerce để 1.1.
 4. Tạo repo GitHub (private trước, public khi phát hành).
 
@@ -37,7 +37,7 @@ R1 Multisite (không có mã xử lý). R2 Site cài trong thư mục con, perma
 - **Xong khi:** zip cài được trên WP trống, `readme.txt` qua trình kiểm readme của WordPress.org.
 
 ### M1 – Chuẩn hoá i18n (2 ngày)
-- Đổi toàn bộ chuỗi gốc sang tiếng Anh; `load_plugin_textdomain` ở `init`; sinh `languages/tml-multilingual.pot`; xuất bản dịch `vi` (.po/.mo) từ chuỗi cũ để Teachme không mất chữ.
+- Đổi toàn bộ chuỗi gốc sang tiếng Anh; `load_plugin_textdomain` ở `init`; sinh `languages/lingolane.pot`; xuất bản dịch `vi` (.po/.mo) từ chuỗi cũ để Teachme không mất chữ.
 - Chuỗi ghép dùng `sprintf`/`_n`, có comment `translators:`.
 - **Xong khi:** đổi ngôn ngữ quản trị sang vi vẫn ra giao diện tiếng Việt như cũ; grep ký tự tiếng Việt trong mã nguồn trả 0.
 

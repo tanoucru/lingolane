@@ -1,4 +1,4 @@
-# TML Multilingual
+# Lingolane
 
 Plugin đa ngôn ngữ nhẹ cho WordPress, tách từ dự án Teachme. Phát triển bởi @tannguyen.
 
@@ -8,7 +8,7 @@ Plugin đa ngôn ngữ nhẹ cho WordPress, tách từ dự án Teachme. Phát t
 - hreflang / x-default, sitemap, nút chuyển ngôn ngữ (`[tml_switcher]`, widget, menu)
 - Viết lại link nội bộ, thống kê tiến độ dịch
 
-Mã plugin nằm ở `tml-multilingual/` (zip thư mục này để cài). Yêu cầu WP ≥ 6.2, PHP ≥ 7.4.
+Mã plugin nằm ở `lingolane/` (zip thư mục này để cài). Yêu cầu WP ≥ 6.2, PHP ≥ 7.4.
 
 ## Hook mở rộng (tách khỏi Teachme)
 | Filter | Mặc định | Ý nghĩa |
@@ -34,7 +34,7 @@ add_filter( 'tml_translatable_post_types', fn( $t ) => array_unique( array_merge
 Lưu ý: class `TML_Shared::is_tutor()` / `translated_tutor()` đã đổi tên thành `is_gated()` / `translated_gated()`; plugin teachme-directory/seo gọi `TML_Languages`, `TML_Urls`, `TML_Switcher` nên không ảnh hưởng.
 
 ## Kiểm thử
-Chạy trên site Local/`.test`: `wp eval-file wp-content/plugins/tml-multilingual/tests/test-*.php` (chỉ chạy được trên host `.local`/`.test`).
+Chạy trên site Local/`.test`: `wp eval-file wp-content/plugins/lingolane/tests/test-*.php` (chỉ chạy được trên host `.local`/`.test`).
 
 ## Kế hoạch phát hành
 Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md): rà soát hiện trạng, quyết định cần duyệt và lộ trình M0–M5.
