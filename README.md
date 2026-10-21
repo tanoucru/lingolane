@@ -1,40 +1,50 @@
 # Lingolane
 
-Plugin đa ngôn ngữ nhẹ cho WordPress, tách từ dự án Teachme. Phát triển bởi @tannguyen.
+Plugin đa ngôn ngữ nhẹ cho WordPress, tách từ dự án Teachme. Phát triển bởi @tannguyen. Phát hành hai kênh: bản lite trên WordPress.org và bản phát hành riêng.
 
 - Nhóm bản dịch (translation group) cho bài viết, trang, term
 - Đường dẫn theo thư mục ngôn ngữ (`/vi/…`), ngôn ngữ mặc định không tiền tố
-- Dịch chuỗi giao diện (theme, plugin)
-- hreflang / x-default, sitemap, nút chuyển ngôn ngữ (`[tml_switcher]`, widget, menu)
+- Dịch chuỗi giao diện (theme, plugin), nhập/xuất CSV
+- hreflang / x-default, nút chuyển ngôn ngữ (`[lingolane_switcher]`, widget, menu `#lingolane-switcher`)
 - Viết lại link nội bộ, thống kê tiến độ dịch
 
-Mã plugin nằm ở `lingolane/` (zip thư mục này để cài). Yêu cầu WP ≥ 6.2, PHP ≥ 7.4.
+Mã plugin nằm ở `lingolane/`. Yêu cầu WP ≥ 6.2, PHP ≥ 7.4. Giấy phép GPL-2.0-or-later.
 
-## Hook mở rộng (tách khỏi Teachme)
+## Định danh
+Slug và text-domain `lingolane`; hàm/option/bảng/filter `lingolane_`; hằng `LINGOLANE_`; class `Lingolane_*`; shortcode `[lingolane_switcher]`.
+
+## Hook mở rộng
 | Filter | Mặc định | Ý nghĩa |
 |---|---|---|
-| `tml_translatable_post_types` | `post`, `page` | Loại nội dung dịch được |
-| `tml_shared_page_slugs` | `[]` | Slug trang dùng chung mọi ngôn ngữ (không đổi URL) |
-| `tml_shared_post_types` | `[]` | Post type dùng chung mọi ngôn ngữ |
-| `tml_shared_taxonomies` | `[]` | Taxonomy dùng chung |
-| `tml_gated_post_types` | `[]` | Bản chưa dịch của loại này bị loại khỏi hreflang/sitemap |
+| `lingolane_translatable_post_types` | `post`, `page` | Loại nội dung dịch được |
+| `lingolane_shared_page_slugs` | `[]` | Slug trang dùng chung mọi ngôn ngữ (không đổi URL) |
+| `lingolane_shared_post_types` | `[]` | Post type dùng chung mọi ngôn ngữ |
+| `lingolane_shared_taxonomies` | `[]` | Taxonomy dùng chung |
+| `lingolane_gated_post_types` | `[]` | Bản chưa dịch của loại này bị loại khỏi hreflang/sitemap |
 
 Mặc định ngôn ngữ: English (gốc, không tiền tố) + Tiếng Việt; đổi trong Cài đặt.
 
-## Dùng lại trong Teachme
-Teachme đang chạy bản cũ trong `wp-plugins/teachme-multilingual` (chưa đổi). Khi chuyển sang bản này, thêm mu-plugin:
-```php
-add_filter( 'tml_shared_page_slugs', fn() => array( 'create','edit','remove','my-listings','my-favorites','profile','reset-password','change-password','logout','transactions','payment','invoices','my-watchdogs','package-information','listing-slider','form-redirect','report-spam-abuse-or-inappropriate-content' ) );
-$cpts = array( 'listing','science','language','computer-science','business','business-english','education','music','art-crafts','sport','career-coaching' );
-add_filter( 'tml_shared_post_types', fn() => $cpts );
-add_filter( 'tml_gated_post_types', fn() => $cpts );
-add_filter( 'tml_shared_taxonomies', fn() => array( 'listing_categories','locations' ) );
-add_filter( 'tml_translatable_post_types', fn( $t ) => array_unique( array_merge( $t, array( 'listing','science','language','computer-science','faq' ) ) ) );
+## Build
+```bash
+bin/build.sh   # kiểm phiên bản khớp 3 nơi, lint PHP, ra dist/lingolane-<version>.zip (không gồm tests/)
 ```
-Lưu ý: class `TML_Shared::is_tutor()` / `translated_tutor()` đã đổi tên thành `is_gated()` / `translated_gated()`; plugin teachme-directory/seo gọi `TML_Languages`, `TML_Urls`, `TML_Switcher` nên không ảnh hưởng.
+
+## Nâng cấp từ bản tiền phát hành `tml_` (Teachme)
+Khi kích hoạt, plugin tự đổi tên bảng `tml_translations`/`tml_strings` và sao chép option `tml_settings` sang tên mới (không mất dữ liệu). `includes/compat-legacy.php` giữ alias `TML_*`, `tml_get_translation_url()`, shortcode `[tml_switcher]` và menu `#tml-switcher`/`{{tml}}` để theme/plugin Teachme chạy tiếp; tắt bằng `define( 'LINGOLANE_NO_LEGACY', true )`. Phải **tắt bản cũ trước khi bật bản mới** (hai bản không chạy song song).
+
+Mu-plugin cho Teachme (thay các danh sách từng gắn cứng):
+```php
+$cpts = array( 'listing','science','language','computer-science','business','business-english','education','music','art-crafts','sport','career-coaching' );
+add_filter( 'lingolane_shared_page_slugs', fn() => array( 'create','edit','remove','my-listings','my-favorites','profile','reset-password','change-password','logout','transactions','payment','invoices','my-watchdogs','package-information','listing-slider','form-redirect','report-spam-abuse-or-inappropriate-content' ) );
+add_filter( 'lingolane_shared_post_types', fn() => $cpts );
+add_filter( 'lingolane_gated_post_types', fn() => $cpts );
+add_filter( 'lingolane_shared_taxonomies', fn() => array( 'listing_categories','locations' ) );
+add_filter( 'lingolane_translatable_post_types', fn( $t ) => array_unique( array_merge( $t, array( 'listing','science','language','computer-science','faq' ) ) ) );
+```
+`is_tutor()`/`translated_tutor()` đã đổi thành `is_gated()`/`translated_gated()`.
 
 ## Kiểm thử
-Chạy trên site Local/`.test`: `wp eval-file wp-content/plugins/lingolane/tests/test-*.php` (chỉ chạy được trên host `.local`/`.test`).
+Chạy trên site Local/`.test`: `wp eval-file wp-content/plugins/lingolane/tests/test-*.php` (chỉ chạy trên host `.local`/`.test`). Sẽ chuyển sang PHPUnit + CI ở M2.
 
 ## Kế hoạch phát hành
-Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md): rà soát hiện trạng, quyết định cần duyệt và lộ trình M0–M5.
+Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md).

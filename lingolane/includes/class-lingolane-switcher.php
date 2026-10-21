@@ -40,7 +40,7 @@ class Lingolane_Switcher {
         $next_id = -1;
         foreach ( $items as $existing ) { $next_id = min( $next_id, (int) $existing->ID - 1 ); }
         foreach ( $items as $item ) {
-            if ( ! in_array( $item->url, array( '#lingolane-switcher', '#tml-switcher' ), true ) || $item->title !== '{{tml}}' ) { $result[] = $item; continue; }
+            if ( ! in_array( $item->url, array( '#lingolane-switcher', '#tml-switcher' ), true ) || ! in_array( $item->title, array( '{{lingolane}}', '{{tml}}' ), true ) ) { $result[] = $item; continue; }
             foreach ( self::languages() as $language ) {
                 $copy = clone $item;
                 $copy->ID = $next_id--;

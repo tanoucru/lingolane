@@ -1037,7 +1037,7 @@ class Lingolane_Admin {
                     <ul class="lingolane-steps">
                         <li><?php echo wp_kses( __( 'Shortcode: <code>[lingolane_switcher]</code>, dạng thả xuống <code>[lingolane_switcher style="dropdown"]</code>, chỉ hiện mã <code>[lingolane_switcher show="code"]</code>.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
                         <li><?php esc_html_e( 'Widget: Giao diện › Widget › “Chọn ngôn ngữ”.', 'lingolane' ); ?></li>
-                        <li><?php echo wp_kses( __( 'Trong menu: thêm Liên kết tự tạo với URL <code>#lingolane-switcher</code> và nhãn <code>{{tml}}</code>; mục này tự tách thành từng ngôn ngữ.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Trong menu: thêm Liên kết tự tạo với URL <code>#lingolane-switcher</code> và nhãn <code>{{lingolane}}</code>; mục này tự tách thành từng ngôn ngữ.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
                     </ul>
                     <p class="lingolane-hint"><?php esc_html_e( 'Nút luôn dẫn tới đúng bản dịch của trang đang xem; trang chưa dịch dẫn về bản gốc kèm ghi chú.', 'lingolane' ); ?></p>
                 </section>

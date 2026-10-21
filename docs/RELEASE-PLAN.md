@@ -20,7 +20,7 @@ Ngày rà soát: 2026-10-21. Phạm vi: `lingolane/` (~3.500 dòng PHP, 7 file t
 | B5 | Chỉ tương thích Yoast. Không xử lý Rank Math, AIOSEO, SEOPress, sitemap lõi WP (`wp-sitemap.xml`) | `class-tml-seo.php` | Chặn |
 
 **Rủi ro khi gắn vào site lạ (cần kiểm, chưa có bằng chứng)**
-R1 Multisite (không có mã xử lý). R2 Site cài trong thư mục con, permalink "Plain", HTTPS/proxy. R3 Theme khối (FSE) và block Navigation (switcher hiện hỗ trợ `wp_nav_menu`/widget/shortcode). R4 Page builder (Elementor, Divi, Bricks), ACF/meta tuỳ chỉnh, WooCommerce. R5 Plugin cache (WP Rocket, LiteSpeed, Cloudflare) với URL theo ngôn ngữ. R6 Chạy cùng Polylang/WPML gây xung đột. R7 Hiệu năng truy vấn lọc theo ngôn ngữ trên site lớn (10k+ bài). R8 Tiền tố `tml_` chỉ 3 ký tự, dễ trùng khi lên WordPress.org (yêu cầu ≥4). R9 Phiên bản lặp ở 3 nơi (header, `TML_VERSION`, readme). R10 Chưa kiểm có gọi HTTP ra ngoài hay không (ảnh hưởng chính sách riêng tư).
+R1 Multisite (không có mã xử lý). R2 Site cài trong thư mục con, permalink "Plain", HTTPS/proxy. R3 Theme khối (FSE) và block Navigation (switcher hiện hỗ trợ `wp_nav_menu`/widget/shortcode). R4 Page builder (Elementor, Divi, Bricks), ACF/meta tuỳ chỉnh, WooCommerce. R5 Plugin cache (WP Rocket, LiteSpeed, Cloudflare) với URL theo ngôn ngữ. R6 Chạy cùng Polylang/WPML gây xung đột. R7 Hiệu năng truy vấn lọc theo ngôn ngữ trên site lớn (10k+ bài). R8 Tiền tố `tml_` chỉ 3 ký tự (ĐÃ XỬ LÝ ở M0: đổi thành `lingolane_`). R9 Phiên bản lặp ở 3 nơi (header, `TML_VERSION`, readme). R10 Chưa kiểm có gọi HTTP ra ngoài hay không (ảnh hưởng chính sách riêng tư).
 
 ## 2. Quyết định cần Tan (chặn M0)
 1. **Kênh phân phối:** WordPress.org (miễn phí, GPL, duyệt thủ công 1–4 tuần) · bán/phát hành riêng trên site (GPL, tự cập nhật qua GitHub Releases) · cả hai (bản lite + bản trả phí).
@@ -80,3 +80,8 @@ M0 → (M1 ∥ M2) → M3 → M4 → M5. M1 và M2 độc lập nên chạy song
 
 ## 5. Chuyển Teachme sang bản mới
 Bảng DB `tml_translations`/`tml_strings` giữ nguyên tên nên không cần di chuyển dữ liệu. Chỉ cần kích hoạt bản mới thay bản cũ, thêm mu-plugin filter (README), và đổi `is_tutor` thành `is_gated` nếu theme/plugin Teachme có gọi. Làm trên Local trước; live cần Tan duyệt.
+
+## 6. Nhật ký thực hiện
+**2026-10-21 · M0 (phần làm được không cần site thật) · Đã quyết:** chọn cả WordPress.org (bản lite) và phát hành riêng (Tan duyệt); tên **Lingolane**, slug/text-domain `lingolane`, tiền tố `lingolane_`/`LINGOLANE_`/`Lingolane_*` (kiểm API WordPress.org: slug `lingolane` chưa tồn tại, tìm kiếm tên không ra kết quả tương tự). Lý do: tên ngắn, không mang tên Teachme, prefix dài đủ tránh trùng. Hoàn tác: `git revert` commit đổi tên.
+Đã xong: đổi tên toàn bộ, chuyển dữ liệu `tml_` → `lingolane_` khi kích hoạt, lớp tương thích `TML_*`, GPL-2.0 đầy đủ, `readme.txt` tiếng Anh, `bin/build.sh` (kiểm phiên bản khớp 3 nơi, lint, zip không gồm tests; chạy thử ra 27 file).
+Chưa xong M0: kiểm readme bằng trình kiểm của WordPress.org; cài thử zip trên WP sạch (site Local `check` đã có Plugin Check, chờ Tan cho phép cài thử); kiểm trùng thương hiệu "Lingolane" ngoài WordPress.org (chưa tra cứu nhãn hiệu).
