@@ -58,11 +58,27 @@ Kiểm trên site Local sạch cho từng ô, ghi kết quả vào `docs/COMPAT.
 | Xung đột | Phát hiện Polylang/WPML đang bật → cảnh báo và tự tạm tắt router thay vì chạy song song |
 | Multisite | 1.0: chặn kích hoạt network-wide kèm thông báo rõ (hoặc hỗ trợ đầy đủ nếu Tan chọn) |
 | Hiệu năng | Benchmark 10k bài/50k term: số truy vấn thêm, TTFB; thêm chỉ mục nếu cần |
-- **Xong khi:** mọi ô "Đạt" hoặc "Không hỗ trợ + có cảnh báo trong plugin"; không lỗi PHP/JS ở console trên các site kiểm.
+
+**Bổ sung từ phân tích đối thủ** ([COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P1). Học ý tưởng, tự viết mã; Polylang là GPLv3 nên không chép.
+| Mã | Việc | Gắn với |
+|---|---|---|
+| C1 | Đọc `wpml-config.xml` của theme/plugin đang bật (custom field copy/dịch, CPT, taxonomy, `admin-texts`, xpath block) | Nội dung, page builder, ACF |
+| C2 | Shim WPML API (`wpml_object_id`, `icl_object_id`, `wpml_current_language`, `wpml_element_language_details`), chỉ khi không có WPML/Polylang | Xung đột (R6) |
+| C3 | Truy vấn lọc bằng subquery không tương quan, bỏ `CONCAT`/`COLLATE`, index `(language_code, element_type, element_id)`; benchmark trước và sau | Hiệu năng (R7) |
+| C4 | Nạp cache bản dịch theo lô (`the_posts`, `get_terms`), hết hạn theo `last_changed` thay TTL 60 giây | Hiệu năng (R7) |
+| C5 | Filter `lingolane_copy_post_metas` và dịch `_thumbnail_id` khi tạo bản dịch | Nội dung |
+| C6 | Sitemap lõi `wp-sitemap.xml` đa ngôn ngữ | SEO (B5) |
+| C7 | Block `lingolane/language-switcher` (dùng được trong block Navigation) và switcher nổi tuỳ chọn | Theme khối (R3) |
+| C8 | Kiểm textdomain của theme/plugin nạp đúng ngôn ngữ của request; nếu sai, hoãn `load_textdomain` | Theme, plugin |
+- **Xong khi:** mọi ô "Đạt" hoặc "Không hỗ trợ + có cảnh báo trong plugin"; không lỗi PHP/JS ở console trên các site kiểm; C1–C8 có test PHPUnit; C3 có số liệu benchmark trước và sau ghi trong `docs/COMPAT.md`.
 
 ### M4 – Trải nghiệm lần đầu (2 ngày)
-- Trình hướng dẫn cài đặt (ngôn ngữ gốc, ngôn ngữ phụ, kiểu URL); không đổi URL hiện có cho tới khi người dùng xác nhận.
+- **C9** Trình hướng dẫn cài đặt: ngôn ngữ gốc và phụ → kiểu URL → gán ngôn ngữ mặc định cho nội dung cũ → trang chủ từng ngôn ngữ → vị trí switcher (xem trước) → "Dịch trang đầu tiên"; không đổi URL hiện có cho tới khi người dùng xác nhận.
+- **C10** Nút "Dịch trang này" trên admin bar: thanh bên frontend liệt kê bản dịch của trang (tạo/sửa) và các chuỗi gettext thật sự xuất hiện trên trang, dịch ngay tại chỗ.
+- **C11** Trạng thái "bản dịch lỗi thời" khi bài gốc sửa sau bản dịch (cột danh sách, metabox, thống kê); bảng chuỗi thêm cột `status` (máy/người).
+- **C12** Registry cấu hình có schema, làm nền cho trang cài đặt và nhập/xuất cấu hình.
 - Tuỳ chọn "xoá dữ liệu khi gỡ cài đặt" (mặc định tắt), nhập/xuất cấu hình, công cụ nhập chỉ-đọc từ Polylang/WPML.
+- Chi tiết và nguồn: [COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P2.
 - Kiểm trợ năng WCAG 2.2 AA cho trang quản trị và nút chuyển ngôn ngữ.
 - **Xong khi:** người mới cài xong và có trang đầu tiên được dịch trong < 5 phút (đo trên 3 người thử).
 
@@ -73,7 +89,7 @@ Kiểm trên site Local sạch cho từng ô, ghi kết quả vào `docs/COMPAT.
 - **Xong khi:** không còn lỗi nghiêm trọng sau 7 ngày beta; Tan duyệt tạo repo public/đăng.
 
 ### M6 – Sau phát hành
-WooCommerce (1.1), dịch tự động tuỳ chọn (cần Tan duyệt chi phí và quyền riêng tư), multisite, kênh hỗ trợ và quy trình vá lỗi.
+WooCommerce (1.1), dịch tự động tuỳ chọn (cần Tan duyệt chi phí và quyền riêng tư), multisite, kênh hỗ trợ và quy trình vá lỗi. Thêm C13 (sync, dịch option, URL domain/subdomain, REST `lang`) và C14 (phát hiện ngôn ngữ trình duyệt, ngôn ngữ ưa thích của người dùng, bộ nhớ dịch, dịch máy có trạng thái) theo [COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P3.
 
 ## 4. Thứ tự và phụ thuộc
 M0 → (M1 ∥ M2) → M3 → M4 → M5. M1 và M2 độc lập nên chạy song song; M3 cần CI của M2 và chuỗi tiếng Anh của M1. Ước tính 2,5–3 tuần làm việc cho một người.

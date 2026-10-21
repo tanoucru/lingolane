@@ -64,4 +64,4 @@ npx wp-env run tests-cli --env-cwd=wp-content/plugins/lingolane-dev vendor/bin/p
 CI (`.github/workflows/ci.yml`) chạy khi push lên `main` và với mọi Pull Request: phpcs, `php -l` trên PHP 7.4/8.1/8.4, PHPUnit qua wp-env (PHP 7.4 với WP 6.2 tối thiểu, PHP 8.1 và 8.4 với WP mới nhất; 8.4 là thử nghiệm), Plugin Check (`bin/plugin-check-gate.py`: lỗi làm hỏng build, cảnh báo thì không) và đóng gói zip.
 
 ## Kế hoạch phát hành
-Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md).
+Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md). Phân tích Polylang/TranslatePress và các đề xuất C1–C14: [docs/COMPETITOR-ANALYSIS.md](docs/COMPETITOR-ANALYSIS.md).
