@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Coding standards (phpcs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      # Errors fail the build; warnings (table-name interpolation) are listed only.
+      - run: vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1
+
+  syntax:
+    name: PHP ${{ matrix.php }} syntax
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4', '8.1', '8.4' ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - run: find lingolane -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+  phpunit:
+    name: PHPUnit (PHP ${{ matrix.php }}, ${{ matrix.label }})
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '7.4', core: 'https://wordpress.org/wordpress-6.2.2.zip', label: 'WP 6.2 (minimum)', experimental: false }
+          - { php: '8.1', core: '', label: 'WP latest', experimental: false }
+          - { php: '8.4', core: '', label: 'WP latest', experimental: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+      # Dependencies are resolved for PHP 7.4 (composer.json platform), so one install works in every container.
+      - run: composer install --no-interaction --no-progress
+      - name: Select WordPress and PHP versions for wp-env
+        run: |
+          echo "WP_ENV_PHP_VERSION=${{ matrix.php }}" >> "$GITHUB_ENV"
+          if [ -n "${{ matrix.core }}" ]; then echo "WP_ENV_CORE=${{ matrix.core }}" >> "$GITHUB_ENV"; fi
+      - run: npx --yes @wordpress/env start
+      - run: npx wp-env run tests-cli --env-cwd=wp-content/plugins/lingolane-dev vendor/bin/phpunit
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npx --yes @wordpress/env start
+      - run: npx wp-env run cli wp plugin install plugin-check --activate
+      # The gate below decides: ERROR findings fail the build, warnings do not.
+      - run: npx wp-env run cli wp plugin check lingolane --format=json > plugin-check.json || true
+      - run: python3 bin/plugin-check-gate.py < plugin-check.json
+
+  package:
+    name: Build zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - run: bin/build.sh
+      - name: Check zip contents
+        run: |
+          unzip -l dist/lingolane-*.zip | grep -q 'lingolane/lingolane.php'
+          unzip -l dist/lingolane-*.zip | grep -q 'lingolane/languages/lingolane-vi.mo'
+          if unzip -l dist/lingolane-*.zip | grep -E '/tests/|\.DS_Store|/vendor/'; then echo 'Unexpected dev files in zip' >&2; exit 1; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lingolane-zip
+          path: dist/lingolane-*.zip

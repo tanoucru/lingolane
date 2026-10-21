@@ -99,8 +99,8 @@ class Lingolane_Strings {
         remove_filter( 'gettext_with_context', array( __CLASS__, 'context' ), 20 );
         try {
             $text = '' === (string) $context
-                ? apply_filters( 'gettext', $source, $source, $domain )
-                : apply_filters( 'gettext_with_context', $source, $source, $context, $domain );
+                ? apply_filters( 'gettext', $source, $source, $domain ) // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter, re-applied to read the theme's own translation.
+                : apply_filters( 'gettext_with_context', $source, $source, $context, $domain ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter, see above.
         } finally {
             add_filter( 'gettext', array( __CLASS__, 'gettext' ), 20, 3 );
             add_filter( 'gettext_with_context', array( __CLASS__, 'context' ), 20, 4 );

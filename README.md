@@ -46,8 +46,22 @@ add_filter( 'lingolane_translatable_post_types', fn( $t ) => array_unique( array
 ```
 `is_tutor()`/`translated_tutor()` đã đổi thành `is_gated()`/`translated_gated()`.
 
-## Kiểm thử
-Chạy trên site Local/`.test`: `wp eval-file wp-content/plugins/lingolane/tests/test-*.php` (chỉ chạy trên host `.local`/`.test`). Sẽ chuyển sang PHPUnit + CI ở M2.
+## Kiểm thử và chất lượng
+Bộ test PHPUnit (40 test, 126 assertion) nằm ở `tests/phpunit/`, mỗi file một mảng chức năng: nhóm bản dịch, router, URL/hreflang, bản ghi dùng chung, ngôn ngữ mặc định, quản trị, chuỗi giao diện. Mỗi test chạy trong một transaction của DB test và tự khôi phục.
+
+```bash
+composer install          # PHPUnit 9.6, thư viện test WordPress, WPCS
+composer lint             # phpcs: lỗi làm hỏng build, cảnh báo chỉ liệt kê
+composer test             # PHPUnit (cần DB test, xem dưới)
+```
+**Chạy bằng wp-env (cần Docker):**
+```bash
+npx @wordpress/env start
+npx wp-env run tests-cli --env-cwd=wp-content/plugins/lingolane-dev vendor/bin/phpunit
+```
+**Chạy không cần Docker:** tạo một DB riêng (thư viện test **xoá toàn bộ bảng** của DB nó dùng, không dùng DB của site thật), viết `wp-tests-config.php` trỏ tới DB đó và thư mục WordPress, rồi đặt `WP_PHPUNIT__TESTS_CONFIG=/đường/dẫn/wp-tests-config.php` trước khi chạy `composer test`.
+
+CI (`.github/workflows/ci.yml`) chạy khi push lên `main` và với mọi Pull Request: phpcs, `php -l` trên PHP 7.4/8.1/8.4, PHPUnit qua wp-env (PHP 7.4 với WP 6.2 tối thiểu, PHP 8.1 và 8.4 với WP mới nhất; 8.4 là thử nghiệm), Plugin Check (`bin/plugin-check-gate.py`: lỗi làm hỏng build, cảnh báo thì không) và đóng gói zip.
 
 ## Kế hoạch phát hành
 Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md).

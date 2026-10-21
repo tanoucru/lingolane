@@ -1,0 +1,41 @@
+{
+  "name": "tanoucru/lingolane",
+  "description": "Lingolane: lightweight multilingual plugin for WordPress.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "@tannguyen"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "phpunit/phpunit": "^9.6",
+    "wp-coding-standards/wpcs": "^3.1",
+    "wp-phpunit/wp-phpunit": "^7.1",
+    "yoast/phpunit-polyfills": "^2.0"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.33"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "lint": "phpcs --runtime-set ignore_warnings_on_exit 1",
+    "build": "bin/build.sh"
+  },
+  "scripts-descriptions": {
+    "test": "Run the PHPUnit suite (needs a WordPress test database, see README).",
+    "lint": "Check coding standards (errors fail, warnings are listed).",
+    "build": "Build dist/lingolane-<version>.zip."
+  }
+}
