@@ -11,6 +11,7 @@
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Text Domain: lingolane
+ * Domain Path: /languages
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -18,6 +19,10 @@ define( 'LINGOLANE_VERSION', '1.0.0-dev' );
 define( 'LINGOLANE_FILE', __FILE__ );
 define( 'LINGOLANE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LINGOLANE_URL', plugin_dir_url( __FILE__ ) );
+
+add_action( 'init', function () {
+    load_plugin_textdomain( 'lingolane', false, dirname( plugin_basename( LINGOLANE_FILE ) ) . '/languages' );
+}, 0 );
 
 require_once LINGOLANE_DIR . 'includes/class-lingolane-languages.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-install.php';

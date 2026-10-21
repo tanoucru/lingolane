@@ -112,17 +112,17 @@ class Lingolane_Strings {
     public static function save( $domain, $source, $context, $language, $translation, $register = false ) {
         global $wpdb;
         if ( ! is_string( $domain ) || ! is_string( $source ) || ! is_string( $context ) || ! is_string( $translation ) || ! Lingolane_Languages::is_valid( $language ) ) {
-            return new WP_Error( 'lingolane_string', __( 'Dữ liệu chuỗi không hợp lệ.', 'lingolane' ) );
+            return new WP_Error( 'lingolane_string', __( 'Invalid string data.', 'lingolane' ) );
         }
         $domain = sanitize_text_field( $domain );
         $context = sanitize_text_field( $context );
         // The source is an exact gettext lookup key, including markup and whitespace: validate, never rewrite.
         if ( wp_check_invalid_utf8( $source ) !== $source || strpos( $source, "\0" ) !== false ) {
-            return new WP_Error( 'lingolane_string', __( 'Chuỗi gốc phải là văn bản UTF-8 hợp lệ.', 'lingolane' ) );
+            return new WP_Error( 'lingolane_string', __( 'The source string must be valid UTF-8 text.', 'lingolane' ) );
         }
         $translation = wp_kses_post( $translation );
         if ( $domain === '' || strlen( $domain ) > 100 || strlen( $context ) > 100 || $source === '' ) {
-            return new WP_Error( 'lingolane_string', __( 'Miền và chuỗi gốc không được để trống; miền và ngữ cảnh tối đa 100 ký tự.', 'lingolane' ) );
+            return new WP_Error( 'lingolane_string', __( 'Domain and source string cannot be empty; domain and context are limited to 100 characters.', 'lingolane' ) );
         }
         $table = $wpdb->prefix . 'lingolane_strings';
         $update = $register ? 'source = VALUES(source)' : 'translation = VALUES(translation), updated_at = VALUES(updated_at)';
@@ -131,7 +131,7 @@ class Lingolane_Strings {
             $domain, $context, self::hash( $source, $context ), $source, $language, $translation, current_time( 'mysql', true )
         ) );
         if ( $result !== 0 ) { self::invalidate( $language ); }
-        return false === $result ? new WP_Error( 'lingolane_string_db', __( 'Không thể lưu chuỗi dịch.', 'lingolane' ) ) : true;
+        return false === $result ? new WP_Error( 'lingolane_string_db', __( 'Could not save the string translation.', 'lingolane' ) ) : true;
     }
 }
 

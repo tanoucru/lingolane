@@ -76,7 +76,7 @@ class Lingolane_Switcher {
     }
 }
 class Lingolane_Switcher_Widget extends WP_Widget {
-    public function __construct() { parent::__construct( 'lingolane_switcher', __( 'Chọn ngôn ngữ', 'lingolane' ), array( 'description' => __( 'Danh sách ngôn ngữ có bản dịch cho trang hiện tại.', 'lingolane' ) ) ); }
+    public function __construct() { parent::__construct( 'lingolane_switcher', __( 'Select language', 'lingolane' ), array( 'description' => __( 'Languages that have a translation of the current page.', 'lingolane' ) ) ); }
     public function widget( $args, $instance ) {
         // Theme wrappers are trusted markup supplied by register_sidebar().
         echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

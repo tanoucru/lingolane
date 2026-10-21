@@ -24,6 +24,9 @@ Slug và text-domain `lingolane`; hàm/option/bảng/filter `lingolane_`; hằng
 
 Mặc định ngôn ngữ: English (gốc, không tiền tố) + Tiếng Việt; đổi trong Cài đặt.
 
+## Ngôn ngữ giao diện
+Chuỗi gốc bằng tiếng Anh, text-domain `lingolane`. `lingolane/languages/` có `lingolane.pot`, `lingolane-vi.po/.mo`. Sinh lại mẫu: `wp i18n make-pot lingolane lingolane/languages/lingolane.pot --slug=lingolane --domain=lingolane --skip-js --exclude=tests,languages`. Biên dịch `.mo`: `python3 bin/make-mo.py` (build.sh tự gọi).
+
 ## Build
 ```bash
 bin/build.sh   # kiểm phiên bản khớp 3 nơi, lint PHP, ra dist/lingolane-<version>.zip (không gồm tests/)

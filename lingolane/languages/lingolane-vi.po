@@ -1,0 +1,811 @@
+# Vietnamese translation for Lingolane.
+msgid ""
+msgstr ""
+"Project-Id-Version: Lingolane\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Select language"
+msgstr "Chọn ngôn ngữ"
+
+msgid "Languages that have a translation of the current page."
+msgstr "Danh sách ngôn ngữ có bản dịch cho trang hiện tại."
+
+msgid "Invalid string data."
+msgstr "Dữ liệu chuỗi không hợp lệ."
+
+msgid "The source string must be valid UTF-8 text."
+msgstr "Chuỗi gốc phải là văn bản UTF-8 hợp lệ."
+
+msgid "Domain and source string cannot be empty; domain and context are limited to 100 characters."
+msgstr "Miền và chuỗi gốc không được để trống; miền và ngữ cảnh tối đa 100 ký tự."
+
+msgid "Could not save the string translation."
+msgstr "Không thể lưu chuỗi dịch."
+
+msgid "Invalid element or language."
+msgstr "Phần tử hoặc ngôn ngữ không hợp lệ."
+
+msgid "Could not lock the translation group. Please try again."
+msgstr "Chưa thể khóa nhóm bản dịch. Vui lòng thử lại."
+
+msgid "The group already has a translation or belongs to a different content type."
+msgstr "Nhóm đã có bản dịch hoặc khác loại nội dung."
+
+msgid "Could not save the translation group."
+msgstr "Không thể lưu nhóm bản dịch."
+
+msgid "Invalid post ID or language."
+msgstr "ID bài viết hoặc ngôn ngữ không hợp lệ."
+
+msgid "The original post was not found."
+msgstr "Không tìm thấy bài viết gốc."
+
+msgid "The post is already in the target language."
+msgstr "Bài viết đã thuộc ngôn ngữ đích."
+
+msgid "Draft translation created."
+msgstr "Đã tạo bản dịch nháp."
+
+msgid "Content, images and terms were copied from the original. Translate the title, content and slug, then click Publish."
+msgstr "Nội dung, ảnh và phân loại đã được sao chép từ bản gốc. Dịch tiêu đề, nội dung và đường dẫn rồi bấm Đăng."
+
+msgid "Translations"
+msgstr "Bản dịch"
+
+msgid "Language of this post"
+msgstr "Ngôn ngữ của bài này"
+
+msgid "Original:"
+msgstr "Bản gốc:"
+
+msgid "Shared: this post is shown in every language. Only create a translation if you need separate content for each language."
+msgstr "Đang dùng chung: bài này hiển thị ở mọi ngôn ngữ. Chỉ tạo bản dịch nếu cần nội dung riêng cho từng ngôn ngữ."
+
+msgid "Create translation"
+msgstr "Tạo bản dịch"
+
+msgid "Save the post first"
+msgstr "Lưu bài trước"
+
+msgid "The language was not changed: this translation group already has a %s version. The post was saved with its previous language."
+msgstr "Chưa đổi được ngôn ngữ: nhóm bản dịch này đã có bản %s. Bài đã được lưu với ngôn ngữ cũ."
+
+msgid "You do not have permission to edit this content."
+msgstr "Bạn không có quyền sửa nội dung này."
+
+msgid "Invalid content or language."
+msgstr "Nội dung hoặc ngôn ngữ không hợp lệ."
+
+msgid "You do not have permission to create content of this type."
+msgstr "Bạn không có quyền tạo nội dung loại này."
+
+msgid "You do not have permission to edit this translation."
+msgstr "Bạn không có quyền sửa bản dịch này."
+
+msgid "You do not have permission to perform this action."
+msgstr "Bạn không có quyền thực hiện thao tác này."
+
+msgid "String deleted."
+msgstr "Đã xoá chuỗi."
+
+msgid "Translation saved."
+msgstr "Đã lưu bản dịch."
+
+msgid "Imported %1$d rows, then stopped: %2$s"
+msgstr "Đã nhập %1$d dòng rồi dừng: %2$s"
+
+msgid "Imported %d translations."
+msgstr "Đã nhập %d bản dịch."
+
+msgid "This string was not found. Reload the page and try again."
+msgstr "Không tìm thấy chuỗi này. Tải lại trang rồi thử lại."
+
+msgid "This string has already been deleted."
+msgstr "Chuỗi này đã được xoá."
+
+msgid "Your session has expired. Reload the page."
+msgstr "Phiên làm việc đã hết hạn. Tải lại trang."
+
+msgid "No CSV file selected."
+msgstr "Chưa chọn file CSV."
+
+msgid "The file upload failed. Please try again."
+msgstr "Tải file lên không thành công. Thử lại."
+
+msgid "Only .csv files up to 2 MB are accepted."
+msgstr "Chỉ nhận file .csv tối đa 2 MB."
+
+msgid "Could not read the CSV file."
+msgstr "Không đọc được file CSV."
+
+msgid "The CSV file is empty or has no header row."
+msgstr "File CSV trống hoặc thiếu dòng tiêu đề."
+
+msgid "The header row must contain these columns: %s. Nothing was written."
+msgstr "Dòng tiêu đề phải gồm các cột: %s. Chưa có dữ liệu nào được ghi."
+
+msgid "Row %d has a different number of columns than the header. Nothing was written."
+msgstr "Dòng %d có số cột không khớp tiêu đề. Chưa có dữ liệu nào được ghi."
+
+msgid "Row %d is not valid UTF-8 text. Save the file with UTF-8 encoding and try again."
+msgstr "Dòng %d không phải văn bản UTF-8 hợp lệ. Lưu file với mã hoá UTF-8 rồi thử lại."
+
+msgid "Row %d is missing the source string, or its language code is not enabled on this site. Nothing was written."
+msgstr "Dòng %d thiếu chuỗi gốc hoặc mã ngôn ngữ không có trên website. Chưa có dữ liệu nào được ghi."
+
+msgid "The file has no data rows."
+msgstr "File không có dòng dữ liệu nào."
+
+msgid "No language to translate into yet"
+msgstr "Chưa có ngôn ngữ để dịch"
+
+msgid "Add a second language in the Languages tab."
+msgstr "Thêm ngôn ngữ thứ hai ở tab Ngôn ngữ."
+
+msgid "All"
+msgstr "Tất cả"
+
+msgid "Untranslated"
+msgstr "Chưa dịch"
+
+msgid "Translated"
+msgstr "Đã dịch"
+
+msgid "Provided by theme"
+msgstr "Giao diện có sẵn"
+
+msgid "Interface strings · %s"
+msgstr "Chữ trên giao diện · %s"
+
+msgid "Scan interface"
+msgstr "Quét giao diện"
+
+msgid "Filter by status"
+msgstr "Lọc theo tình trạng"
+
+msgid "Translate into"
+msgstr "Dịch sang"
+
+msgid "Search"
+msgstr "Tìm"
+
+msgid "Source text or translation"
+msgstr "Chữ gốc hoặc bản dịch"
+
+msgid "Filter"
+msgstr "Lọc"
+
+msgid "Clear filters"
+msgstr "Xoá bộ lọc"
+
+msgid "Tip: type the translation, then press <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to save and jump to the next string."
+msgstr "Mẹo: gõ bản dịch rồi nhấn <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> để lưu và chuyển sang chuỗi kế tiếp."
+
+msgid "%s translation"
+msgstr "Bản dịch %s"
+
+msgid "No untranslated strings left."
+msgstr "Không còn chuỗi nào chưa dịch."
+
+msgid "The list is empty. Click “Scan interface” to collect text from your theme, or import a CSV file below."
+msgstr "Danh sách đang trống. Bấm “Quét giao diện” để lấy chữ từ theme, hoặc nhập file CSV bên dưới."
+
+msgid "No strings match the filter."
+msgstr "Không có chuỗi nào khớp bộ lọc."
+
+msgid "Enter translation…"
+msgstr "Nhập bản dịch…"
+
+msgid "Edit the built-in translation"
+msgstr "Sửa từ bản có sẵn"
+
+msgid "For names, product codes and similar text that needs no translation"
+msgstr "Dùng cho tên riêng, mã chương trình… không cần dịch"
+
+msgid "Keep as is"
+msgstr "Giữ nguyên"
+
+msgid "Delete"
+msgstr "Xoá"
+
+msgid "Save"
+msgstr "Lưu"
+
+msgid "Bulk translate with CSV"
+msgstr "Dịch hàng loạt bằng CSV"
+
+msgid "Download all strings and existing translations, then open them in Google Sheets or Excel to translate."
+msgstr "Tải toàn bộ chuỗi và bản dịch hiện có, mở bằng Google Sheets hoặc Excel để dịch."
+
+msgid "Download CSV"
+msgstr "Tải file CSV"
+
+msgid "2. Import again"
+msgstr "2. Nhập lại"
+
+msgid "CSV file (UTF-8, up to 2 MB)"
+msgstr "File CSV (UTF-8, tối đa 2 MB)"
+
+msgid "Use the file exported in step 1 (columns domain, context, source, language, translation)."
+msgstr "Dùng file đã xuất ở bước 1 (cột domain, context, source, language, translation)."
+
+msgid "Import translations"
+msgstr "Nhập bản dịch"
+
+msgid "The file is validated before anything is written; if one row is invalid, no row is saved."
+msgstr "File được kiểm tra trước khi ghi; nếu một dòng sai, không dòng nào bị ghi."
+
+msgid "Posts & pages"
+msgstr "Bài & trang"
+
+msgid "Languages"
+msgstr "Ngôn ngữ"
+
+msgid "Settings"
+msgstr "Cài đặt"
+
+msgid "Guide"
+msgstr "Hướng dẫn"
+
+msgid "Published"
+msgstr "Đã xuất bản"
+
+msgid "Draft"
+msgstr "Bản nháp"
+
+msgid "Scheduled"
+msgstr "Hẹn giờ"
+
+msgid "Private"
+msgstr "Riêng tư"
+
+msgid "Lingolane — Languages"
+msgstr "Lingolane — Ngôn ngữ"
+
+msgid "Multilingual"
+msgstr "Đa ngôn ngữ"
+
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+msgid "Saved"
+msgstr "Đã lưu"
+
+msgid "Could not save. Please try again."
+msgstr "Không lưu được. Thử lại."
+
+msgid "Not saved"
+msgstr "Chưa lưu"
+
+msgid "Remove this string from the list? Its saved translations are deleted as well."
+msgstr "Xoá chuỗi này khỏi danh sách? Bản dịch đã lưu của chuỗi cũng bị xoá."
+
+msgid "You have unsaved translations. Leave this page?"
+msgstr "Có bản dịch chưa lưu. Rời trang?"
+
+msgid "The selected language is not in the list."
+msgstr "Ngôn ngữ đã chọn không có trong danh sách."
+
+msgid "%s is now the default language. Its pages no longer have a prefix in their URLs."
+msgstr "%s là ngôn ngữ mặc định. Trang của ngôn ngữ này giờ không có tiền tố trong đường dẫn."
+
+msgid "The language code is 2–3 lowercase letters, optionally with a region (for example ja, fr, zh-tw)."
+msgstr "Mã ngôn ngữ gồm 2–3 chữ cái thường, có thể thêm vùng (ví dụ: ja, fr, zh-tw)."
+
+msgid "A display name and a valid WordPress locale are required (for example fr_FR, ja)."
+msgstr "Cần tên hiển thị và locale WordPress hợp lệ (ví dụ: fr_FR, ja)."
+
+msgid "The code “%s” is already in the list."
+msgstr "Mã “%s” đã có trong danh sách."
+
+msgid "Added %1$s. Its pages have URLs starting with %2$s; create translations in the Posts & pages tab."
+msgstr "Đã thêm %1$s. Trang của ngôn ngữ này có địa chỉ bắt đầu bằng %2$s; tạo bản dịch ở tab Bài & trang."
+
+msgid "Updated %s."
+msgstr "Đã cập nhật %s."
+
+msgid "You cannot remove the default language or the content’s source language."
+msgstr "Không thể xoá ngôn ngữ mặc định hoặc ngôn ngữ gốc của nội dung."
+
+msgid "This language still has %1$d linked items and %2$d translated strings. Delete or move those translations first so no data is lost."
+msgstr "Ngôn ngữ này còn %1$d nội dung liên kết và %2$d chuỗi đã dịch. Xoá hoặc chuyển các bản dịch đó trước để không mất dữ liệu."
+
+msgid "Removed %s from the site."
+msgstr "Đã gỡ %s khỏi website."
+
+msgid "Select at least one content type to translate. No changes were saved."
+msgstr "Chọn ít nhất một loại nội dung cần dịch. Chưa có thay đổi nào được lưu."
+
+msgid "Settings saved."
+msgstr "Đã lưu cài đặt."
+
+msgid "Cache cleared. The latest translations will show on the next page load."
+msgstr "Đã làm mới bộ nhớ đệm. Bản dịch mới nhất sẽ hiển thị ngay ở lượt tải trang kế tiếp."
+
+msgid "added %d new strings"
+msgstr "thêm %d chuỗi mới"
+
+msgid "removed %d unused untranslated strings"
+msgstr "gỡ %d chuỗi chưa dịch không còn dùng"
+
+msgid "Interface scan complete: %1$s. There are now %2$d visitor-visible strings."
+msgstr "Đã quét giao diện: %1$s. Hiện có %2$d chuỗi khách nhìn thấy."
+
+msgid "The list is complete: all %d visitor-visible strings are already listed."
+msgstr "Danh sách đã đầy đủ: %d chuỗi khách nhìn thấy đều đã có."
+
+msgid "Translate posts, pages and interface text."
+msgstr "Bản dịch bài viết, trang và chữ trên giao diện."
+
+msgid "Enabled languages"
+msgstr "Ngôn ngữ đang bật"
+
+msgid "Open the %s home page"
+msgstr "Mở trang chủ %s"
+
+msgid "Management items"
+msgstr "Mục quản lý"
+
+msgid "Your site has only one language"
+msgstr "Website mới có một ngôn ngữ"
+
+msgid "Add a second language to start translating posts and your interface."
+msgstr "Thêm ngôn ngữ thứ hai để bắt đầu dịch bài viết và giao diện."
+
+msgid "Add a language"
+msgstr "Thêm ngôn ngữ"
+
+msgid "Post and page translation progress"
+msgstr "Tiến độ dịch bài và trang"
+
+msgid "%1$s/%2$s published"
+msgstr "%1$s/%2$s đã xuất bản"
+
+msgid "%s drafts"
+msgstr "%s bản nháp"
+
+msgid "Interface string translation progress"
+msgstr "Tiến độ dịch chuỗi giao diện"
+
+msgid "%1$s/%2$s translated"
+msgstr "%1$s/%2$s có bản dịch"
+
+msgid "Translate the %s missing pages"
+msgstr "Dịch %s trang còn thiếu"
+
+msgid "Publish %s drafts"
+msgstr "Xuất bản %s bản nháp"
+
+msgid "All posts & pages are translated"
+msgstr "Bài & trang đã dịch đủ"
+
+msgid "%s untranslated strings"
+msgstr "%s chuỗi chưa dịch"
+
+msgid "System status"
+msgstr "Tình trạng hệ thống"
+
+msgid "%s shared records are shown in every language and need no translation."
+msgstr "%s bản ghi dùng chung cho mọi ngôn ngữ, không cần tạo bản dịch."
+
+msgid "Language directory in URLs"
+msgstr "Đường dẫn theo thư mục ngôn ngữ"
+
+msgid "Example: /en/about-us/. The default language has no prefix."
+msgstr "Ví dụ: /en/about-us/. Ngôn ngữ mặc định không có tiền tố."
+
+msgid "Pretty permalinks required"
+msgstr "Cần bật đường dẫn đẹp"
+
+msgid "Open Settings › Permalinks"
+msgstr "Mở Cài đặt › Đường dẫn tĩnh"
+
+msgid "Translation tables ready"
+msgstr "Bảng dữ liệu bản dịch sẵn sàng"
+
+msgid "Translation links and strings are stored separately and do not affect your original content."
+msgstr "Liên kết bản dịch và chuỗi được lưu riêng, không ảnh hưởng nội dung gốc."
+
+msgid "Missing tables"
+msgstr "Thiếu bảng dữ liệu"
+
+msgid "Deactivate and reactivate the plugin to create the tables."
+msgstr "Tắt rồi bật lại plugin để tạo bảng."
+
+msgid "Multilingual SEO"
+msgstr "SEO đa ngôn ngữ"
+
+msgid "hreflang, canonical and lang attributes are added automatically to pages that have translations."
+msgstr "Thẻ hreflang, canonical và thuộc tính lang được thêm tự động cho trang có bản dịch."
+
+msgid "Language-specific menus"
+msgstr "Menu riêng theo ngôn ngữ"
+
+msgid "In use for: %s."
+msgstr "Đang dùng cho: %s."
+
+msgid "Shared menu"
+msgstr "Menu dùng chung"
+
+msgid "How to create a menu for each language"
+msgstr "Cách tạo menu riêng cho từng ngôn ngữ"
+
+msgid "Recently updated translations"
+msgstr "Bản dịch cập nhật gần đây"
+
+msgid "View all"
+msgstr "Xem tất cả"
+
+msgid "(No title)"
+msgstr "(Chưa có tiêu đề)"
+
+msgid "%s ago"
+msgstr "%s trước"
+
+msgid "Post and page translations"
+msgstr "Bản dịch bài viết và trang"
+
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s mục"
+
+msgid "Content type"
+msgstr "Loại nội dung"
+
+msgid "Posts & pages to translate"
+msgstr "Bài viết & trang cần dịch"
+
+msgid "shared"
+msgstr "dùng chung"
+
+msgid "All languages"
+msgstr "Mọi ngôn ngữ"
+
+msgid "Status"
+msgstr "Tình trạng"
+
+msgid "No published translation"
+msgstr "Chưa có bản dịch xuất bản"
+
+msgid "Draft translation"
+msgstr "Bản dịch đang nháp"
+
+msgid "Fully translated"
+msgstr "Đã dịch đủ"
+
+msgid "Title or ID"
+msgstr "Tiêu đề hoặc ID"
+
+msgid "Items of this type are shared across all languages: visitors in other languages still see the original. Only create a separate version when the content must be completely different."
+msgstr "Mục thuộc loại này dùng chung cho mọi ngôn ngữ: khách ở ngôn ngữ khác vẫn thấy bản gốc. Chỉ tạo bản riêng khi cần nội dung khác hẳn."
+
+msgid "Great, nothing is missing a translation."
+msgstr "Tuyệt vời, không còn mục nào thiếu bản dịch."
+
+msgid "No items match the filter."
+msgstr "Không có mục nào khớp bộ lọc."
+
+msgid "View translation"
+msgstr "Xem bản dịch"
+
+msgid "Shared"
+msgstr "Dùng chung"
+
+msgid "Show the original in every language"
+msgstr "Hiển thị bản gốc ở mọi ngôn ngữ"
+
+msgid "“Create translation” copies the content, featured image and terms into a new draft linked to the original. When the translation is ready, click Publish in the editor."
+msgstr "“Tạo bản dịch” sao chép nội dung, ảnh đại diện và phân loại sang một bản nháp mới đã liên kết với bài gốc. Dịch xong, bấm Đăng trong trình soạn thảo."
+
+msgid "Previous"
+msgstr "Trước"
+
+msgid "Pagination"
+msgstr "Phân trang"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s–%2$s trên %3$s"
+
+msgid "Site languages"
+msgstr "Ngôn ngữ của website"
+
+msgid "URL"
+msgstr "Địa chỉ"
+
+msgid "Linked content"
+msgstr "Nội dung liên kết"
+
+msgid "Actions"
+msgstr "Thao tác"
+
+msgid "Default"
+msgstr "Mặc định"
+
+msgid "URLs have no language prefix"
+msgstr "Địa chỉ không có tiền tố ngôn ngữ"
+
+msgid "Source language"
+msgstr "Ngôn ngữ gốc"
+
+msgid "The language your content and interface text are written in"
+msgstr "Ngôn ngữ viết nội dung và chữ giao diện gốc"
+
+msgid "Display name"
+msgstr "Tên hiển thị"
+
+msgid "Make %s the default language? Every page URL will change: this language loses its prefix and the current default gets one. Do this before search engines have indexed your site."
+msgstr "Đặt %s làm ngôn ngữ mặc định? Địa chỉ của mọi trang sẽ đổi: ngôn ngữ này bỏ tiền tố, ngôn ngữ hiện tại nhận tiền tố. Nên làm trước khi website có lượt truy cập từ Google."
+
+msgid "Set as default"
+msgstr "Đặt mặc định"
+
+msgid "Remove %s from the site? URLs for this language will stop working."
+msgstr "Gỡ %s khỏi website? Đường dẫn của ngôn ngữ này sẽ ngừng hoạt động."
+
+msgid "Has linked content; cannot remove"
+msgstr "Còn nội dung liên kết, không thể gỡ"
+
+msgid "Remove language"
+msgstr "Gỡ ngôn ngữ"
+
+msgid "Pick from the list to prefill, or type your own. After adding, create translations for each page in the Posts & pages tab."
+msgstr "Chọn từ danh sách để điền sẵn, hoặc tự nhập. Sau khi thêm, tạo bản dịch cho từng trang ở tab Bài & trang."
+
+msgid "Common languages"
+msgstr "Ngôn ngữ phổ biến"
+
+msgid "— Select to prefill —"
+msgstr "— Chọn để điền nhanh —"
+
+msgid "Code (used in URLs)"
+msgstr "Mã (dùng trong đường dẫn)"
+
+msgid "2–3 lowercase letters, for example fr → /fr/"
+msgstr "2–3 chữ cái thường, ví dụ fr → /fr/"
+
+msgid "Content to translate"
+msgstr "Nội dung cần dịch"
+
+msgid "Selected types get a Language column in the post list, a “Translations” box in the editor, and are filtered by language on the front end."
+msgstr "Loại được chọn có cột Ngôn ngữ trong danh sách bài, hộp “Bản dịch” trong trình soạn thảo và được lọc theo ngôn ngữ ngoài website."
+
+msgid "Taxonomies"
+msgstr "Phân loại"
+
+msgid "“Shared”: records of shared types appear in every language until you create a separate translation for that record."
+msgstr "“Dùng chung”: bản ghi thuộc loại dùng chung hiển thị ở mọi ngôn ngữ cho tới khi bạn tạo bản dịch riêng cho bản ghi đó."
+
+msgid "When a translation is missing"
+msgstr "Khi chưa có bản dịch"
+
+msgid "Untranslated pages always open the original with a small notice for visitors and never return a 404 error."
+msgstr "Trang chưa dịch luôn mở bản gốc kèm thông báo nhỏ cho khách, không bao giờ báo lỗi 404."
+
+msgid "Show untranslated posts in lists"
+msgstr "Hiện bài chưa dịch trong danh sách"
+
+msgid "Blog, archive and search pages in other languages will also list original posts that have no translation. Turn off to list translated posts only."
+msgstr "Trang blog, chuyên mục và tìm kiếm ở ngôn ngữ khác sẽ liệt kê cả bài gốc chưa có bản dịch. Tắt để chỉ liệt kê bài đã dịch."
+
+msgid "Fixed text in themes and plugins (buttons, labels, messages). Translations entered in the Interface strings tab take priority over built-in ones."
+msgstr "Chữ cố định trong theme và plugin (nút, nhãn, thông báo). Bản dịch nhập ở tab Chuỗi giao diện được ưu tiên hơn bản có sẵn."
+
+msgid "Translate theme text"
+msgstr "Dịch chữ của theme"
+
+msgid "Apply saved translations to your active theme."
+msgstr "Áp dụng bản dịch đã lưu cho theme đang dùng."
+
+msgid "Translate plugin text"
+msgstr "Dịch chữ của plugin"
+
+msgid "Apply saved translations to forms and other plugins."
+msgstr "Áp dụng bản dịch đã lưu cho form và các plugin khác."
+
+msgid "Translate only these text domains"
+msgstr "Chỉ dịch các miền (text domain)"
+
+msgid "Leave empty = every domain with translations"
+msgstr "Để trống = mọi miền có bản dịch"
+
+msgid "Example: my-theme, my-plugin. Separate with commas. Leave empty if unsure."
+msgstr "Ví dụ: my-theme, my-plugin. Phân cách bằng dấu phẩy. Để trống nếu không chắc."
+
+msgid "Save settings"
+msgstr "Lưu cài đặt"
+
+msgid "Tools"
+msgstr "Công cụ"
+
+msgid "Use after updating your theme or importing translations in bulk."
+msgstr "Dùng khi vừa cập nhật theme hoặc nhập bản dịch hàng loạt."
+
+msgid "Find new strings in the theme"
+msgstr "Tìm chuỗi mới trong giao diện"
+
+msgid "Reads the theme code and adds new text to the list to translate. Existing translations are not changed."
+msgstr "Đọc mã theme và thêm chữ mới vào danh sách cần dịch. Không thay đổi bản dịch đã có."
+
+msgid "Clear cache"
+msgstr "Làm mới bộ nhớ đệm"
+
+msgid "Deletes temporary translation data so the site reads it again immediately."
+msgstr "Xoá dữ liệu tạm của bản dịch để website đọc lại ngay."
+
+msgid "Refresh"
+msgstr "Làm mới"
+
+msgid "Other, rarely used types (%d)"
+msgstr "Loại khác ít dùng (%d)"
+
+msgid "Guide contents"
+msgstr "Mục lục hướng dẫn"
+
+msgid "Translate a page"
+msgstr "Dịch một trang"
+
+msgid "Translate interface text"
+msgstr "Dịch chữ trên giao diện"
+
+msgid "Language-specific menus"
+msgstr "Menu theo ngôn ngữ"
+
+msgid "Language switcher"
+msgstr "Nút chuyển ngôn ngữ"
+
+msgid "Shared records"
+msgstr "Hồ sơ dùng chung"
+
+msgid "SEO and URLs"
+msgstr "SEO và đường dẫn"
+
+msgid "1. Translate a page or post"
+msgstr "1. Dịch một trang hoặc bài viết"
+
+msgid "Open the %s tab and find the page to translate (filter by “No published translation” to see what is left)."
+msgstr "Mở tab %s, tìm trang cần dịch (lọc “Chưa có bản dịch xuất bản” để thấy việc còn lại)."
+
+msgid "Click “Create translation” in the language column. A draft is created with all the content, images and terms of the original."
+msgstr "Bấm “Tạo bản dịch” ở cột ngôn ngữ. Một bản nháp được tạo với toàn bộ nội dung, ảnh và phân loại của bản gốc."
+
+msgid "Translate the title, content and slug in the editor, then click Publish."
+msgstr "Dịch tiêu đề, nội dung và đường dẫn (slug) trong trình soạn thảo, sau đó bấm Đăng."
+
+msgid "You can also do this in the editor: the “Translations” box in the right column shows the post’s language and buttons for missing translations. The Language column in the Pages/Posts lists has the same buttons."
+msgstr "Cũng có thể làm ngay trong trình soạn thảo: hộp “Bản dịch” ở cột phải hiển thị ngôn ngữ của bài và nút tạo bản dịch còn thiếu. Cột Ngôn ngữ trong danh sách Trang/Bài viết cũng có nút tương tự."
+
+msgid "2. Translate interface text"
+msgstr "2. Dịch chữ trên giao diện"
+
+msgid "Buttons, form labels and messages live in theme/plugin code, so they cannot be edited in the editor."
+msgstr "Nút, nhãn form, thông báo… nằm trong mã theme/plugin nên không sửa trong trình soạn thảo được."
+
+msgid "In the Interface strings tab, filter by “Untranslated”."
+msgstr "Ở tab Chuỗi giao diện, lọc “Chưa dịch”."
+
+msgid "Type the translation, then click Save or press Ctrl/⌘ + Enter (it moves to the next string)."
+msgstr "Gõ bản dịch rồi bấm Lưu hoặc Ctrl/⌘ + Enter (tự chuyển sang chuỗi kế tiếp)."
+
+msgid "Strings marked “Provided by theme” are already translated by the theme; only enter one to change the wording."
+msgstr "Chuỗi “Giao diện có sẵn” đã được theme dịch; chỉ nhập khi muốn thay câu chữ."
+
+msgid "Bulk translate: export CSV, edit in Google Sheets/Excel, then import again. Columns: domain, context, source, language, translation."
+msgstr "Dịch hàng loạt: Xuất CSV, sửa trong Google Sheets/Excel, rồi Nhập lại. Cột: domain, context, source, language, translation."
+
+msgid "3. Language-specific menus"
+msgstr "3. Menu theo ngôn ngữ"
+
+msgid "Create a new menu under Appearance › Menus and name it using the pattern <code>location language-code</code>, for example %1$s. When visitors view that language, this menu replaces the original at the matching location."
+msgstr "Tạo menu mới ở Giao diện › Menu và đặt tên theo mẫu <code>vị-trí mã-ngôn-ngữ</code>, ví dụ %1$s. Khi khách xem bản tiếng đó, menu này tự thay menu gốc ở vị trí tương ứng."
+
+msgid "Theme menu locations: %s"
+msgstr "Vị trí menu của theme: %s"
+
+msgid "4. Language switcher"
+msgstr "4. Nút chuyển ngôn ngữ"
+
+msgid "To place a language switcher anywhere:"
+msgstr "Để đặt nút chuyển ngôn ngữ ở bất kỳ vị trí nào:"
+
+msgid "Shortcode: <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style=\"dropdown\"]</code>, codes only <code>[lingolane_switcher show=\"code\"]</code>."
+msgstr "Shortcode: <code>[lingolane_switcher]</code>, dạng thả xuống <code>[lingolane_switcher style=\"dropdown\"]</code>, chỉ hiện mã <code>[lingolane_switcher show=\"code\"]</code>."
+
+msgid "Widget: Appearance › Widgets › “Select language”."
+msgstr "Widget: Giao diện › Widget › “Chọn ngôn ngữ”."
+
+msgid "In a menu: add a Custom Link with the URL <code>#lingolane-switcher</code> and the label <code>{{lingolane}}</code>; it expands into one item per language."
+msgstr "Trong menu: thêm Liên kết tự tạo với URL <code>#lingolane-switcher</code> và nhãn <code>{{lingolane}}</code>; mục này tự tách thành từng ngôn ngữ."
+
+msgid "The switcher always links to the matching translation of the current page; untranslated pages link to the original with a notice."
+msgstr "Nút luôn dẫn tới đúng bản dịch của trang đang xem; trang chưa dịch dẫn về bản gốc kèm ghi chú."
+
+msgid "5. Shared records and account pages"
+msgstr "5. Bản ghi dùng chung và trang tài khoản"
+
+msgid "Records of shared post types, shared taxonomies and shared pages (for example account and checkout pages) are shown in every language, so visitors in any language can still find them. Fixed text on those pages is translated through Interface strings; content written by users stays unchanged."
+msgstr "Bản ghi của các loại nội dung, phân loại và trang dùng chung (ví dụ trang tài khoản, thanh toán) hiển thị ở mọi ngôn ngữ nên khách ở ngôn ngữ nào cũng tìm thấy. Chữ cố định trên các trang này được dịch qua Chuỗi giao diện; nội dung do người dùng viết giữ nguyên."
+
+msgid "6. SEO and URLs"
+msgstr "6. SEO và đường dẫn"
+
+msgid "The default language has no prefix; other languages live in their own directory, for example %s."
+msgstr "Ngôn ngữ mặc định không có tiền tố; ngôn ngữ khác nằm trong thư mục riêng, ví dụ %s."
+
+msgid "Every translated page automatically gets hreflang, x-default and canonical tags in the right language; Yoast SEO uses the same values."
+msgstr "Mỗi trang có bản dịch tự có thẻ hreflang, x-default và canonical đúng ngôn ngữ; Yoast SEO dùng chung các giá trị này."
+
+msgid "Internal links inside content automatically switch to the matching translation when one exists."
+msgstr "Liên kết nội bộ trong bài được tự chuyển sang bản dịch tương ứng khi có."
+
+msgid "This post is written in %s"
+msgstr "Bài này viết bằng %s"
+
+msgid "Shown in every language"
+msgstr "Hiển thị ở mọi ngôn ngữ"
+
+msgid "Edit %1$s version (%2$s)"
+msgstr "Sửa bản %1$s (%2$s)"
+
+msgid "Create %s translation"
+msgstr "Tạo bản dịch %s"
+
+msgid "Filter by language"
+msgstr "Lọc theo ngôn ngữ"
+
+msgid "(opens in a new tab)"
+msgstr "(mở tab mới)"
+
+msgid "Edit"
+msgstr "Sửa"
+
+msgid "Source"
+msgstr "Nguồn"
+
+msgid "Source text (%s)"
+msgstr "Chữ gốc (%s)"
+
+msgid "1. Export file"
+msgstr "1. Xuất file"
+
+msgid "Overview"
+msgstr "Tổng quan"
+
+msgid "Interface strings"
+msgstr "Chuỗi giao diện"
+
+msgid "Pending review"
+msgstr "Chờ duyệt"
+
+msgid "%s provided by the theme"
+msgstr "%s lấy từ giao diện"
+
+msgid "Original content"
+msgstr "Nội dung gốc"
+
+msgid "Remove"
+msgstr "Gỡ"
+
+msgid "Content"
+msgstr "Nội dung"
+
+msgid "Next"
+msgstr "Sau"
+
+msgid "View page"
+msgstr "Xem trang"
+
+msgid "view side by side"
+msgstr "xem song song"
+
+msgid "WordPress locale"
+msgstr "Locale WordPress"
+
+msgid "Lightweight multilingual for WordPress: translation groups for posts and pages, string translation, language URLs, hreflang and a language switcher."
+msgstr "Đa ngôn ngữ nhẹ cho WordPress: nhóm bản dịch cho bài viết và trang, dịch chuỗi giao diện, đường dẫn theo ngôn ngữ, hreflang và nút chuyển ngôn ngữ."
+
+msgid "Locale"
+msgstr "Locale"

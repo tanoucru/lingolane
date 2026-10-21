@@ -23,7 +23,7 @@ class Lingolane_Columns {
     }
 
     public static function columns( $columns ) {
-        $columns['lingolane_language'] = __( 'Ngôn ngữ', 'lingolane' );
+        $columns['lingolane_language'] = __( 'Languages', 'lingolane' );
         return $columns;
     }
 
@@ -38,9 +38,9 @@ class Lingolane_Columns {
 
         echo '<div class="lingolane-col">';
         /* translators: %s: language */
-        echo '<span class="lingolane-code lingolane-code--current" title="' . esc_attr( sprintf( __( 'Bài này viết bằng %s', 'lingolane' ), Lingolane_Languages::name( $current ) ) ) . '">' . esc_html( strtoupper( $current ) ) . '</span>';
+        echo '<span class="lingolane-code lingolane-code--current" title="' . esc_attr( sprintf( __( 'This post is written in %s', 'lingolane' ), Lingolane_Languages::name( $current ) ) ) . '">' . esc_html( strtoupper( $current ) ) . '</span>';
         if ( $shared ) {
-            echo '<span class="lingolane-chip lingolane-chip--muted" title="' . esc_attr__( 'Hiển thị ở mọi ngôn ngữ', 'lingolane' ) . '">' . esc_html__( 'Dùng chung', 'lingolane' ) . '</span>';
+            echo '<span class="lingolane-chip lingolane-chip--muted" title="' . esc_attr__( 'Shown in every language', 'lingolane' ) . '">' . esc_html__( 'Shared', 'lingolane' ) . '</span>';
         } else {
             foreach ( Lingolane_Languages::all() as $language ) {
                 $code = $language['code'];
@@ -50,11 +50,11 @@ class Lingolane_Columns {
                     if ( ! current_user_can( 'edit_post', $trans_id ) ) { continue; }
                     $status = get_post_status( $trans_id );
                     /* translators: 1: language, 2: status */
-                    $label = sprintf( __( 'Sửa bản %1$s (%2$s)', 'lingolane' ), $language['name'], Lingolane_Admin::status_label( $status ) );
+                    $label = sprintf( __( 'Edit %1$s version (%2$s)', 'lingolane' ), $language['name'], Lingolane_Admin::status_label( $status ) );
                     echo '<a class="lingolane-code lingolane-code--' . ( 'publish' === $status ? 'ok' : 'warn' ) . '" href="' . esc_url( get_edit_post_link( $trans_id, 'raw' ) ) . '" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '">' . esc_html( strtoupper( $code ) ) . '</a>';
                 } elseif ( current_user_can( 'edit_post', $id ) && 'trash' !== $post->post_status ) {
                     /* translators: %s: language */
-                    $label = sprintf( __( 'Tạo bản dịch %s', 'lingolane' ), $language['name'] );
+                    $label = sprintf( __( 'Create %s translation', 'lingolane' ), $language['name'] );
                     echo '<a class="lingolane-code lingolane-code--add" href="' . esc_url( Lingolane_Admin::translate_url( $id, $code ) ) . '" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '"><span aria-hidden="true">+</span>' . esc_html( strtoupper( $code ) ) . '</a>';
                 }
             }
@@ -69,7 +69,7 @@ class Lingolane_Columns {
     public static function dropdown( $post_type ) {
         if ( ! in_array( $post_type, Lingolane_Query::post_types(), true ) ) { return; }
         $current = self::requested_language();
-        echo '<label class="screen-reader-text" for="lingolane-lang-filter">' . esc_html__( 'Lọc theo ngôn ngữ', 'lingolane' ) . '</label><select name="lingolane_lang" id="lingolane-lang-filter"><option value="all">' . esc_html__( 'Mọi ngôn ngữ', 'lingolane' ) . '</option>';
+        echo '<label class="screen-reader-text" for="lingolane-lang-filter">' . esc_html__( 'Filter by language', 'lingolane' ) . '</label><select name="lingolane_lang" id="lingolane-lang-filter"><option value="all">' . esc_html__( 'All languages', 'lingolane' ) . '</option>';
         foreach ( Lingolane_Languages::all() as $language ) {
             echo '<option value="' . esc_attr( $language['code'] ) . '" ' . selected( $current, $language['code'], false ) . '>' . esc_html( $language['name'] ) . '</option>';
         }

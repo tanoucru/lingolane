@@ -39,13 +39,13 @@ class Lingolane_Elements {
         $lang = sanitize_key( $lang );
         $source = $source === null ? null : sanitize_key( $source );
         if ( ! $id || strlen( $type ) > 40 || ! preg_match( '/^(post|tax)_[a-z0-9_-]+$/D', $type ) || ! Lingolane_Languages::is_valid( $lang ) || ( $source !== null && ! Lingolane_Languages::is_valid( $source ) ) || ( $trid !== null && ! absint( $trid ) ) ) {
-            return new WP_Error( 'lingolane_invalid_element', 'Phần tử hoặc ngôn ngữ không hợp lệ.' );
+            return new WP_Error( 'lingolane_invalid_element', __( 'Invalid element or language.', 'lingolane' ) );
         }
         $table = $wpdb->prefix . 'lingolane_translations';
         // Serialize group allocation and membership checks, including concurrent admin requests.
         $lock = 'lingolane_' . md5( DB_NAME . $table );
         if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', $lock, 5 ) ) ) {
-            return new WP_Error( 'lingolane_lock', 'Chưa thể khóa nhóm bản dịch. Vui lòng thử lại.' );
+            return new WP_Error( 'lingolane_lock', __( 'Could not lock the translation group. Please try again.', 'lingolane' ) );
         }
         try {
             $old = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE element_type = %s AND element_id = %d", $type, $id ), ARRAY_A );
@@ -54,14 +54,14 @@ class Lingolane_Elements {
             } else {
                 $trid = absint( $trid );
                 $conflict = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table WHERE trid = %d AND (element_type <> %s OR (language_code = %s AND element_id <> %d)) LIMIT 1", $trid, $type, $lang, $id ) );
-                if ( $conflict ) { return new WP_Error( 'lingolane_group_conflict', 'Nhóm đã có bản dịch hoặc khác loại nội dung.' ); }
+                if ( $conflict ) { return new WP_Error( 'lingolane_group_conflict', __( 'The group already has a translation or belongs to a different content type.', 'lingolane' ) ); }
             }
             if ( $source === null ) {
                 $sql = $wpdb->prepare( "INSERT INTO $table (element_type, element_id, trid, language_code, source_language_code) VALUES (%s, %d, %d, %s, NULL) ON DUPLICATE KEY UPDATE trid = VALUES(trid), language_code = VALUES(language_code), source_language_code = NULL", $type, $id, $trid, $lang );
             } else {
                 $sql = $wpdb->prepare( "INSERT INTO $table (element_type, element_id, trid, language_code, source_language_code) VALUES (%s, %d, %d, %s, %s) ON DUPLICATE KEY UPDATE trid = VALUES(trid), language_code = VALUES(language_code), source_language_code = VALUES(source_language_code)", $type, $id, $trid, $lang, $source );
             }
-            if ( false === $wpdb->query( $sql ) ) { return new WP_Error( 'lingolane_write_failed', 'Không thể lưu nhóm bản dịch.' ); }
+            if ( false === $wpdb->query( $sql ) ) { return new WP_Error( 'lingolane_write_failed', __( 'Could not save the translation group.', 'lingolane' ) ); }
             self::invalidate( $type, $id, $trid );
             if ( $old ) { self::invalidate( $type, $id, $old['trid'] ); }
             return $trid;
@@ -102,16 +102,16 @@ class Lingolane_Elements {
         $id = absint( $id );
         $target_lang = sanitize_key( $target_lang );
         if ( ! $id || ! Lingolane_Languages::is_valid( $target_lang ) ) {
-            return new WP_Error( 'lingolane_invalid', 'ID bài viết hoặc ngôn ngữ không hợp lệ.' );
+            return new WP_Error( 'lingolane_invalid', __( 'Invalid post ID or language.', 'lingolane' ) );
         }
         $post = get_post( $id );
         if ( ! $post ) {
-            return new WP_Error( 'lingolane_not_found', 'Không tìm thấy bài viết gốc.' );
+            return new WP_Error( 'lingolane_not_found', __( 'The original post was not found.', 'lingolane' ) );
         }
         $type = 'post_' . $post->post_type;
         $source = self::get_language( $type, $id );
         if ( $source === $target_lang ) {
-            return new WP_Error( 'lingolane_same_lang', 'Bài viết đã thuộc ngôn ngữ đích.' );
+            return new WP_Error( 'lingolane_same_lang', __( 'The post is already in the target language.', 'lingolane' ) );
         }
         $existing = self::get_translation( $type, $id, $target_lang );
         if ( $existing ) {

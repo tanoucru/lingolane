@@ -29,7 +29,7 @@ class Lingolane_Strings_Admin {
 
     public static function handle() {
         global $wpdb;
-        if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'Bạn không có quyền thực hiện thao tác này.', 'lingolane' ), '', array( 'response' => 403 ) ); }
+        if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403 ) ); }
         $operation = self::input( $_POST, 'operation' ); // phpcs:ignore WordPress.Security.NonceVerification
         if ( ! in_array( $operation, array( 'row', 'import', 'export' ), true ) ) { Lingolane_Admin::redirect( 'strings' ); }
         check_admin_referer( 'lingolane_strings_' . $operation );
@@ -62,7 +62,7 @@ class Lingolane_Strings_Admin {
             if ( is_wp_error( $result ) ) {
                 Lingolane_Admin::flash( 'error', $result->get_error_message() );
             } else {
-                Lingolane_Admin::flash( 'success', $delete ? __( 'Đã xoá chuỗi.', 'lingolane' ) : __( 'Đã lưu bản dịch.', 'lingolane' ) );
+                Lingolane_Admin::flash( 'success', $delete ? __( 'String deleted.', 'lingolane' ) : __( 'Translation saved.', 'lingolane' ) );
             }
             Lingolane_Admin::back( 'strings' );
         }
@@ -77,14 +77,14 @@ class Lingolane_Strings_Admin {
             $result = Lingolane_Strings::save( $row[0], $row[2], $row[1], $row[3], $row[4] );
             if ( is_wp_error( $result ) ) {
                 /* translators: 1: rows saved before the error, 2: error */
-                Lingolane_Admin::flash( 'error', sprintf( __( 'Đã nhập %1$d dòng rồi dừng: %2$s', 'lingolane' ), $saved, $result->get_error_message() ) );
+                Lingolane_Admin::flash( 'error', sprintf( __( 'Imported %1$d rows, then stopped: %2$s', 'lingolane' ), $saved, $result->get_error_message() ) );
                 Lingolane_Admin::back( 'strings' );
             }
             ++$saved;
         }
         Lingolane_Stats::flush_strings();
         /* translators: %d: rows */
-        Lingolane_Admin::flash( 'success', sprintf( __( 'Đã nhập %d bản dịch.', 'lingolane' ), $saved ) );
+        Lingolane_Admin::flash( 'success', sprintf( __( 'Imported %d translations.', 'lingolane' ), $saved ) );
         Lingolane_Admin::redirect( 'strings' );
     }
 
@@ -95,7 +95,7 @@ class Lingolane_Strings_Admin {
 
     private static function save_row( $id, $translation ) {
         $row = self::find( $id );
-        if ( ! $row || ! is_string( $translation ) ) { return new WP_Error( 'lingolane_string', __( 'Không tìm thấy chuỗi này. Tải lại trang rồi thử lại.', 'lingolane' ) ); }
+        if ( ! $row || ! is_string( $translation ) ) { return new WP_Error( 'lingolane_string', __( 'This string was not found. Reload the page and try again.', 'lingolane' ) ); }
         $result = Lingolane_Strings::save( $row->domain, $row->source, (string) $row->context, $row->language_code, trim( $translation ) );
         if ( ! is_wp_error( $result ) ) { Lingolane_Stats::flush_strings(); }
         return is_wp_error( $result ) ? $result : $row;
@@ -104,7 +104,7 @@ class Lingolane_Strings_Admin {
     private static function delete_row( $id ) {
         global $wpdb;
         $row = self::find( $id );
-        if ( ! $row ) { return new WP_Error( 'lingolane_string', __( 'Chuỗi này đã được xoá.', 'lingolane' ) ); }
+        if ( ! $row ) { return new WP_Error( 'lingolane_string', __( 'This string has already been deleted.', 'lingolane' ) ); }
         // A string is registered once per language; remove it everywhere so it does not reappear half-listed.
         $wpdb->delete( $wpdb->prefix . 'lingolane_strings', array( 'domain' => $row->domain, 'source_hash' => $row->source_hash ), array( '%s', '%s' ) );
         Lingolane_Strings::flush_cache();
@@ -114,7 +114,7 @@ class Lingolane_Strings_Admin {
 
     private static function ajax_guard() {
         if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'lingolane_strings_ajax', 'nonce', false ) ) {
-            wp_send_json_error( array( 'message' => __( 'Phiên làm việc đã hết hạn. Tải lại trang.', 'lingolane' ) ), 403 );
+            wp_send_json_error( array( 'message' => __( 'Your session has expired. Reload the page.', 'lingolane' ) ), 403 );
         }
     }
 
@@ -137,32 +137,32 @@ class Lingolane_Strings_Admin {
 
     private static function read_csv() {
         $error = function ( $message ) { return new WP_Error( 'lingolane_csv', $message ); };
-        if ( ! isset( $_FILES['csv'] ) || ! is_array( $_FILES['csv'] ) ) { return $error( __( 'Chưa chọn file CSV.', 'lingolane' ) ); } // phpcs:ignore WordPress.Security.NonceVerification
+        if ( ! isset( $_FILES['csv'] ) || ! is_array( $_FILES['csv'] ) ) { return $error( __( 'No CSV file selected.', 'lingolane' ) ); } // phpcs:ignore WordPress.Security.NonceVerification
         $file = $_FILES['csv']; // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
-        if ( ! isset( $file['error'], $file['tmp_name'], $file['name'] ) || ! is_scalar( $file['error'] ) || (int) $file['error'] !== UPLOAD_ERR_OK || ! is_string( $file['tmp_name'] ) || ! is_string( $file['name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) { return $error( __( 'Tải file lên không thành công. Thử lại.', 'lingolane' ) ); }
-        if ( strtolower( pathinfo( sanitize_file_name( $file['name'] ), PATHINFO_EXTENSION ) ) !== 'csv' || filesize( $file['tmp_name'] ) > 2 * MB_IN_BYTES ) { return $error( __( 'Chỉ nhận file .csv tối đa 2 MB.', 'lingolane' ) ); }
+        if ( ! isset( $file['error'], $file['tmp_name'], $file['name'] ) || ! is_scalar( $file['error'] ) || (int) $file['error'] !== UPLOAD_ERR_OK || ! is_string( $file['tmp_name'] ) || ! is_string( $file['name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) { return $error( __( 'The file upload failed. Please try again.', 'lingolane' ) ); }
+        if ( strtolower( pathinfo( sanitize_file_name( $file['name'] ), PATHINFO_EXTENSION ) ) !== 'csv' || filesize( $file['tmp_name'] ) > 2 * MB_IN_BYTES ) { return $error( __( 'Only .csv files up to 2 MB are accepted.', 'lingolane' ) ); }
         $stream = fopen( $file['tmp_name'], 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
-        if ( ! $stream ) { return $error( __( 'Không đọc được file CSV.', 'lingolane' ) ); }
+        if ( ! $stream ) { return $error( __( 'Could not read the CSV file.', 'lingolane' ) ); }
         $rows = array();
         try {
             $header = fgetcsv( $stream, 0, ',', '"', '' );
-            if ( ! is_array( $header ) || ! isset( $header[0] ) ) { return $error( __( 'File CSV trống hoặc thiếu dòng tiêu đề.', 'lingolane' ) ); }
+            if ( ! is_array( $header ) || ! isset( $header[0] ) ) { return $error( __( 'The CSV file is empty or has no header row.', 'lingolane' ) ); }
             $header[0] = preg_replace( '/^\xEF\xBB\xBF/', '', (string) $header[0] );
             $header = array_map( 'trim', $header );
             $expected = array( 'domain', 'context', 'source', 'language', 'translation' );
             if ( count( $header ) !== count( $expected ) || array_diff( $expected, $header ) ) {
                 /* translators: %s: column list */
-                return $error( sprintf( __( 'Dòng tiêu đề phải gồm các cột: %s. Chưa có dữ liệu nào được ghi.', 'lingolane' ), implode( ', ', $expected ) ) );
+                return $error( sprintf( __( 'The header row must contain these columns: %s. Nothing was written.', 'lingolane' ), implode( ', ', $expected ) ) );
             }
             $line = 1;
             while ( ( $cells = fgetcsv( $stream, 0, ',', '"', '' ) ) !== false ) {
                 ++$line;
                 if ( $cells === array( null ) ) { continue; }
                 /* translators: %d: line number */
-                if ( count( $cells ) !== count( $header ) ) { return $error( sprintf( __( 'Dòng %d có số cột không khớp tiêu đề. Chưa có dữ liệu nào được ghi.', 'lingolane' ), $line ) ); }
+                if ( count( $cells ) !== count( $header ) ) { return $error( sprintf( __( 'Row %d has a different number of columns than the header. Nothing was written.', 'lingolane' ), $line ) ); }
                 foreach ( $cells as &$cell ) {
                     /* translators: %d: line number */
-                    if ( ! is_string( $cell ) || strpos( $cell, "\0" ) !== false || 1 !== preg_match( '//u', $cell ) ) { return $error( sprintf( __( 'Dòng %d không phải văn bản UTF-8 hợp lệ. Lưu file với mã hoá UTF-8 rồi thử lại.', 'lingolane' ), $line ) ); }
+                    if ( ! is_string( $cell ) || strpos( $cell, "\0" ) !== false || 1 !== preg_match( '//u', $cell ) ) { return $error( sprintf( __( 'Row %d is not valid UTF-8 text. Save the file with UTF-8 encoding and try again.', 'lingolane' ), $line ) ); }
                     if ( preg_match( "/^'(?:['=+@\\-\\t\\r\\n]|\\s+[=+@\\-])/", $cell ) ) { $cell = substr( $cell, 1 ); }
                 }
                 unset( $cell );
@@ -173,12 +173,12 @@ class Lingolane_Strings_Admin {
                 $language = sanitize_key( $data['language'] );
                 if ( $domain === '' || strlen( $domain ) > 100 || strlen( $context ) > 100 || $source === '' || ! Lingolane_Languages::is_valid( $language ) || $language !== $data['language'] ) {
                     /* translators: %d: line number */
-                    return $error( sprintf( __( 'Dòng %d thiếu chuỗi gốc hoặc mã ngôn ngữ không có trên website. Chưa có dữ liệu nào được ghi.', 'lingolane' ), $line ) );
+                    return $error( sprintf( __( 'Row %d is missing the source string, or its language code is not enabled on this site. Nothing was written.', 'lingolane' ), $line ) );
                 }
                 $rows[] = array( $domain, $context, $source, $language, wp_kses_post( $data['translation'] ) );
             }
         } finally { fclose( $stream ); } // phpcs:ignore WordPress.WP.AlternativeFunctions
-        if ( ! $rows ) { return $error( __( 'File không có dòng dữ liệu nào.', 'lingolane' ) ); }
+        if ( ! $rows ) { return $error( __( 'The file has no data rows.', 'lingolane' ) ); }
         return $rows;
     }
 
@@ -245,7 +245,7 @@ class Lingolane_Strings_Admin {
         if ( ! current_user_can( 'manage_options' ) ) { return; }
         $others = Lingolane_Stats::other_languages();
         if ( ! $others ) {
-            echo '<section class="lingolane-card lingolane-empty"><h2>' . esc_html__( 'Chưa có ngôn ngữ để dịch', 'lingolane' ) . '</h2><p>' . esc_html__( 'Thêm ngôn ngữ thứ hai ở tab Ngôn ngữ.', 'lingolane' ) . '</p></section>';
+            echo '<section class="lingolane-card lingolane-empty"><h2>' . esc_html__( 'No language to translate into yet', 'lingolane' ) . '</h2><p>' . esc_html__( 'Add a second language in the Languages tab.', 'lingolane' ) . '</p></section>';
             return;
         }
         $table    = $wpdb->prefix . 'lingolane_strings';
@@ -294,20 +294,20 @@ class Lingolane_Strings_Admin {
         $s = isset( $stats[ $language ] ) ? $stats[ $language ] : array( 'total' => 0, 'own' => 0, 'inherited' => 0, 'missing' => 0 );
         $language_name = Lingolane_Languages::name( $language );
         $tabs = array(
-            ''          => array( __( 'Tất cả', 'lingolane' ), $s['total'] ),
-            'missing'   => array( __( 'Chưa dịch', 'lingolane' ), $s['missing'] ),
-            'own'       => array( __( 'Đã dịch', 'lingolane' ), $s['own'] ),
-            'inherited' => array( __( 'Giao diện có sẵn', 'lingolane' ), $s['inherited'] ),
+            ''          => array( __( 'All', 'lingolane' ), $s['total'] ),
+            'missing'   => array( __( 'Untranslated', 'lingolane' ), $s['missing'] ),
+            'own'       => array( __( 'Translated', 'lingolane' ), $s['own'] ),
+            'inherited' => array( __( 'Provided by theme', 'lingolane' ), $s['inherited'] ),
         );
         $base = array( 'language' => $language, 'domain' => $domain, 'keyword' => $keyword );
         ?>
         <section class="lingolane-card">
             <div class="lingolane-card__head">
-                <h2 class="lingolane-card__title"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Chữ trên giao diện · %s', 'lingolane' ), $language_name ) ); ?></h2>
-                <a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=lingolane_scan_theme_strings' ), 'lingolane_scan_theme_strings' ) ); ?>"><span class="dashicons dashicons-search" aria-hidden="true"></span><?php esc_html_e( 'Quét giao diện', 'lingolane' ); ?></a>
+                <h2 class="lingolane-card__title"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Interface strings · %s', 'lingolane' ), $language_name ) ); ?></h2>
+                <a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=lingolane_scan_theme_strings' ), 'lingolane_scan_theme_strings' ) ); ?>"><span class="dashicons dashicons-search" aria-hidden="true"></span><?php esc_html_e( 'Scan interface', 'lingolane' ); ?></a>
             </div>
 
-            <ul class="lingolane-segments" aria-label="<?php esc_attr_e( 'Lọc theo tình trạng', 'lingolane' ); ?>">
+            <ul class="lingolane-segments" aria-label="<?php esc_attr_e( 'Filter by status', 'lingolane' ); ?>">
                 <?php foreach ( $tabs as $key => $item ) : ?>
                     <li><a href="<?php echo esc_url( Lingolane_Admin::url( 'strings', array_filter( array_merge( $base, array( 'status' => $key ) ) ) ) ); ?>" class="<?php echo $key === $status ? 'is-active' : ''; ?>"<?php echo $key === $status ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $item[0] ); ?> <span class="lingolane-segments__count"><?php echo esc_html( number_format_i18n( $item[1] ) ); ?></span></a></li>
                 <?php endforeach; ?>
@@ -319,7 +319,7 @@ class Lingolane_Strings_Admin {
                 <?php if ( $status ) : ?><input type="hidden" name="status" value="<?php echo esc_attr( $status ); ?>"><?php endif; ?>
                 <?php if ( count( $others ) > 1 ) : ?>
                     <div class="lingolane-field">
-                        <label for="lingolane-s-lang"><?php esc_html_e( 'Dịch sang', 'lingolane' ); ?></label>
+                        <label for="lingolane-s-lang"><?php esc_html_e( 'Translate into', 'lingolane' ); ?></label>
                         <select id="lingolane-s-lang" name="language">
                             <?php foreach ( $others as $item ) : ?>
                                 <option value="<?php echo esc_attr( $item['code'] ); ?>" <?php selected( $language, $item['code'] ); ?>><?php echo esc_html( $item['name'] ); ?></option>
@@ -331,9 +331,9 @@ class Lingolane_Strings_Admin {
                 <?php endif; ?>
                 <?php if ( count( (array) $domains ) > 1 ) : ?>
                     <div class="lingolane-field">
-                        <label for="lingolane-s-domain"><?php esc_html_e( 'Nguồn', 'lingolane' ); ?></label>
+                        <label for="lingolane-s-domain"><?php esc_html_e( 'Source', 'lingolane' ); ?></label>
                         <select id="lingolane-s-domain" name="domain">
-                            <option value=""><?php esc_html_e( 'Tất cả', 'lingolane' ); ?></option>
+                            <option value=""><?php esc_html_e( 'All', 'lingolane' ); ?></option>
                             <?php foreach ( (array) $domains as $item ) : ?>
                                 <option value="<?php echo esc_attr( $item ); ?>" <?php selected( $domain, $item ); ?>><?php echo esc_html( $item ); ?></option>
                             <?php endforeach; ?>
@@ -341,25 +341,25 @@ class Lingolane_Strings_Admin {
                     </div>
                 <?php endif; ?>
                 <div class="lingolane-field lingolane-field--grow">
-                    <label for="lingolane-s-keyword"><?php esc_html_e( 'Tìm', 'lingolane' ); ?></label>
-                    <input id="lingolane-s-keyword" type="search" name="keyword" value="<?php echo esc_attr( $keyword ); ?>" placeholder="<?php esc_attr_e( 'Chữ gốc hoặc bản dịch', 'lingolane' ); ?>">
+                    <label for="lingolane-s-keyword"><?php esc_html_e( 'Search', 'lingolane' ); ?></label>
+                    <input id="lingolane-s-keyword" type="search" name="keyword" value="<?php echo esc_attr( $keyword ); ?>" placeholder="<?php esc_attr_e( 'Source text or translation', 'lingolane' ); ?>">
                 </div>
                 <div class="lingolane-field lingolane-field--actions">
-                    <button type="submit" class="button"><?php esc_html_e( 'Lọc', 'lingolane' ); ?></button>
+                    <button type="submit" class="button"><?php esc_html_e( 'Filter', 'lingolane' ); ?></button>
                     <?php if ( '' !== $keyword || '' !== $domain ) : ?>
-                        <a class="button-link" href="<?php echo esc_url( Lingolane_Admin::url( 'strings', array_filter( array( 'language' => $language, 'status' => $status ) ) ) ); ?>"><?php esc_html_e( 'Xoá bộ lọc', 'lingolane' ); ?></a>
+                        <a class="button-link" href="<?php echo esc_url( Lingolane_Admin::url( 'strings', array_filter( array( 'language' => $language, 'status' => $status ) ) ) ); ?>"><?php esc_html_e( 'Clear filters', 'lingolane' ); ?></a>
                     <?php endif; ?>
                 </div>
             </form>
 
-            <p class="lingolane-kbd-hint"><?php echo wp_kses( __( 'Mẹo: gõ bản dịch rồi nhấn <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> để lưu và chuyển sang chuỗi kế tiếp.', 'lingolane' ), array( 'kbd' => array() ) ); ?></p>
+            <p class="lingolane-kbd-hint"><?php echo wp_kses( __( 'Tip: type the translation, then press <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to save and jump to the next string.', 'lingolane' ), array( 'kbd' => array() ) ); ?></p>
 
             <div class="lingolane-table-wrap">
                 <table class="lingolane-table lingolane-strings">
                     <thead>
                         <tr>
-                            <th scope="col" class="lingolane-strings__source"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Chữ gốc (%s)', 'lingolane' ), Lingolane_Languages::name( Lingolane_Languages::source_code() ) ) ); ?></th>
-                            <th scope="col"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Bản dịch %s', 'lingolane' ), $language_name ) ); ?></th>
+                            <th scope="col" class="lingolane-strings__source"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Source text (%s)', 'lingolane' ), Lingolane_Languages::name( Lingolane_Languages::source_code() ) ) ); ?></th>
+                            <th scope="col"><?php /* translators: %s: language */ echo esc_html( sprintf( __( '%s translation', 'lingolane' ), $language_name ) ); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -367,11 +367,11 @@ class Lingolane_Strings_Admin {
                         <tr><td colspan="2" class="lingolane-table__empty">
                             <?php
                             if ( 'missing' === $status ) {
-                                echo '<span class="dashicons dashicons-yes-alt" aria-hidden="true"></span> ' . esc_html__( 'Không còn chuỗi nào chưa dịch.', 'lingolane' );
+                                echo '<span class="dashicons dashicons-yes-alt" aria-hidden="true"></span> ' . esc_html__( 'No untranslated strings left.', 'lingolane' );
                             } elseif ( ! $s['total'] ) {
-                                esc_html_e( 'Danh sách đang trống. Bấm “Quét giao diện” để lấy chữ từ theme, hoặc nhập file CSV bên dưới.', 'lingolane' );
+                                esc_html_e( 'The list is empty. Click “Scan interface” to collect text from your theme, or import a CSV file below.', 'lingolane' );
                             } else {
-                                esc_html_e( 'Không có chuỗi nào khớp bộ lọc.', 'lingolane' );
+                                esc_html_e( 'No strings match the filter.', 'lingolane' );
                             }
                             ?>
                         </td></tr>
@@ -379,7 +379,7 @@ class Lingolane_Strings_Admin {
                         $id = (int) $row->id;
                         $inherit = array_key_exists( $id, $inherited ) ? $inherited[ $id ] : ( '' === $row->translation ? Lingolane_Strings::inherited( $row->source, $row->domain, (string) $row->context, $language ) : '' );
                         $state = '' !== $row->translation ? 'own' : ( '' !== $inherit ? 'inherited' : 'missing' );
-                        $chips = array( 'own' => array( __( 'Đã dịch', 'lingolane' ), 'ok' ), 'inherited' => array( __( 'Giao diện có sẵn', 'lingolane' ), 'info' ), 'missing' => array( __( 'Chưa dịch', 'lingolane' ), 'warn' ) );
+                        $chips = array( 'own' => array( __( 'Translated', 'lingolane' ), 'ok' ), 'inherited' => array( __( 'Provided by theme', 'lingolane' ), 'info' ), 'missing' => array( __( 'Untranslated', 'lingolane' ), 'warn' ) );
                         ?>
                         <tr data-lingolane-row="<?php echo esc_attr( $id ); ?>">
                             <td class="lingolane-strings__source">
@@ -389,19 +389,19 @@ class Lingolane_Strings_Admin {
                             <td>
                                 <?php self::form( 'row', 'lingolane-string' ); ?>
                                     <input type="hidden" name="id" value="<?php echo esc_attr( $id ); ?>">
-                                    <label class="screen-reader-text" for="lingolane-str-<?php echo esc_attr( $id ); ?>"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Bản dịch %s', 'lingolane' ), $language_name ) ); ?></label>
-                                    <textarea id="lingolane-str-<?php echo esc_attr( $id ); ?>" name="translation" rows="<?php echo esc_attr( max( 1, min( 6, (int) ceil( mb_strlen( $row->source ) / 70 ) ) ) ); ?>" lang="<?php echo esc_attr( $language ); ?>" aria-describedby="lingolane-src-<?php echo esc_attr( $id ); ?>" placeholder="<?php echo esc_attr( '' !== $inherit ? $inherit : __( 'Nhập bản dịch…', 'lingolane' ) ); ?>" data-inherited="<?php echo esc_attr( $inherit ); ?>"><?php echo esc_textarea( $row->translation ); ?></textarea>
+                                    <label class="screen-reader-text" for="lingolane-str-<?php echo esc_attr( $id ); ?>"><?php /* translators: %s: language */ echo esc_html( sprintf( __( '%s translation', 'lingolane' ), $language_name ) ); ?></label>
+                                    <textarea id="lingolane-str-<?php echo esc_attr( $id ); ?>" name="translation" rows="<?php echo esc_attr( max( 1, min( 6, (int) ceil( mb_strlen( $row->source ) / 70 ) ) ) ); ?>" lang="<?php echo esc_attr( $language ); ?>" aria-describedby="lingolane-src-<?php echo esc_attr( $id ); ?>" placeholder="<?php echo esc_attr( '' !== $inherit ? $inherit : __( 'Enter translation…', 'lingolane' ) ); ?>" data-inherited="<?php echo esc_attr( $inherit ); ?>"><?php echo esc_textarea( $row->translation ); ?></textarea>
                                     <div class="lingolane-string__bar">
                                         <span class="lingolane-chip lingolane-chip--<?php echo esc_attr( $chips[ $state ][1] ); ?>" data-lingolane-status="<?php echo esc_attr( $state ); ?>"><?php echo esc_html( $chips[ $state ][0] ); ?></span>
                                         <span class="lingolane-string__msg" role="status" aria-live="polite"></span>
                                         <span class="lingolane-string__actions">
                                             <?php if ( '' !== $inherit ) : ?>
-                                                <button type="button" class="button-link" data-lingolane-copy><?php esc_html_e( 'Sửa từ bản có sẵn', 'lingolane' ); ?></button>
+                                                <button type="button" class="button-link" data-lingolane-copy><?php esc_html_e( 'Edit the built-in translation', 'lingolane' ); ?></button>
                                             <?php elseif ( 'missing' === $state ) : ?>
-                                                <button type="button" class="button-link" data-lingolane-same title="<?php esc_attr_e( 'Dùng cho tên riêng, mã chương trình… không cần dịch', 'lingolane' ); ?>"><?php esc_html_e( 'Giữ nguyên', 'lingolane' ); ?></button>
+                                                <button type="button" class="button-link" data-lingolane-same title="<?php esc_attr_e( 'For names, product codes and similar text that needs no translation', 'lingolane' ); ?>"><?php esc_html_e( 'Keep as is', 'lingolane' ); ?></button>
                                             <?php endif; ?>
-                                            <button type="submit" name="delete" value="1" class="button-link button-link-delete" data-lingolane-delete formnovalidate><?php esc_html_e( 'Xoá', 'lingolane' ); ?></button>
-                                            <button type="submit" class="button button-small button-primary" data-lingolane-save><?php esc_html_e( 'Lưu', 'lingolane' ); ?></button>
+                                            <button type="submit" name="delete" value="1" class="button-link button-link-delete" data-lingolane-delete formnovalidate><?php esc_html_e( 'Delete', 'lingolane' ); ?></button>
+                                            <button type="submit" class="button button-small button-primary" data-lingolane-save><?php esc_html_e( 'Save', 'lingolane' ); ?></button>
                                         </span>
                                     </div>
                                 </form>
@@ -415,25 +415,25 @@ class Lingolane_Strings_Admin {
         </section>
 
         <section class="lingolane-card">
-            <h2 class="lingolane-card__title"><?php esc_html_e( 'Dịch hàng loạt bằng CSV', 'lingolane' ); ?></h2>
+            <h2 class="lingolane-card__title"><?php esc_html_e( 'Bulk translate with CSV', 'lingolane' ); ?></h2>
             <div class="lingolane-grid lingolane-grid--two">
                 <div class="lingolane-subcard">
-                    <h3><?php esc_html_e( '1. Xuất file', 'lingolane' ); ?></h3>
-                    <p><?php esc_html_e( 'Tải toàn bộ chuỗi và bản dịch hiện có, mở bằng Google Sheets hoặc Excel để dịch.', 'lingolane' ); ?></p>
+                    <h3><?php esc_html_e( '1. Export file', 'lingolane' ); ?></h3>
+                    <p><?php esc_html_e( 'Download all strings and existing translations, then open them in Google Sheets or Excel to translate.', 'lingolane' ); ?></p>
                     <?php self::form( 'export' ); ?>
-                        <button type="submit" class="button"><span class="dashicons dashicons-download" aria-hidden="true"></span><?php esc_html_e( 'Tải file CSV', 'lingolane' ); ?></button>
+                        <button type="submit" class="button"><span class="dashicons dashicons-download" aria-hidden="true"></span><?php esc_html_e( 'Download CSV', 'lingolane' ); ?></button>
                     </form>
                 </div>
                 <div class="lingolane-subcard">
-                    <h3><?php esc_html_e( '2. Nhập lại', 'lingolane' ); ?></h3>
+                    <h3><?php esc_html_e( '2. Import again', 'lingolane' ); ?></h3>
                     <?php self::form( 'import', 'lingolane-import' ); ?>
                         <div class="lingolane-field">
-                            <label for="lingolane-csv"><?php esc_html_e( 'File CSV (UTF-8, tối đa 2 MB)', 'lingolane' ); ?></label>
+                            <label for="lingolane-csv"><?php esc_html_e( 'CSV file (UTF-8, up to 2 MB)', 'lingolane' ); ?></label>
                             <input id="lingolane-csv" type="file" name="csv" accept=".csv,text/csv" required>
                         </div>
-                        <p class="lingolane-hint"><?php esc_html_e( 'Dùng file đã xuất ở bước 1 (cột domain, context, source, language, translation).', 'lingolane' ); ?></p>
-                        <button type="submit" class="button button-primary"><span class="dashicons dashicons-upload" aria-hidden="true"></span><?php esc_html_e( 'Nhập bản dịch', 'lingolane' ); ?></button>
-                        <p class="lingolane-hint"><?php esc_html_e( 'File được kiểm tra trước khi ghi; nếu một dòng sai, không dòng nào bị ghi.', 'lingolane' ); ?></p>
+                        <p class="lingolane-hint"><?php esc_html_e( 'Use the file exported in step 1 (columns domain, context, source, language, translation).', 'lingolane' ); ?></p>
+                        <button type="submit" class="button button-primary"><span class="dashicons dashicons-upload" aria-hidden="true"></span><?php esc_html_e( 'Import translations', 'lingolane' ); ?></button>
+                        <p class="lingolane-hint"><?php esc_html_e( 'The file is validated before anything is written; if one row is invalid, no row is saved.', 'lingolane' ); ?></p>
                     </form>
                 </div>
             </div>
