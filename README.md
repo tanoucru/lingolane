@@ -36,7 +36,5 @@ Lưu ý: class `TML_Shared::is_tutor()` / `translated_tutor()` đã đổi tên 
 ## Kiểm thử
 Chạy trên site Local/`.test`: `wp eval-file wp-content/plugins/tml-multilingual/tests/test-*.php` (chỉ chạy được trên host `.local`/`.test`).
 
-## Việc còn lại trước khi phát hành
-1. Chạy bộ test trên site Local sạch (chưa chạy ở bước tách).
-2. Soát chuỗi giao diện gốc tiếng Việt → nạp `.pot`, đặt chuỗi gốc tiếng Anh.
-3. Tạo repo GitHub private `tanoucru/wp-multilingual` (chờ Tan duyệt), đóng zip, đặt phiên bản 1.0.0.
+## Kế hoạch phát hành
+Xem [docs/RELEASE-PLAN.md](docs/RELEASE-PLAN.md): rà soát hiện trạng, quyết định cần duyệt và lộ trình M0–M5.
