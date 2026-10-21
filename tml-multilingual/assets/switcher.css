@@ -1,0 +1,7 @@
+.tml-switcher{color:var(--tm-navy,#0D2240);font-family:var(--tm-font-body,Inter,sans-serif)}
+.tml-switcher ul{display:flex;flex-wrap:wrap;gap:.75rem;list-style:none;margin:0;padding:0}
+.tml-switcher a{color:inherit;text-decoration:underline;text-underline-offset:.2em}
+.tml-switcher a[aria-current="true"]{color:var(--tm-teal,#1F7A70);font-weight:700}
+.tml-switcher a:focus-visible,.tml-switcher summary:focus-visible{outline:2px solid var(--tm-focus,#E9A23B);outline-offset:4px}
+.tml-switcher summary{cursor:pointer;padding:.5rem 0}
+details.tml-switcher ul{flex-direction:column;padding:.5rem 0}
