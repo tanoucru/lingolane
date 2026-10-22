@@ -20,7 +20,7 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 	public function tear_down() {
 		wp_dequeue_script( 'lingolane-tree' );
 		wp_deregister_script( 'lingolane-tree' );
-		unset( $_GET['lingolane_lang'] );
+		unset( $_GET['lingolane_lang'], $_REQUEST['paged'] );
 		if ( class_exists( 'Lingolane_Tree' ) ) {
 			Lingolane_Tree::reset();
 		}
@@ -417,6 +417,55 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		foreach ( $leaders as $id ) {
 			$states = Lingolane_Tree::post_states( array(), get_post( $id ) );
 			$this->assertArrayHasKey( 'lingolane_progress', $states );
+			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+		}
+		$this->assertLessThanOrEqual( 3, $wpdb->num_queries - $before );
+	}
+
+	public function test_translations_leading_one_group_do_not_repeat_rows() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$ids['A_fr'] = Lingolane_Elements::duplicate_post( $ids['A'], 'fr', 'publish' );
+		$this->assertNotWPError( $ids['A_fr'] );
+		wp_update_post( array( 'ID' => $ids['A'], 'post_status' => 'draft' ) );
+		$this->tree_list_table();
+		$query = $this->tree_query( array( 'post_status' => 'publish', 'posts_per_page' => -1 ) );
+		$this->assertContains( $ids['A_en'], $this->ids( $query ) );
+		$this->assertContains( $ids['A_fr'], $this->ids( $query ) );
+		Lingolane_Tree::remember( $ids['A_en'] );
+		Lingolane_Tree::remember( $ids['A_fr'] );
+		$html = $this->printed_templates();
+		$this->assertSame( 1, substr_count( $html, 'id="post-' . $ids['A'] . '"' ) );
+		$this->assertSame( 0, substr_count( $html, 'id="post-' . $ids['A_en'] . '"' ) );
+		$this->assertSame( 0, substr_count( $html, 'id="post-' . $ids['A_fr'] . '"' ) );
+		$this->assertStringNotContainsString( 'data-lingolane-leader="' . $ids['A_fr'] . '"', $html );
+	}
+
+	/** Pages a, a1 (child of b), b, c, d sort a, a1, b… by title but print a, b, a1, c, d, so page 2 is b, a1, c. */
+	public function test_progress_states_batch_the_page_a_hierarchical_list_prints() {
+		$this->require_tree_model();
+		$ids = array();
+		foreach ( array( 'a', 'b', 'c', 'd' ) as $title ) {
+			$ids[ $title ] = $this->new_post( array( 'post_type' => 'page', 'post_title' => $title ) );
+		}
+		$ids['a1'] = $this->new_post( array( 'post_type' => 'page', 'post_title' => 'a1', 'post_parent' => $ids['b'] ) );
+		foreach ( $ids as $id ) {
+			$this->assertNotWPError( Lingolane_Elements::set( 'post_page', $id, 'vi' ) );
+			$this->assertNotWPError( Lingolane_Elements::duplicate_post( $id, 'en', 'publish' ) );
+		}
+		$table = $this->tree_list_table();
+		$query = $this->tree_query( array( 'fields' => 'id=>parent', 'orderby' => 'menu_order title', 'order' => 'asc', 'posts_per_page' => -1 ) );
+		$this->assertSame( array( $ids['a'], $ids['a1'], $ids['b'], $ids['c'], $ids['d'] ), array_map( 'intval', wp_list_pluck( $query->posts, 'ID' ) ) );
+		$pagination = new ReflectionMethod( $table, 'set_pagination_args' );
+		$pagination->setAccessible( true );
+		$pagination->invoke( $table, array( 'total_items' => 5, 'per_page' => 2 ) );
+		$_REQUEST['paged'] = 2;
+		$posts = array_map( 'get_post', array( $ids['b'], $ids['a1'], $ids['c'] ) );
+		wp_cache_flush();
+		global $wpdb;
+		$before = $wpdb->num_queries;
+		foreach ( $posts as $post ) {
+			$states = Lingolane_Tree::post_states( array(), $post );
 			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
 		}
 		$this->assertLessThanOrEqual( 3, $wpdb->num_queries - $before );

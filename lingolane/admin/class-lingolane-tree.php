@@ -191,18 +191,11 @@ class Lingolane_Tree {
         self::$remembered[] = $post_id;
     }
 
-    /** The group led by $id, loading the next page-sized window of main query rows with it on a miss. */
+    /** The group led by $id, loading every row of the current list page with it on a miss. */
     private static function group( $id ) {
         $id = (int) $id;
         if ( ! array_key_exists( $id, self::$groups ) ) {
-            $ids = array();
-            foreach ( (array) $GLOBALS['wp_the_query']->posts as $row ) {
-                $ids[] = (int) ( is_object( $row ) ? $row->ID : $row );
-            }
-            $position = array_search( $id, $ids, true );
-            $per_page = isset( $GLOBALS['wp_list_table'] ) ? (int) $GLOBALS['wp_list_table']->get_pagination_arg( 'per_page' ) : 0;
-            $window = false === $position ? array() : array_slice( $ids, $position, $per_page > 0 ? $per_page : 20 );
-            $window = array_values( array_unique( array_merge( array( $id ), array_diff( $window, array_keys( self::$groups ) ) ) ) );
+            $window = array_values( array_unique( array_merge( array( $id ), array_diff( self::page_ids(), array_keys( self::$groups ) ) ) ) );
             $found = self::groups( get_current_screen()->post_type, $window );
             foreach ( $window as $window_id ) {
                 self::$groups[ $window_id ] = isset( $found[ $window_id ] ) ? $found[ $window_id ] : false;
@@ -211,36 +204,97 @@ class Lingolane_Tree {
         return self::$groups[ $id ];
     }
 
-    /** Prints each printed leader's translation rows, built by the list table itself, in a template the script unfolds. */
+    /**
+     * Row IDs the list shows on this page. A hierarchical list loads every page and paginates while it walks
+     * parents before children (WP_Posts_List_Table::_display_rows_hierarchical()), so the walk is repeated here.
+     */
+    private static function page_ids() {
+        $query = $GLOBALS['wp_the_query'];
+        $parents = array();
+        foreach ( (array) $query->posts as $row ) {
+            $id = (int) ( is_object( $row ) ? $row->ID : $row );
+            $parents[ $id ] = is_object( $row ) && isset( $row->post_parent ) && (int) $row->post_parent !== $id ? (int) $row->post_parent : 0;
+        }
+        if ( -1 !== (int) $query->get( 'posts_per_page' ) ) { return array_keys( $parents ); }
+
+        $order = array_keys( $parents );
+        if ( empty( $_REQUEST['s'] ) && is_post_type_hierarchical( $query->get( 'post_type' ) ) && 'menu_order title' === $query->get( 'orderby' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same check as core.
+            $children = array();
+            foreach ( $parents as $id => $parent ) {
+                $children[ $parent ][] = $id;
+            }
+            $order = array();
+            $stack = isset( $children[0] ) ? array_reverse( $children[0] ) : array();
+            unset( $children[0] );
+            while ( $stack ) {
+                $id = array_pop( $stack );
+                $order[] = $id;
+                if ( isset( $children[ $id ] ) ) {
+                    $stack = array_merge( $stack, array_reverse( $children[ $id ] ) );
+                    unset( $children[ $id ] );
+                }
+            }
+            // Children whose parent is not listed come last, as core prints them.
+            foreach ( $children as $orphans ) {
+                $order = array_merge( $order, $orphans );
+            }
+        }
+        $table = isset( $GLOBALS['wp_list_table'] ) ? $GLOBALS['wp_list_table'] : null;
+        $per_page = $table ? (int) $table->get_pagination_arg( 'per_page' ) : 0;
+        $per_page = $per_page > 0 ? $per_page : 20;
+        $ids = array_slice( $order, ( ( $table ? $table->get_pagenum() : 1 ) - 1 ) * $per_page, $per_page );
+        // A page that starts inside a subtree also prints that subtree's ancestors.
+        for ( $parent = $ids ? $parents[ $ids[0] ] : 0; $parent && isset( $parents[ $parent ] ) && ! in_array( $parent, $ids, true ); $parent = $parents[ $parent ] ) {
+            $ids[] = $parent;
+        }
+        return $ids;
+    }
+
+    /**
+     * Prints each printed leader's translation rows, built by the list table itself, in a template the script unfolds.
+     * Translations of a source the view hides can each lead the same group (posts_where()), so a post already on
+     * the page is not printed again and a group's missing languages are offered once.
+     */
     public static function print_templates( $which ) {
         if ( 'bottom' !== $which || ! self::$remembered || self::$printing || ! self::tree_mode() || empty( $GLOBALS['wp_list_table'] ) ) { return; }
         $table = $GLOBALS['wp_list_table'];
         $languages = Lingolane_Languages::all();
         $saved = isset( $GLOBALS['post'] ) ? $GLOBALS['post'] : null;
+        $shown = array_fill_keys( self::$remembered, true );
+        $offered = array();
+        $level = ob_get_level();
         self::$printing = true;
         try {
             foreach ( self::$remembered as $leader ) {
                 $group = self::group( $leader );
                 if ( ! $group ) { continue; }
-                echo '<template class="lingolane-tree-tpl" data-lingolane-leader="' . esc_attr( $leader ) . '">';
+                ob_start();
                 foreach ( $languages as $language ) {
-                    if ( ! isset( $group['members'][ $language['code'] ] ) ) { continue; }
+                    if ( ! isset( $group['members'][ $language['code'] ] ) || isset( $shown[ $group['members'][ $language['code'] ] ] ) ) { continue; }
                     $member = get_post( $group['members'][ $language['code'] ] );
                     // Hidden like core hides other users' private posts from those who cannot read them.
                     if ( ! $member || ( 'private' === $member->post_status && ! current_user_can( 'read_post', $member->ID ) ) ) { continue; }
+                    $shown[ $member->ID ] = true;
                     $table->single_row( $member, 0 );
                 }
                 $source = get_post( $leader );
-                if ( $source && 'trash' !== $source->post_status && current_user_can( 'edit_post', $leader ) ) {
+                if ( ! isset( $offered[ $group['trid'] ] ) && $source && 'trash' !== $source->post_status && current_user_can( 'edit_post', $leader ) ) {
+                    $offered[ $group['trid'] ] = true;
                     foreach ( $group['missing'] as $code ) {
                         /* translators: %s: language name */
                         $label = sprintf( __( '%s: not translated yet', 'lingolane' ), Lingolane_Languages::name( $code ) );
                         echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon is an SVG built from a fixed list, the rest is escaped.
                     }
                 }
-                echo '</template>';
+                $rows = ob_get_clean();
+                if ( '' !== $rows ) {
+                    echo '<template class="lingolane-tree-tpl" data-lingolane-leader="' . esc_attr( $leader ) . '">' . $rows . '</template>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $rows holds the list table's own rows and the escaped markup above.
+                }
             }
         } finally {
+            while ( ob_get_level() > $level ) {
+                ob_end_clean();
+            }
             self::$printing = false;
             if ( $saved instanceof WP_Post ) {
                 $GLOBALS['post'] = $saved;
