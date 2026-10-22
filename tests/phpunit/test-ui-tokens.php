@@ -76,7 +76,7 @@ class Test_Lingolane_UI_Tokens extends Lingolane_TestCase {
 			}
 			foreach ( explode( ',', $block ) as $selector ) {
 				$selector = trim( $selector );
-				if ( '' !== $selector && ! preg_match( '/^(\.lingolane|body\.lingolane-screen|\.column-lingolane_language|\.wp-list-table \.column-lingolane_language|:root)/', $selector ) ) {
+				if ( '' !== $selector && ! preg_match( '/^(\.lingolane|body\.lingolane-screen|body\.lingolane-tree|\.column-lingolane_language|\.wp-list-table \.column-lingolane_language|:root)/', $selector ) ) {
 					$bad[] = $selector;
 				}
 			}

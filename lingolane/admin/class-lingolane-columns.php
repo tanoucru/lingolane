@@ -6,6 +6,7 @@ class Lingolane_Columns {
         add_action( 'restrict_manage_posts', array( __CLASS__, 'dropdown' ) );
         add_action( 'pre_get_posts', array( __CLASS__, 'filter' ), 20 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+        add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) );
     }
 
     public static function enqueue( $hook ) {
@@ -22,9 +23,30 @@ class Lingolane_Columns {
         }
     }
 
+    public static function tree_screen() {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        return $screen && 'edit' === $screen->base
+            && in_array( $screen->post_type, Lingolane_Query::post_types(), true )
+            && ! in_array( $screen->post_type, Lingolane_Shared::post_types(), true );
+    }
+
+    public static function body_class( $classes ) {
+        return self::tree_screen() ? $classes . ' lingolane-tree' : $classes;
+    }
+
     public static function columns( $columns ) {
-        $columns['lingolane_language'] = __( 'Languages', 'lingolane' );
-        return $columns;
+        unset( $columns['lingolane_language'] );
+        $result = array();
+        foreach ( $columns as $key => $label ) {
+            $result[ $key ] = $label;
+            if ( 'title' === $key ) {
+                $result['lingolane_language'] = __( 'Languages', 'lingolane' );
+            }
+        }
+        if ( ! isset( $result['lingolane_language'] ) ) {
+            $result['lingolane_language'] = __( 'Languages', 'lingolane' );
+        }
+        return $result;
     }
 
     public static function render( $column, $id ) {

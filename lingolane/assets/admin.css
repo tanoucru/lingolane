@@ -3,7 +3,8 @@
 .lingolane-wrap,
 .lingolane-box,
 .lingolane-col,
-.lingolane-toasts {
+.lingolane-toasts,
+body.lingolane-tree .wp-list-table {
 	--lingolane-bg: #f7f8fb;
 	--lingolane-card: #ffffff;
 	--lingolane-line: #e6e8ef;
