@@ -110,8 +110,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-langcard { display: flex; flex-direction: column; gap: 18px; }
 .lingolane-langcard__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .lingolane-langcard__head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; }
-.lingolane-link-muted { color: var(--lingolane-muted); font-size: 12px; text-decoration: none; }
-.lingolane-link-muted { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
+.lingolane-link-muted { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); color: var(--lingolane-muted); font-size: 12px; text-decoration: none; }
 .lingolane-metric__row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
 .lingolane-metric__label { color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-metric__value { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }

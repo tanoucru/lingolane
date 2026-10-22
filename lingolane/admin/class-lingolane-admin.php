@@ -115,14 +115,8 @@ class Lingolane_Admin {
 
     /* ------------------------------------------------------------------ menu & assets */
 
-    /** Data-URI SVG for the admin menu (WordPress recolours it to match the admin colour scheme). */
-    private static function menu_icon() {
-        $svg = str_replace( array( '<svg ', 'currentColor' ), array( '<svg xmlns="http://www.w3.org/2000/svg" ', '#a7aaad' ), Lingolane_UI::icon( 'languages', 20 ) );
-        return 'data:image/svg+xml;base64,' . base64_encode( $svg ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- static menu icon
-    }
-
     public static function menu() {
-        add_menu_page( __( 'Lingolane — Languages', 'lingolane' ), __( 'Multilingual', 'lingolane' ), 'manage_options', self::PAGE, array( __CLASS__, 'render' ), self::menu_icon(), 27 );
+        add_menu_page( __( 'Lingolane — Languages', 'lingolane' ), __( 'Multilingual', 'lingolane' ), 'manage_options', self::PAGE, array( __CLASS__, 'render' ), 'dashicons-translation', 27 );
         foreach ( self::tabs() as $tab => $meta ) {
             add_submenu_page( self::PAGE, $meta[0], $meta[0], 'manage_options', 'overview' === $tab ? self::PAGE : 'admin.php?page=' . self::PAGE . '&tab=' . $tab, 'overview' === $tab ? array( __CLASS__, 'render' ) : null );
         }

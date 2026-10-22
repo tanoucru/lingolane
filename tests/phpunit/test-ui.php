@@ -73,12 +73,18 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		$copy = Lingolane_Elements::duplicate_post( $page, 'en', 'draft' );
 		$this->assertNotWPError( $copy );
 
+		// Neither the metabox nor the column renders an icon; assert what they do render.
 		ob_start();
 		Lingolane_Metabox::render( get_post( $page ) );
+		$box = ob_get_clean();
+		$this->assertStringContainsString( 'lingolane-box__list', $box );
+		$this->assertStringNotContainsString( 'dashicons', $box );
+
+		ob_start();
 		Lingolane_Columns::render( 'lingolane_language', $page );
-		$html = ob_get_clean();
-		$this->assertNotSame( '', $html );
-		$this->assertStringNotContainsString( 'dashicons', $html );
+		$col = ob_get_clean();
+		$this->assertStringContainsString( 'lingolane-col', $col );
+		$this->assertStringNotContainsString( 'dashicons', $col );
 	}
 
 	public function test_styles_no_longer_depend_on_dashicons() {
