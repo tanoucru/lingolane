@@ -40,4 +40,22 @@ class Lingolane_UI {
             self::$icons[ $name ]
         );
     }
+
+    /**
+     * Decorative inline SVG illustration from assets/illustrations/. Unknown names return ''.
+     *
+     * @param string $name One of welcome, empty-languages, all-done.
+     */
+    public static function illustration( $name ) {
+        static $cache = array();
+        if ( ! in_array( $name, array( 'welcome', 'empty-languages', 'all-done' ), true ) ) {
+            _doing_it_wrong( 'Lingolane_UI::illustration', esc_html( sprintf( 'Unknown illustration "%s".', $name ) ), '1.0.0' );
+            return '';
+        }
+        if ( ! isset( $cache[ $name ] ) ) {
+            $svg = file_get_contents( LINGOLANE_DIR . 'assets/illustrations/' . $name . '.svg' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- local bundled asset
+            $cache[ $name ] = $svg ? '<div class="lingolane-illustration" aria-hidden="true">' . trim( $svg ) . '</div>' : '';
+        }
+        return $cache[ $name ];
+    }
 }

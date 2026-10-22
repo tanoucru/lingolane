@@ -177,8 +177,14 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-card__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: var(--lingolane-space-4); }
 .lingolane-card__head .lingolane-card__title { margin: 0; }
 .lingolane-card__desc { margin: -8px 0 var(--lingolane-space-4); color: var(--lingolane-muted); }
-.lingolane-empty { padding: 40px var(--lingolane-space-5); text-align: center; }
-.lingolane-empty p { color: var(--lingolane-muted); }
+.lingolane-empty { display: flex; flex-direction: column; align-items: center; gap: var(--lingolane-space-3); padding: var(--lingolane-space-6) var(--lingolane-space-5); text-align: center; }
+.lingolane-empty h2 { margin: 0; font-size: 18px; color: var(--lingolane-ink); }
+.lingolane-empty p { max-width: 46ch; margin: 0; color: var(--lingolane-muted); line-height: 1.55; }
+.lingolane-empty .button { margin-top: var(--lingolane-space-1); }
+.lingolane-empty--done,
+.lingolane-welcome { margin-bottom: var(--lingolane-space-5); }
+.lingolane-illustration { width: 100%; max-width: 160px; line-height: 0; }
+.lingolane-illustration svg { display: block; width: 100%; height: auto; }
 .lingolane-count { color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-hint { margin: 10px 0 0; color: var(--lingolane-muted); font-size: 13px; line-height: 1.55; }
 .lingolane-wrap > .lingolane-body > .lingolane-hint { margin: -8px 2px 20px; }

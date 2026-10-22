@@ -172,4 +172,66 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 			$this->assertStringContainsString( $needle, $data );
 		}
 	}
+	public function test_illustrations_are_safe_inline_svg() {
+		foreach ( array( 'welcome', 'empty-languages', 'all-done' ) as $name ) {
+			$file = LINGOLANE_DIR . 'assets/illustrations/' . $name . '.svg';
+			$this->assertFileExists( $file );
+			$this->assertLessThanOrEqual( 4096, filesize( $file ), "$name.svg size" );
+			$html = Lingolane_UI::illustration( $name );
+			$this->assertStringStartsWith( '<div class="lingolane-illustration" aria-hidden="true"><svg', $html, $name );
+			$this->assertStringContainsString( 'viewBox="0 0 160 120"', $html, $name );
+			foreach ( array( '<script', 'href="http', 'xlink:href="http', '@import', 'on' . 'load=' ) as $bad ) {
+				$this->assertStringNotContainsString( $bad, $html, "$name contains $bad" );
+			}
+			if ( preg_match_all( '/\bid="([^"]+)"/', $html, $ids ) ) {
+				foreach ( $ids[1] as $id ) {
+					$this->assertStringStartsWith( 'lingolane-ill-' . $name . '-', $id, "$name id prefix" );
+				}
+			}
+		}
+	}
+
+	public function test_unknown_illustration_returns_empty() {
+		$this->setExpectedIncorrectUsage( 'Lingolane_UI::illustration' );
+		$this->assertSame( '', Lingolane_UI::illustration( '../../wp-config' ) );
+	}
+
+	public function filter_one_language() {
+		$settings              = $this->settings_array();
+		$settings['languages'] = array( $settings['languages'][0] );
+		return $settings;
+	}
+
+	public function test_empty_states_show_illustration() {
+		remove_filter( 'pre_option_lingolane_settings', array( $this, 'filter_settings' ) );
+		add_filter( 'pre_option_lingolane_settings', array( $this, 'filter_one_language' ) );
+		$this->assertCount( 1, Lingolane_Languages::all() );
+		$overview = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'lingolane-illustration', $overview );
+		$this->assertStringContainsString( 'lingolane-empty', $overview );
+		$strings = $this->render_tab( 'strings' );
+		$this->assertStringContainsString( 'lingolane-illustration', $strings );
+		$this->assertStringContainsString( 'No language to translate into yet', $strings );
+	}
+
+	public function test_all_done_illustration_only_when_everything_is_translated() {
+		Lingolane_Stats::flush_strings();
+		$page = $this->new_post( array( 'post_type' => 'page' ) );
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringNotContainsString( 'lingolane-empty--done', $html, 'a page is still missing its translation' );
+
+		$copy = Lingolane_Elements::duplicate_post( $page, 'en', 'publish' );
+		$this->assertNotWPError( $copy );
+		Lingolane_Stats::flush_strings();
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'lingolane-empty--done', $html );
+		$this->assertStringContainsString( 'lingolane-illustration', $html );
+	}
+
+	public function test_guide_opens_with_welcome_illustration() {
+		$html = $this->render_tab( 'guide' );
+		$this->assertStringContainsString( 'lingolane-welcome', $html );
+		$this->assertStringContainsString( 'lingolane-illustration', $html );
+		$this->assertLessThan( strpos( $html, 'lingolane-guide__toc' ), strpos( $html, 'lingolane-welcome' ) );
+	}
 }

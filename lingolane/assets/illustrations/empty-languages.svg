@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="80" cy="58" r="50" style="fill:var(--lingolane-accent-soft,#eef0ff)"/>
+<ellipse cx="72" cy="98" rx="26" ry="4" style="fill:var(--lingolane-accent,#4f46e5);opacity:.12"/>
+<circle cx="72" cy="62" r="28" stroke-width="3" style="fill:var(--lingolane-card,#fff);stroke:var(--lingolane-accent,#4f46e5)"/>
+<g stroke-width="2" style="stroke:var(--lingolane-accent,#4f46e5)">
+<ellipse cx="72" cy="62" rx="12" ry="28"/>
+<path d="M44 62h56M48 48h48M48 76h48" style="opacity:.55"/>
+</g>
+<g stroke-width="2" style="stroke:var(--lingolane-accent-2,#7c3aed)">
+<path d="M104 16h28a10 10 0 0 1 10 10v8a10 10 0 0 1-10 10h-16l-10 8v-8a10 10 0 0 1-10-10v-8a10 10 0 0 1 10-10z" stroke-dasharray="5 5" style="fill:var(--lingolane-card,#fff)"/>
+<path d="M108 27h20M108 34h12" style="opacity:.35"/>
+</g>
+<circle cx="98" cy="86" r="15" stroke-width="4" style="fill:var(--lingolane-accent,#4f46e5);stroke:var(--lingolane-card,#fff)"/>
+<path d="M98 79v14M91 86h14" stroke-width="3" style="stroke:var(--lingolane-card,#fff)"/>
+<path d="M24 34v10M19 39h10" stroke-width="2" style="stroke:var(--lingolane-accent-2,#7c3aed)"/>
+<circle cx="132" cy="70" r="3" style="fill:var(--lingolane-accent,#4f46e5);opacity:.35"/>
+<circle cx="30" cy="82" r="2.5" style="fill:var(--lingolane-accent,#4f46e5);opacity:.35"/>
+</svg>

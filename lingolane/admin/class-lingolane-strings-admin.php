@@ -245,7 +245,7 @@ class Lingolane_Strings_Admin {
         if ( ! current_user_can( 'manage_options' ) ) { return; }
         $others = Lingolane_Stats::other_languages();
         if ( ! $others ) {
-            echo '<section class="lingolane-card lingolane-empty"><h2>' . esc_html__( 'No language to translate into yet', 'lingolane' ) . '</h2><p>' . esc_html__( 'Add a second language in the Languages tab.', 'lingolane' ) . '</p></section>';
+            echo '<section class="lingolane-card lingolane-empty">' . Lingolane_UI::illustration( 'empty-languages' ) . '<h2>' . esc_html__( 'No language to translate into yet', 'lingolane' ) . '</h2><p>' . esc_html__( 'Add a second language in the Languages tab.', 'lingolane' ) . '</p><a class="button button-primary" href="' . esc_url( Lingolane_Admin::url( 'languages' ) ) . '">' . esc_html__( 'Add a language', 'lingolane' ) . '</a></section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list
             return;
         }
         $table    = $wpdb->prefix . 'lingolane_strings';

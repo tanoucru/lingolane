@@ -470,9 +470,31 @@ class Lingolane_Admin {
         $others  = Lingolane_Stats::other_languages();
         $strings = Lingolane_Stats::strings();
         $shared  = Lingolane_Stats::shared_count();
+        $rows    = array();
+        $sources = 0;
+        $pending = 0;
+        foreach ( $others as $language ) {
+            $code    = $language['code'];
+            $content = Lingolane_Stats::content( $code );
+            $s       = isset( $strings[ $code ] ) ? $strings[ $code ] : array( 'total' => 0, 'own' => 0, 'inherited' => 0, 'missing' => 0 );
+            $rows[ $code ] = array( $content, $s, Lingolane_Stats::percent( $content['published'], $content['total'] ), Lingolane_Stats::percent( $s['own'] + $s['inherited'], $s['total'] ) );
+            $sources = max( $sources, $content['total'] );
+            $pending += ( $rows[ $code ][2] < 100 || $rows[ $code ][3] < 100 ) ? 1 : 0;
+        }
+        // Celebrate only when there is something translated: every other language at 100% for content and strings.
+        $all_done = $others && $sources > 0 && 0 === $pending;
         ?>
+        <?php if ( $all_done ) : ?>
+            <section class="lingolane-card lingolane-empty lingolane-empty--done">
+                <?php echo Lingolane_UI::illustration( 'all-done' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
+                <h2><?php esc_html_e( 'Everything is translated', 'lingolane' ); ?></h2>
+                <p><?php esc_html_e( 'Every page and interface string is published in all your languages. New content will show up here when it needs translating.', 'lingolane' ); ?></p>
+                <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Add another language', 'lingolane' ); ?></a>
+            </section>
+        <?php endif; ?>
         <?php if ( ! $others ) : ?>
             <section class="lingolane-card lingolane-empty">
+                <?php echo Lingolane_UI::illustration( 'empty-languages' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
                 <h2><?php esc_html_e( 'Your site has only one language', 'lingolane' ); ?></h2>
                 <p><?php esc_html_e( 'Add a second language to start translating posts and your interface.', 'lingolane' ); ?></p>
                 <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Add a language', 'lingolane' ); ?></a>
@@ -481,12 +503,9 @@ class Lingolane_Admin {
 
         <div class="lingolane-grid lingolane-grid--cards">
             <?php foreach ( $others as $language ) :
-                $code    = $language['code'];
-                $content = Lingolane_Stats::content( $code );
-                $percent = Lingolane_Stats::percent( $content['published'], $content['total'] );
-                $s       = isset( $strings[ $code ] ) ? $strings[ $code ] : array( 'total' => 0, 'own' => 0, 'inherited' => 0, 'missing' => 0 );
-                $s_done  = $s['own'] + $s['inherited'];
-                $s_pct   = Lingolane_Stats::percent( $s_done, $s['total'] );
+                $code   = $language['code'];
+                list( $content, $s, $percent, $s_pct ) = $rows[ $code ];
+                $s_done = $s['own'] + $s['inherited'];
                 ?>
                 <section class="lingolane-card lingolane-langcard">
                     <header class="lingolane-langcard__head">
@@ -1089,6 +1108,12 @@ class Lingolane_Admin {
         $locations = get_registered_nav_menus();
         $location = $locations ? array_keys( $locations )[0] : 'primary';
         ?>
+        <section class="lingolane-card lingolane-empty lingolane-welcome">
+            <?php echo Lingolane_UI::illustration( 'welcome' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
+            <h2><?php esc_html_e( 'Welcome to Lingolane', 'lingolane' ); ?></h2>
+            <p><?php esc_html_e( 'Translate pages, menus and interface text in a few steps. Start with the guide below or add your languages first.', 'lingolane' ); ?></p>
+            <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Set up languages', 'lingolane' ); ?></a>
+        </section>
         <div class="lingolane-guide">
             <nav class="lingolane-card lingolane-guide__toc" aria-label="<?php esc_attr_e( 'Guide contents', 'lingolane' ); ?>">
                 <h2 class="lingolane-card__title"><?php esc_html_e( 'Content', 'lingolane' ); ?></h2>
