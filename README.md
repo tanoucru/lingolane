@@ -4,6 +4,7 @@ Plugin đa ngôn ngữ nhẹ cho WordPress, tách từ dự án Teachme. Phát t
 
 - Mọi ngôn ngữ WordPress có bản dịch (131 ngôn ngữ với WP 7.1, danh mục lấy từ API WordPress.org, kèm 44 ngôn ngữ dự phòng khi mất mạng; bỏ các biến thể như `de_DE_formal`). Thêm ngôn ngữ nào thì chỉ tải gói dịch WordPress/theme/plugin của locale đó (`Lingolane_Packs`); bản cập nhật về sau đi theo cơ chế cập nhật bản dịch của WordPress cho mọi ngôn ngữ của site
 - Nhóm bản dịch (translation group) cho bài viết, trang, term
+- Danh sách Trang/Bài viết dạng cây: gập/mở nhóm bản dịch, nhớ trạng thái, hiển thị tiến độ và dòng tạo bản dịch còn thiếu; giữ nhóm sau Sửa nhanh
 - Đường dẫn theo thư mục ngôn ngữ (`/vi/…`), ngôn ngữ mặc định không tiền tố
 - Dịch chuỗi giao diện (theme, plugin), nhập/xuất CSV
 - hreflang / x-default, nút chuyển ngôn ngữ (`[lingolane_switcher]`, widget, menu `#lingolane-switcher`)

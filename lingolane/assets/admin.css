@@ -3,7 +3,8 @@
 .lingolane-wrap,
 .lingolane-box,
 .lingolane-col,
-.lingolane-toasts {
+.lingolane-toasts,
+body.lingolane-tree .wp-list-table {
 	--lingolane-bg: #f7f8fb;
 	--lingolane-card: #ffffff;
 	--lingolane-line: #e6e8ef;
@@ -111,7 +112,8 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 	.lingolane-wrap,
 	.lingolane-box,
 	.lingolane-col,
-	.lingolane-toasts { --lingolane-dur: 0ms; }
+	.lingolane-toasts,
+	body.lingolane-tree .wp-list-table { --lingolane-dur: 0ms; }
 	.lingolane-wrap *, .lingolane-box *, .lingolane-col *, .lingolane-toasts * { animation: none !important; }
 }
 
@@ -467,6 +469,69 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-col .lingolane-code--warn { border-color: transparent; background: var(--lingolane-warn-bg); color: var(--lingolane-warn); }
 .lingolane-col .lingolane-code--add { border-style: dashed; background: var(--lingolane-card); color: var(--lingolane-muted); }
 .lingolane-col a.lingolane-code:hover { border-color: var(--lingolane-accent); color: var(--lingolane-accent-ink); }
+
+/* ------------------------------------------------------------------ Tree list */
+
+body.lingolane-tree .wp-list-table .lingolane-tree-child[hidden],
+body.lingolane-tree .wp-list-table .inline-edit-row[hidden] { display: none; }
+body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title { position: relative; padding-inline-start: var(--lingolane-space-6); }
+body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title::before {
+	content: "";
+	position: absolute;
+	inset-inline-start: var(--lingolane-space-2);
+	inset-block-start: 0;
+	inline-size: var(--lingolane-space-3);
+	block-size: 20px;
+	border-inline-start: 1px solid var(--lingolane-line);
+	border-block-end: 1px solid var(--lingolane-line);
+	pointer-events: none;
+}
+body.lingolane-tree .wp-list-table .lingolane-tree-child.is-last .column-title::before { border-end-start-radius: var(--lingolane-radius-sm); }
+/* Carries the line on to the next sibling. */
+body.lingolane-tree .wp-list-table .lingolane-tree-child:not(.is-last) .column-title::after {
+	content: "";
+	position: absolute;
+	inset-inline-start: var(--lingolane-space-2);
+	inset-block: 0;
+	border-inline-start: 1px solid var(--lingolane-line);
+	pointer-events: none;
+}
+body.lingolane-tree .wp-list-table tr.lingolane-tree-match > th,
+body.lingolane-tree .wp-list-table tr.lingolane-tree-match > td { background-color: var(--lingolane-accent-soft); }
+body.lingolane-tree .wp-list-table .lingolane-tree-missing { color: var(--lingolane-muted); }
+body.lingolane-tree .wp-list-table .lingolane-tree-progress {
+	display: inline-flex;
+	padding-block: 2px;
+	padding-inline: var(--lingolane-space-2);
+	border-radius: var(--lingolane-radius-sm);
+	background: var(--lingolane-accent-soft);
+	color: var(--lingolane-accent-ink);
+	font-size: 12px;
+}
+body.lingolane-tree .wp-list-table .lingolane-tree-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 24px;
+	block-size: 24px;
+	padding: 0;
+	margin-inline-end: var(--lingolane-space-1);
+	border: 0;
+	border-radius: var(--lingolane-radius-sm);
+	background: transparent;
+	color: var(--lingolane-muted);
+	vertical-align: middle;
+	cursor: pointer;
+	transition: color var(--lingolane-dur) var(--lingolane-ease), background-color var(--lingolane-dur) var(--lingolane-ease);
+}
+body.lingolane-tree .wp-list-table .lingolane-tree-toggle:hover { background: var(--lingolane-accent-soft); color: var(--lingolane-accent-ink); }
+body.lingolane-tree .wp-list-table .lingolane-tree-toggle:focus-visible { outline: 2px solid var(--lingolane-accent); outline-offset: 2px; }
+body.lingolane-tree .lingolane-tree-bulk { display: inline-flex; gap: 4px; margin-inline-start: 8px; }
+
+@media (max-width: 782px) {
+	body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title::before,
+	body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title::after { display: none; }
+}
 
 /* ------------------------------------------------------------------ Responsive */
 

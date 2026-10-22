@@ -9,6 +9,7 @@ class Lingolane_Admin {
         add_action( 'admin_page_access_denied', array( __CLASS__, 'legacy_redirect' ) );
         add_filter( 'submenu_file', array( __CLASS__, 'submenu_file' ), 10, 2 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+        add_action( 'admin_footer', array( 'Lingolane_UI', 'print_sprite' ), 1 );
         add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) );
         add_filter( 'plugin_action_links_' . plugin_basename( LINGOLANE_DIR . 'lingolane.php' ), array( __CLASS__, 'action_links' ) );
         add_action( 'admin_post_lingolane_save_default_language', array( __CLASS__, 'save_default_language' ) );
@@ -146,11 +147,11 @@ class Lingolane_Admin {
     /** Trusted icon markup for toasts, shared by render_notices() and admin.js. */
     private static function toast_icons() {
         return array(
-            'success' => Lingolane_UI::icon( 'circle-check' ),
-            'info'    => Lingolane_UI::icon( 'info' ),
-            'warning' => Lingolane_UI::icon( 'triangle-alert' ),
-            'error'   => Lingolane_UI::icon( 'triangle-alert' ),
-            'close'   => Lingolane_UI::icon( 'x', 16 ),
+            'success' => Lingolane_UI::icon( 'circle-check', 20, '', true ),
+            'info'    => Lingolane_UI::icon( 'info', 20, '', true ),
+            'warning' => Lingolane_UI::icon( 'triangle-alert', 20, '', true ),
+            'error'   => Lingolane_UI::icon( 'triangle-alert', 20, '', true ),
+            'close'   => Lingolane_UI::icon( 'x', 16, '', true ),
         );
     }
 

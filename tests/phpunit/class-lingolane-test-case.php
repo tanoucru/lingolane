@@ -28,6 +28,9 @@ abstract class Lingolane_TestCase extends WP_UnitTestCase {
 
 	public function set_up() {
 		parent::set_up();
+		// Rows in the plugin table outlive the core rollback; stale ones would attach to reused post IDs.
+		global $wpdb;
+		$wpdb->query( "DELETE FROM {$wpdb->prefix}lingolane_translations" );
 		$this->saved_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
 		add_filter( 'pre_option_lingolane_settings', array( $this, 'filter_settings' ) );
 		$this->set_permalink_structure( '/%postname%/' );

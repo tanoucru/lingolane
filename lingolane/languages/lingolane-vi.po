@@ -8,6 +8,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "Expand all"
+msgstr "Mở tất cả"
+
+msgid "Collapse all"
+msgstr "Gập tất cả"
+
+#. translators: %s: post title
+msgid "Show translations of %s"
+msgstr "Hiện bản dịch của %s"
+
+#. translators: %s: post title
+msgid "Hide translations of %s"
+msgstr "Ẩn bản dịch của %s"
+
+#. translators: %s: language name
+msgid "%s: not translated yet"
+msgstr "%s: chưa dịch"
+
+msgid "Create"
+msgstr "Tạo"
+
+#. translators: 1: translated languages, 2: all languages
+msgid "%1$d of %2$d languages"
+msgstr "%1$d trên %2$d ngôn ngữ"
+
 msgid "Select language"
 msgstr "Chọn ngôn ngữ"
 

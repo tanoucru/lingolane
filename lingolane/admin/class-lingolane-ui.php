@@ -2,10 +2,11 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 /**
- * Shared admin UI helpers (inline SVG icons from the bundled Lucide subset).
+ * Shared admin UI helpers (SVG icons from the bundled Lucide subset).
  */
 class Lingolane_UI {
     private static $icons = null;
+    private static $used = array();
 
     /** Names of the available icons. */
     public static function icons() {
@@ -16,17 +17,23 @@ class Lingolane_UI {
     }
 
     /**
-     * Inline SVG icon. Decorative unless $label is given. Unknown names return ''.
+     * SVG icon. Decorative unless $label is given. Unknown names return ''.
      *
-     * @param string $name  Icon name from icons().
-     * @param int    $size  Pixel size, clamped to 12-48.
-     * @param string $label Accessible label ('' = decorative).
+     * @param string $name   Icon name from icons().
+     * @param int    $size   Pixel size, clamped to 12-48.
+     * @param string $label  Accessible label ('' = decorative).
+     * @param bool   $inline Embed elements instead of referencing the footer sprite.
      */
-    public static function icon( $name, $size = 20, $label = '' ) {
+    public static function icon( $name, $size = 20, $label = '', $inline = false ) {
         self::icons();
         if ( ! isset( self::$icons[ $name ] ) ) {
             _doing_it_wrong( 'Lingolane_UI::icon', esc_html( sprintf( 'Unknown icon "%s".', $name ) ), '1.0.0' );
             return '';
+        }
+        $inner = self::$icons[ $name ];
+        if ( ! $inline ) {
+            self::$used[ $name ] = true;
+            $inner = '<use href="#lingolane-i-' . esc_attr( $name ) . '"></use>';
         }
         $size  = max( 12, min( 48, (int) $size ) );
         $a11y  = '' === $label ? 'aria-hidden="true" focusable="false"' : 'role="img"';
@@ -37,8 +44,31 @@ class Lingolane_UI {
             $size,
             $a11y,
             $title,
-            self::$icons[ $name ]
+            $inner
         );
+    }
+
+    /** Sprite containing each referenced icon once, sorted by name. */
+    public static function sprite() {
+        if ( ! self::$used ) { return ''; }
+        $names = array_keys( self::$used );
+        sort( $names, SORT_STRING );
+        $sprite = '<svg xmlns="http://www.w3.org/2000/svg" class="lingolane-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">';
+        foreach ( $names as $name ) {
+            $sprite .= '<symbol id="lingolane-i-' . esc_attr( $name ) . '" viewBox="0 0 24 24">' . self::$icons[ $name ] . '</symbol>';
+        }
+        return $sprite . '</svg>';
+    }
+
+    /** Print the footer sprite and clear its references. */
+    public static function print_sprite() {
+        echo self::sprite(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Trusted bundled SVG; names escaped in sprite().
+        self::reset();
+    }
+
+    /** Clear the used icon names. */
+    public static function reset() {
+        self::$used = array();
     }
 
     /**

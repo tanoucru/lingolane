@@ -6,6 +6,7 @@ class Lingolane_Columns {
         add_action( 'restrict_manage_posts', array( __CLASS__, 'dropdown' ) );
         add_action( 'pre_get_posts', array( __CLASS__, 'filter' ), 20 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+        add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) );
     }
 
     public static function enqueue( $hook ) {
@@ -13,6 +14,24 @@ class Lingolane_Columns {
         $screen = get_current_screen();
         if ( ! $screen || ! in_array( $screen->post_type, Lingolane_Query::post_types(), true ) ) { return; }
         wp_enqueue_style( 'lingolane-admin', LINGOLANE_URL . 'assets/admin.css', array(), LINGOLANE_VERSION );
+        if ( self::tree_screen() ) {
+            wp_enqueue_script( 'lingolane-tree', LINGOLANE_URL . 'assets/tree.js', array(), LINGOLANE_VERSION, true );
+            wp_localize_script( 'lingolane-tree', 'lingolaneTree', array(
+                'postType' => $screen->post_type,
+                'i18n'     => array(
+                    'expandAll'   => __( 'Expand all', 'lingolane' ),
+                    'collapseAll' => __( 'Collapse all', 'lingolane' ),
+                    /* translators: %s: post title */
+                    'show'        => __( 'Show translations of %s', 'lingolane' ),
+                    /* translators: %s: post title */
+                    'hide'        => __( 'Hide translations of %s', 'lingolane' ),
+                ),
+                'icons'    => array(
+                    'open'   => Lingolane_UI::icon( 'chevron-down', 16, '', true ),
+                    'closed' => Lingolane_UI::icon( 'chevron-right', 16, '', true ),
+                ),
+            ) );
+        }
     }
 
     public static function register() {
@@ -22,15 +41,37 @@ class Lingolane_Columns {
         }
     }
 
+    public static function tree_screen() {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        return $screen && 'edit' === $screen->base
+            && in_array( $screen->post_type, Lingolane_Query::post_types(), true )
+            && ! in_array( $screen->post_type, Lingolane_Shared::post_types(), true );
+    }
+
+    public static function body_class( $classes ) {
+        return self::tree_screen() ? $classes . ' lingolane-tree' : $classes;
+    }
+
     public static function columns( $columns ) {
-        $columns['lingolane_language'] = __( 'Languages', 'lingolane' );
-        return $columns;
+        unset( $columns['lingolane_language'] );
+        $result = array();
+        foreach ( $columns as $key => $label ) {
+            $result[ $key ] = $label;
+            if ( 'title' === $key ) {
+                $result['lingolane_language'] = __( 'Languages', 'lingolane' );
+            }
+        }
+        if ( ! isset( $result['lingolane_language'] ) ) {
+            $result['lingolane_language'] = __( 'Languages', 'lingolane' );
+        }
+        return $result;
     }
 
     public static function render( $column, $id ) {
         if ( 'lingolane_language' !== $column ) { return; }
         $post = get_post( $id );
         if ( ! $post ) { return; }
+        if ( self::tree_screen() && class_exists( 'Lingolane_Tree' ) ) { Lingolane_Tree::remember( $id ); }
         $type    = 'post_' . $post->post_type;
         $current = Lingolane_Elements::get_language( $type, $id );
         $trid    = Lingolane_Elements::get_trid( $type, $id );
@@ -62,7 +103,7 @@ class Lingolane_Columns {
         echo '</div>';
     }
 
-    private static function requested_language() {
+    public static function requested_language() {
         return isset( $_GET['lingolane_lang'] ) && is_string( $_GET['lingolane_lang'] ) ? sanitize_key( wp_unslash( $_GET['lingolane_lang'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification
     }
 

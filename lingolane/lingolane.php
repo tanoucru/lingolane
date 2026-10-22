@@ -60,10 +60,12 @@ if ( is_admin() ) {
     require_once LINGOLANE_DIR . 'admin/class-lingolane-strings-admin.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-metabox.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-columns.php';
+    require_once LINGOLANE_DIR . 'admin/class-lingolane-tree.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-support.php';
     Lingolane_Admin::init();
     Lingolane_Strings_Admin::init();
     Lingolane_Metabox::init();
     Lingolane_Columns::init();
+    Lingolane_Tree::init();
     Lingolane_Support::init();
 }
