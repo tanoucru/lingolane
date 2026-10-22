@@ -1,4 +1,4 @@
-/* Lingolane · admin */
+/* Lingolane · admin — light SaaS design system (tokens, shared components, screens). */
 
 .lingolane-wrap,
 .lingolane-box,
@@ -34,10 +34,6 @@
 	--lingolane-ease: cubic-bezier(.2, .8, .2, 1);
 	--lingolane-dur: 160ms;
 	--lingolane-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	/* Aliases for old tokens until Task 4 removes their last uses. */
-	--lingolane-soft: var(--lingolane-bg);
-	--lingolane-brand: var(--lingolane-accent-ink);
-	--lingolane-shadow: var(--lingolane-shadow-sm);
 	font-family: var(--lingolane-font);
 }
 
@@ -53,71 +49,195 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 	.lingolane-wrap *, .lingolane-box *, .lingolane-col *, .lingolane-toasts * { animation: none !important; }
 }
 
-.lingolane-wrap { max-width: 1240px; margin: 20px 20px 0 2px; color: var(--lingolane-ink); }
+/* Icons: align in the parent with inline-flex, align-items:center and gap (no ad-hoc margins). */
+.lingolane-icon { flex: none; display: inline-block; vertical-align: -0.2em; }
+
+/* ------------------------------------------------------------------ page shell */
+
+.lingolane-wrap { max-width: 1240px; margin: 20px 20px 0 2px; color: var(--lingolane-ink); font-size: 13px; }
 .lingolane-wrap *, .lingolane-wrap *::before, .lingolane-wrap *::after { box-sizing: border-box; }
+.lingolane-wrap a { color: var(--lingolane-accent-ink); }
+.lingolane-wrap a:hover { color: var(--lingolane-accent); }
+
+/* Focus: one visible ring everywhere (links, buttons, inputs, tab items). */
 .lingolane-wrap a:focus-visible,
 .lingolane-wrap button:focus-visible,
 .lingolane-wrap summary:focus-visible,
 .lingolane-wrap input:focus-visible,
 .lingolane-wrap select:focus-visible,
-.lingolane-wrap textarea:focus-visible { outline: 2px solid var(--lingolane-accent); outline-offset: 2px; box-shadow: none; }
+.lingolane-wrap textarea:focus-visible,
+.lingolane-wrap .button:focus-visible,
+.lingolane-box a:focus-visible,
+.lingolane-box select:focus-visible,
+.lingolane-box .button:focus-visible,
+.lingolane-col a:focus-visible { outline: 2px solid var(--lingolane-accent); outline-offset: 2px; box-shadow: none; }
 
-/* Header */
-.lingolane-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
-.lingolane-header__title { display: flex; align-items: center; gap: 14px; }
-.lingolane-header__icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--lingolane-brand); color: #fff; font-size: 24px; }
-.lingolane-header h1 { margin: 0; padding: 0; font-size: 23px; font-weight: 600; line-height: 1.25; }
+/*
+ * .lingolane-header — page header: logo tile, title + subtitle, enabled-language pills.
+ * .lingolane-logo   — 40px gradient tile (accent → accent-2) holding a white 22px icon.
+ * Stacks vertically under 782px.
+ */
+.lingolane-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--lingolane-space-4); margin-bottom: var(--lingolane-space-5); }
+.lingolane-header__title { display: flex; align-items: center; gap: var(--lingolane-space-3); min-width: 0; }
+.lingolane-logo { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--lingolane-accent), var(--lingolane-accent-2)); color: #fff; box-shadow: 0 4px 12px rgba(79, 70, 229, .28); }
+.lingolane-header h1 { margin: 0; padding: 0; color: var(--lingolane-ink); font-size: 22px; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; }
 .lingolane-header p { margin: 2px 0 0; color: var(--lingolane-muted); font-size: 13px; }
-.lingolane-header__langs { display: flex; flex-wrap: wrap; gap: 8px; }
-.lingolane-langpill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border: 1px solid var(--lingolane-line); border-radius: 999px; background: var(--lingolane-card); color: var(--lingolane-ink); font-size: 13px; text-decoration: none; transition: border-color .15s; }
-.lingolane-langpill:hover { border-color: var(--lingolane-accent); color: var(--lingolane-ink); }
-.lingolane-langpill.is-default .lingolane-code { background: var(--lingolane-brand); color: #fff; border-color: var(--lingolane-brand); }
+.lingolane-header__langs { display: flex; flex-wrap: wrap; gap: var(--lingolane-space-2); }
+.lingolane-langpill { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); padding: 4px 12px 4px 4px; border: 1px solid var(--lingolane-line); border-radius: 999px; background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-sm); color: var(--lingolane-ink); font-size: 13px; font-weight: 500; text-decoration: none; transition: border-color var(--lingolane-dur) var(--lingolane-ease), box-shadow var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-wrap .lingolane-langpill { color: var(--lingolane-ink); }
+.lingolane-wrap .lingolane-langpill:hover { border-color: var(--lingolane-accent); box-shadow: var(--lingolane-shadow-md); color: var(--lingolane-ink); }
+.lingolane-langpill.is-default .lingolane-code { border-color: var(--lingolane-accent); background: var(--lingolane-accent); color: #fff; }
 .lingolane-wrap .wp-header-end { margin: 0; visibility: hidden; }
-.lingolane-wrap > .notice { margin: 0 0 16px; }
+.lingolane-wrap > .notice { margin: 0 0 var(--lingolane-space-4); border-radius: var(--lingolane-radius-sm); }
 
-/* Language code badge */
-.lingolane-code { display: inline-flex; align-items: center; justify-content: center; gap: 1px; min-width: 30px; height: 22px; padding: 0 6px; border: 1px solid var(--lingolane-line); border-radius: 6px; background: var(--lingolane-soft); color: var(--lingolane-ink); font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; text-decoration: none; vertical-align: middle; }
+/* Language code badge (monospace, used in header, tables, editor box, list column). */
+.lingolane-code { display: inline-flex; align-items: center; justify-content: center; gap: 1px; min-width: 30px; height: 22px; padding: 0 6px; border: 1px solid var(--lingolane-line); border-radius: 6px; background: var(--lingolane-bg); color: var(--lingolane-ink); font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; text-decoration: none; vertical-align: middle; }
 
-/* Tabs */
-.lingolane-tabs { display: flex; gap: 2px; margin: 0 0 20px; padding: 0; border-bottom: 1px solid var(--lingolane-line); overflow-x: auto; scrollbar-width: none; }
+/*
+ * .lingolane-tabs — pill navigation in a white box; the active item uses accent-soft / accent-ink.
+ * Scrolls horizontally inside its own box on narrow screens (never the page).
+ */
+.lingolane-tabs { display: flex; gap: var(--lingolane-space-1); width: fit-content; max-width: 100%; margin: 0 0 var(--lingolane-space-5); padding: var(--lingolane-space-1); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-sm); overflow-x: auto; scrollbar-width: none; }
 .lingolane-tabs::-webkit-scrollbar { display: none; }
-.lingolane-tabs__item { display: inline-flex; align-items: center; gap: 7px; padding: 11px 14px; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--lingolane-muted); font-size: 14px; font-weight: 500; text-decoration: none; white-space: nowrap; }
-.lingolane-tabs__item .lingolane-icon { flex: none; }
-.lingolane-tabs__item:hover { color: var(--lingolane-ink); }
-.lingolane-tabs__item.is-active { color: var(--lingolane-ink); border-bottom-color: var(--lingolane-accent); font-weight: 600; }
-.lingolane-tabs__item:focus-visible { outline-offset: -2px; }
+.lingolane-wrap .lingolane-tabs__item { display: inline-flex; flex: none; align-items: center; gap: var(--lingolane-space-2); padding: 7px 12px; border-radius: var(--lingolane-radius-sm); color: var(--lingolane-muted); font-size: 13px; font-weight: 500; line-height: 20px; text-decoration: none; white-space: nowrap; transition: background-color var(--lingolane-dur) var(--lingolane-ease), color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-wrap .lingolane-tabs__item:hover { background: var(--lingolane-bg); color: var(--lingolane-ink); }
+.lingolane-wrap .lingolane-tabs__item.is-active { background: var(--lingolane-accent-soft); color: var(--lingolane-accent-ink); font-weight: 600; }
 
-/* Cards */
-.lingolane-card { margin: 0 0 20px; padding: 20px 22px; border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow); }
-.lingolane-card h2, .lingolane-card__title { margin: 0 0 14px; font-size: 15px; font-weight: 600; line-height: 1.4; }
-.lingolane-card__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+/*
+ * .lingolane-card — white surface: line border, radius, shadow-sm.
+ * Add .is-interactive for a shadow-md lift on hover.
+ */
+.lingolane-card { margin: 0 0 var(--lingolane-space-5); padding: 20px var(--lingolane-space-5); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-sm); transition: box-shadow var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-card.is-interactive:hover { box-shadow: var(--lingolane-shadow-md); }
+.lingolane-card h2, .lingolane-card__title { margin: 0 0 var(--lingolane-space-4); color: var(--lingolane-ink); font-size: 15px; font-weight: 600; line-height: 1.4; }
+.lingolane-card__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: var(--lingolane-space-4); }
 .lingolane-card__head .lingolane-card__title { margin: 0; }
-.lingolane-card__desc { margin: -6px 0 16px; color: var(--lingolane-muted); }
-.lingolane-card .button { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
-.lingolane-card .button .lingolane-icon { flex: none; }
-.lingolane-empty { padding: 36px; text-align: center; }
+.lingolane-card__desc { margin: -8px 0 var(--lingolane-space-4); color: var(--lingolane-muted); }
+.lingolane-empty { padding: 40px var(--lingolane-space-5); text-align: center; }
 .lingolane-empty p { color: var(--lingolane-muted); }
 .lingolane-count { color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-hint { margin: 10px 0 0; color: var(--lingolane-muted); font-size: 13px; line-height: 1.55; }
 .lingolane-wrap > .lingolane-body > .lingolane-hint { margin: -8px 2px 20px; }
 
-.lingolane-grid { display: grid; gap: 20px; margin-bottom: 20px; }
+.lingolane-grid { display: grid; gap: 20px; margin-bottom: var(--lingolane-space-5); }
+.lingolane-grid > * { min-width: 0; }
 .lingolane-grid > .lingolane-card { margin: 0; }
-.lingolane-grid--cards { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-.lingolane-grid--two { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin: 0; }
+.lingolane-grid--cards { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.lingolane-grid--two { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); margin: 0; }
 
-/* Overview */
+/*
+ * .lingolane-button — complements WordPress .button: radius-sm, soft shadow, accent primary.
+ * Applied to every .button inside .lingolane-wrap / .lingolane-box; add the class elsewhere.
+ */
+.lingolane-button,
+.lingolane-wrap .button,
+.lingolane-box .button { display: inline-flex; align-items: center; justify-content: center; gap: var(--lingolane-space-2); border-color: var(--lingolane-line); border-radius: var(--lingolane-radius-sm); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-sm); color: var(--lingolane-ink); font-weight: 500; transition: background-color var(--lingolane-dur) var(--lingolane-ease), border-color var(--lingolane-dur) var(--lingolane-ease), color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-button:hover:not(:disabled),
+.lingolane-wrap .button:hover:not(:disabled),
+.lingolane-box .button:hover:not(:disabled) { border-color: var(--lingolane-accent); background: var(--lingolane-accent-soft); color: var(--lingolane-accent-ink); }
+.lingolane-button.button-primary,
+.lingolane-wrap .button.button-primary,
+.lingolane-box .button.button-primary { border-color: var(--lingolane-accent); background: var(--lingolane-accent); color: #fff; }
+.lingolane-button.button-primary:hover:not(:disabled),
+.lingolane-wrap .button.button-primary:hover:not(:disabled),
+.lingolane-box .button.button-primary:hover:not(:disabled) { border-color: var(--lingolane-accent-ink); background: var(--lingolane-accent-ink); color: #fff; }
+.lingolane-button:focus-visible { outline: 2px solid var(--lingolane-accent); outline-offset: 2px; box-shadow: none; }
+.lingolane-wrap .button.button-link-delete { border-color: transparent; background: transparent; box-shadow: none; color: var(--lingolane-danger); }
+.lingolane-wrap .button.button-link-delete:hover:not(:disabled) { border-color: transparent; background: var(--lingolane-danger-bg); color: var(--lingolane-danger); }
+.lingolane-wrap .button.button-link-delete:disabled { color: var(--lingolane-muted) !important; cursor: not-allowed; }
+.lingolane-wrap .button-link { color: var(--lingolane-accent-ink); }
+
+/*
+ * .lingolane-field — label + control stack. Controls get radius-sm and an accent border on focus.
+ * Control borders keep the WordPress grey so they stay ≥ 3:1 against white.
+ */
+.lingolane-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.lingolane-field > label, .lingolane-field > legend { color: var(--lingolane-ink); font-size: 12px; font-weight: 600; }
+.lingolane-field > small { color: var(--lingolane-muted); font-size: 12px; }
+.lingolane-wrap input[type="text"],
+.lingolane-wrap input[type="search"],
+.lingolane-wrap input[type="url"],
+.lingolane-wrap select,
+.lingolane-wrap textarea,
+.lingolane-box select { border-radius: var(--lingolane-radius-sm); transition: border-color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-field input[type="text"], .lingolane-field input[type="search"], .lingolane-field select { min-height: 36px; max-width: 100%; }
+.lingolane-wrap input[type="text"]:focus,
+.lingolane-wrap input[type="search"]:focus,
+.lingolane-wrap input[type="url"]:focus,
+.lingolane-wrap select:focus,
+.lingolane-wrap textarea:focus,
+.lingolane-box select:focus { border-color: var(--lingolane-accent); box-shadow: 0 0 0 1px var(--lingolane-accent); }
+.lingolane-field--grow { flex: 1 1 200px; }
+.lingolane-field--grow input { width: 100%; }
+.lingolane-field--actions { flex-direction: row; align-items: center; gap: var(--lingolane-space-3); }
+.lingolane-wrap fieldset.lingolane-field label { display: block; margin: 2px 0; font-weight: 400; }
+.lingolane-wrap fieldset.lingolane-field small { color: var(--lingolane-muted); }
+
+.lingolane-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--lingolane-space-3); margin: 0 0 var(--lingolane-space-4); padding: 14px; border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius-sm); background: var(--lingolane-bg); }
+.lingolane-banner { display: flex; align-items: flex-start; gap: var(--lingolane-space-2); margin: 0 0 var(--lingolane-space-4); padding: 12px 14px; border-radius: var(--lingolane-radius-sm); background: var(--lingolane-info-bg); color: var(--lingolane-info); }
+.lingolane-kbd-hint { margin: -6px 0 12px; color: var(--lingolane-muted); font-size: 12px; }
+.lingolane-kbd-hint kbd { padding: 1px 5px; border: 1px solid var(--lingolane-line); border-bottom-width: 2px; border-radius: 4px; background: var(--lingolane-card); font-size: 11px; }
+
+/*
+ * .lingolane-kpi — metric tile: 12px muted label, 28px/700 number, optional progress and note.
+ * .lingolane-kpis lays tiles out in an auto-fit grid.
+ */
+.lingolane-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: var(--lingolane-space-3); }
+.lingolane-kpi { min-width: 0; padding: 14px var(--lingolane-space-4); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius-sm); background: var(--lingolane-bg); }
+.lingolane-kpi__row { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+.lingolane-kpi__label { color: var(--lingolane-muted); font-size: 12px; font-weight: 500; }
+.lingolane-kpi__value { color: var(--lingolane-ink); font-size: 28px; font-weight: 700; line-height: 1.15; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.lingolane-kpi__note { margin: 8px 0 0; color: var(--lingolane-muted); font-size: 12px; }
+
+/*
+ * .lingolane-progress — 6px track (accent-soft) with an accent → accent-2 gradient fill.
+ * The fill grows from 0 on page load (CSS @starting-style); with reduced motion the duration
+ * is 0ms, so the bar simply shows its final width.
+ */
+.lingolane-progress { height: 6px; border-radius: 999px; background: var(--lingolane-accent-soft); overflow: hidden; }
+.lingolane-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--lingolane-accent), var(--lingolane-accent-2)); transition: width var(--lingolane-dur) var(--lingolane-ease); }
+@starting-style {
+	.lingolane-progress span { width: 0 !important; }
+}
+
+/*
+ * .lingolane-chip — small rounded status label. Variants: --ok, --warn, --info, --brand, --muted
+ * (admin.js swaps the --* modifier after saving a string).
+ */
+.lingolane-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: var(--lingolane-bg); color: var(--lingolane-muted); font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; vertical-align: middle; box-shadow: inset 0 0 0 1px var(--lingolane-line); }
+.lingolane-chip--ok { background: var(--lingolane-ok-bg); color: var(--lingolane-ok); box-shadow: none; }
+.lingolane-chip--warn { background: var(--lingolane-warn-bg); color: var(--lingolane-warn); box-shadow: none; }
+.lingolane-chip--info { background: var(--lingolane-info-bg); color: var(--lingolane-info); box-shadow: none; }
+.lingolane-chip--brand { background: var(--lingolane-accent-soft); color: var(--lingolane-accent-ink); box-shadow: none; }
+.lingolane-chip--muted { background: transparent; color: var(--lingolane-muted); }
+
+/*
+ * .lingolane-table — inside .lingolane-table-wrap (rounded, scrolls horizontally in its own box).
+ * Head: 12px uppercase muted; rows tint to --lingolane-bg on hover.
+ */
+.lingolane-table-wrap { max-width: 100%; overflow-x: auto; border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-sm); }
+.lingolane-table { width: 100%; border-collapse: collapse; background: var(--lingolane-card); }
+.lingolane-table th { padding: 10px 16px; border-bottom: 1px solid var(--lingolane-line); background: var(--lingolane-bg); color: var(--lingolane-muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+.lingolane-table td { padding: 12px 16px; border-top: 1px solid var(--lingolane-line); vertical-align: middle; transition: background-color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-table tbody tr:first-child td { border-top: 0; }
+.lingolane-table tbody tr:hover td { background: var(--lingolane-bg); }
+.lingolane-table__empty { padding: 36px 16px !important; color: var(--lingolane-muted); text-align: center; }
+.lingolane-table__empty .lingolane-icon { color: var(--lingolane-ok); vertical-align: text-bottom; margin-right: var(--lingolane-space-2); }
+.lingolane-meta { display: block; margin-top: 3px; color: var(--lingolane-muted); font-size: 12px; }
+
+.lingolane-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; color: var(--lingolane-muted); font-size: 13px; }
+.lingolane-pagination .page-numbers { display: inline-block; min-width: 32px; padding: 5px 9px; margin-left: 2px; border-radius: var(--lingolane-radius-sm); text-align: center; text-decoration: none; transition: background-color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-pagination a.page-numbers:hover { background: var(--lingolane-accent-soft); }
+.lingolane-pagination .page-numbers.current { background: var(--lingolane-accent); color: #fff; font-weight: 600; }
+
+/* ------------------------------------------------------------------ Overview */
+
 .lingolane-langcard { display: flex; flex-direction: column; gap: 18px; }
-.lingolane-langcard__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.lingolane-langcard__head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; }
-.lingolane-link-muted { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); color: var(--lingolane-muted); font-size: 12px; text-decoration: none; }
-.lingolane-metric__row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
-.lingolane-metric__label { color: var(--lingolane-muted); font-size: 13px; }
-.lingolane-metric__value { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.lingolane-metric__note { margin: 6px 0 0; color: var(--lingolane-muted); font-size: 12px; }
-.lingolane-progress { height: 8px; border-radius: 999px; background: var(--lingolane-soft); overflow: hidden; box-shadow: inset 0 0 0 1px var(--lingolane-line); }
-.lingolane-progress span { display: block; height: 100%; border-radius: inherit; background: var(--lingolane-accent); transition: width .4s ease; }
-.lingolane-langcard__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; padding-top: 4px; }
+.lingolane-langcard__head { display: flex; align-items: center; justify-content: space-between; gap: var(--lingolane-space-2); }
+.lingolane-langcard__head h2 { display: flex; align-items: center; gap: var(--lingolane-space-2); margin: 0; font-size: 16px; }
+.lingolane-wrap .lingolane-link-muted { display: inline-flex; align-items: center; gap: var(--lingolane-space-1); color: var(--lingolane-muted); font-size: 12px; text-decoration: none; }
+.lingolane-wrap .lingolane-link-muted:hover { color: var(--lingolane-accent-ink); }
+.lingolane-langcard__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lingolane-space-2); margin-top: auto; padding-top: var(--lingolane-space-1); }
 .lingolane-done { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); color: var(--lingolane-ok); font-weight: 500; }
 
 .lingolane-checklist { margin: 0; padding: 0; list-style: none; }
@@ -131,44 +251,12 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-checklist .is-info .lingolane-icon { color: var(--lingolane-info); }
 
 .lingolane-recent { margin: 0; padding: 0; list-style: none; }
-.lingolane-recent li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 9px 0; border-top: 1px solid var(--lingolane-line); }
+.lingolane-recent li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 10px 0; border-top: 1px solid var(--lingolane-line); }
 .lingolane-recent li:first-child { border-top: 0; padding-top: 0; }
 .lingolane-recent a { font-weight: 500; text-decoration: none; }
 .lingolane-recent time { margin-left: auto; color: var(--lingolane-muted); font-size: 12px; }
 
-/* Chips */
-.lingolane-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: var(--lingolane-soft); color: var(--lingolane-muted); font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; vertical-align: middle; }
-.lingolane-chip--ok { background: var(--lingolane-ok-bg); color: var(--lingolane-ok); }
-.lingolane-chip--warn { background: var(--lingolane-warn-bg); color: var(--lingolane-warn); }
-.lingolane-chip--info { background: var(--lingolane-info-bg); color: var(--lingolane-info); }
-.lingolane-chip--brand { background: var(--lingolane-brand); color: #fff; }
-.lingolane-chip--muted { background: transparent; color: var(--lingolane-muted); box-shadow: inset 0 0 0 1px var(--lingolane-line); }
-
-/* Filters & fields */
-.lingolane-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 0 0 16px; padding: 14px; border-radius: 8px; background: var(--lingolane-soft); }
-.lingolane-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; margin: 0; padding: 0; border: 0; }
-.lingolane-field > label, .lingolane-field > legend { color: var(--lingolane-ink); font-size: 12px; font-weight: 600; }
-.lingolane-field > small { color: var(--lingolane-muted); font-size: 12px; }
-.lingolane-field input[type="text"], .lingolane-field input[type="search"], .lingolane-field select { min-height: 34px; max-width: 100%; }
-.lingolane-field--grow { flex: 1 1 200px; }
-.lingolane-field--grow input { width: 100%; }
-.lingolane-field--actions { flex-direction: row; align-items: center; gap: 12px; }
-.lingolane-wrap fieldset.lingolane-field label { display: block; margin: 2px 0; font-weight: 400; }
-.lingolane-wrap fieldset.lingolane-field small { color: var(--lingolane-muted); }
-.lingolane-banner { display: flex; align-items: flex-start; gap: var(--lingolane-space-2); margin: 0 0 16px; padding: 12px 14px; border-radius: 8px; background: var(--lingolane-info-bg); color: var(--lingolane-info); }
-.lingolane-kbd-hint { margin: -6px 0 12px; color: var(--lingolane-muted); font-size: 12px; }
-.lingolane-kbd-hint kbd { padding: 1px 5px; border: 1px solid var(--lingolane-line); border-bottom-width: 2px; border-radius: 4px; background: #fff; font-size: 11px; }
-
-/* Tables */
-.lingolane-table-wrap { overflow-x: auto; border: 1px solid var(--lingolane-line); border-radius: 8px; }
-.lingolane-table { width: 100%; border-collapse: collapse; background: var(--lingolane-card); }
-.lingolane-table th { padding: 10px 14px; border-bottom: 1px solid var(--lingolane-line); background: var(--lingolane-soft); color: var(--lingolane-muted); font-size: 12px; font-weight: 600; text-align: left; white-space: nowrap; }
-.lingolane-table td { padding: 12px 14px; border-top: 1px solid var(--lingolane-line); vertical-align: middle; }
-.lingolane-table tbody tr:first-child td { border-top: 0; }
-.lingolane-table tbody tr:hover td { background: #fbfbfc; }
-.lingolane-table__empty { padding: 32px 14px !important; color: var(--lingolane-muted); text-align: center; }
-.lingolane-table__empty .lingolane-icon { color: var(--lingolane-ok); vertical-align: text-bottom; margin-right: var(--lingolane-space-2); }
-.lingolane-meta { display: block; margin-top: 3px; color: var(--lingolane-muted); font-size: 12px; }
+/* ------------------------------------------------------------------ Posts & pages (matrix) */
 
 .lingolane-matrix th.lingolane-matrix__lang { text-align: center; }
 .lingolane-matrix__lang span { margin-left: 4px; }
@@ -178,120 +266,122 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-cell-link { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
 .lingolane-cell-link__edit { font-size: 13px; }
 .lingolane-cell-link:hover .lingolane-cell-link__edit { text-decoration: underline; }
-.lingolane-icon-link { color: var(--lingolane-muted); text-decoration: none; vertical-align: middle; }
-.lingolane-icon-link:hover { color: var(--lingolane-accent); }
-.lingolane-icon-link { display: inline-flex; align-items: center; }
-.lingolane-wrap .button.lingolane-add { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
-.lingolane-wrap .button.lingolane-add .lingolane-icon { flex: none; }
+.lingolane-wrap .lingolane-icon-link { display: inline-flex; align-items: center; color: var(--lingolane-muted); text-decoration: none; vertical-align: middle; transition: color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-wrap .lingolane-icon-link:hover { color: var(--lingolane-accent); }
 
-.lingolane-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; color: var(--lingolane-muted); font-size: 13px; }
-.lingolane-pagination .page-numbers { display: inline-block; min-width: 32px; padding: 5px 9px; margin-left: 2px; border-radius: 6px; text-align: center; text-decoration: none; }
-.lingolane-pagination a.page-numbers:hover { background: var(--lingolane-soft); }
-.lingolane-pagination .page-numbers.current { background: var(--lingolane-accent); color: #fff; font-weight: 600; }
+/* ------------------------------------------------------------------ Languages */
 
-/* Languages */
 .lingolane-langs td:first-child { white-space: nowrap; }
 .lingolane-langs td:first-child strong { margin: 0 6px; }
 .lingolane-langs__actions { width: 1%; white-space: nowrap; text-align: right; }
 .lingolane-langs__actions > * { display: inline-block; margin-left: 6px; vertical-align: middle; }
-.lingolane-langs__actions .button-link-delete:disabled { color: #a7aaad !important; cursor: not-allowed; }
 .lingolane-inline-form { display: inline-block; margin-left: 6px; vertical-align: middle; }
 .lingolane-popover { position: relative; }
 .lingolane-popover > summary { list-style: none; cursor: pointer; }
 .lingolane-popover > summary::-webkit-details-marker { display: none; }
-.lingolane-popover__panel { position: absolute; z-index: 20; top: calc(100% + 6px); right: 0; display: grid; gap: 12px; width: 260px; padding: 16px; border: 1px solid var(--lingolane-line); border-radius: 8px; background: #fff; box-shadow: 0 10px 30px rgba(16, 24, 40, .14); text-align: left; white-space: normal; }
+.lingolane-popover__panel { position: absolute; z-index: 20; top: calc(100% + 6px); right: 0; display: grid; gap: var(--lingolane-space-3); width: 260px; padding: var(--lingolane-space-4); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-md); text-align: left; white-space: normal; }
 .lingolane-popover__panel input { width: 100%; }
-.lingolane-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; align-items: start; }
+.lingolane-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: var(--lingolane-space-4); align-items: start; }
 .lingolane-form-grid .lingolane-field--actions { padding-top: 22px; }
 .lingolane-form-grid input, .lingolane-form-grid select { width: 100%; }
 
-/* Settings */
+/* ------------------------------------------------------------------ Settings */
+
 .lingolane-setting { display: grid; grid-template-columns: minmax(200px, 300px) 1fr; gap: 28px; }
 .lingolane-setting__intro h2 { margin-bottom: 6px; }
 .lingolane-setting__intro p { margin: 0; color: var(--lingolane-muted); line-height: 1.55; }
 .lingolane-setting__control { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .lingolane-setting fieldset { margin: 0; padding: 0; border: 0; }
-.lingolane-setting legend { margin-bottom: 8px; font-weight: 600; }
-.lingolane-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 16px; }
-.lingolane-checks label { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.lingolane-setting legend { margin-bottom: var(--lingolane-space-2); font-weight: 600; }
+.lingolane-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr)); gap: 6px var(--lingolane-space-4); }
+.lingolane-checks label { display: flex; align-items: center; gap: var(--lingolane-space-2); padding: 6px 0; }
 .lingolane-checks label input { margin: 0; }
-.lingolane-more { margin-top: 8px; }
-.lingolane-more summary { color: var(--lingolane-accent); cursor: pointer; font-size: 13px; }
-.lingolane-more[open] summary { margin-bottom: 6px; }
 .lingolane-checks em { color: var(--lingolane-muted); font-size: 12px; font-style: normal; }
+.lingolane-more { margin-top: var(--lingolane-space-2); }
+.lingolane-more summary { color: var(--lingolane-accent-ink); cursor: pointer; font-size: 13px; font-weight: 500; }
+.lingolane-more[open] summary { margin-bottom: 6px; }
 .lingolane-switch { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
 .lingolane-switch input { margin-top: 3px; }
 .lingolane-switch span { display: flex; flex-direction: column; gap: 2px; color: var(--lingolane-muted); line-height: 1.5; }
 .lingolane-switch strong { color: var(--lingolane-ink); font-weight: 600; }
 .lingolane-setting .lingolane-field input[type="text"] { width: 100%; max-width: 480px; }
-.lingolane-savebar { position: sticky; bottom: 0; z-index: 5; margin: -4px 0 20px; padding: 12px 0; background: linear-gradient(to top, #f0f0f1 70%, rgba(240, 240, 241, 0)); }
+.lingolane-savebar { position: sticky; bottom: 0; z-index: 5; margin: -4px 0 20px; padding: var(--lingolane-space-3) 0; background: linear-gradient(to top, var(--lingolane-bg) 70%, rgba(247, 248, 251, 0)); }
 .lingolane-tools { gap: 0; }
-.lingolane-tool { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--lingolane-line); }
+.lingolane-tool { display: flex; align-items: center; justify-content: space-between; gap: var(--lingolane-space-4); padding: var(--lingolane-space-3) 0; border-top: 1px solid var(--lingolane-line); }
 .lingolane-tool:first-child { border-top: 0; padding-top: 0; }
 .lingolane-tool > div { display: flex; flex-direction: column; gap: 2px; }
 .lingolane-tool span { color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-tool .button { flex: none; }
 
-/* Strings */
+/* ------------------------------------------------------------------ Strings */
+
 .lingolane-segments { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
 .lingolane-segments li { margin: 0; }
-.lingolane-segments a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--lingolane-line); border-radius: 999px; color: var(--lingolane-ink); font-size: 13px; text-decoration: none; }
-.lingolane-segments a:hover { border-color: var(--lingolane-accent); }
-.lingolane-segments a.is-active { border-color: var(--lingolane-ink); background: var(--lingolane-ink); color: #fff; }
-.lingolane-segments__count { padding: 1px 7px; border-radius: 999px; background: rgba(0, 0, 0, .06); font-size: 11px; font-variant-numeric: tabular-nums; }
-.lingolane-segments a.is-active .lingolane-segments__count { background: rgba(255, 255, 255, .2); }
+.lingolane-wrap .lingolane-segments a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--lingolane-line); border-radius: 999px; background: var(--lingolane-card); color: var(--lingolane-ink); font-size: 13px; font-weight: 500; text-decoration: none; transition: border-color var(--lingolane-dur) var(--lingolane-ease), background-color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-wrap .lingolane-segments a:hover { border-color: var(--lingolane-accent); }
+.lingolane-wrap .lingolane-segments a.is-active { border-color: var(--lingolane-accent-soft); background: var(--lingolane-accent-soft); color: var(--lingolane-accent-ink); font-weight: 600; }
+.lingolane-segments__count { padding: 1px 7px; border-radius: 999px; background: var(--lingolane-bg); color: var(--lingolane-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.lingolane-segments a.is-active .lingolane-segments__count { background: var(--lingolane-card); color: var(--lingolane-accent-ink); }
 .lingolane-strings__source { width: 42%; }
 .lingolane-strings td { vertical-align: top; }
 .lingolane-source { font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 .lingolane-string { margin: 0; }
 .lingolane-string textarea { display: block; width: 100%; min-height: 38px; padding: 7px 10px; font-size: 14px; line-height: 1.5; resize: vertical; }
-.lingolane-string textarea::placeholder { color: #8c8f94; }
+.lingolane-string textarea::placeholder { color: var(--lingolane-muted); }
 .lingolane-string.is-dirty textarea { border-color: var(--lingolane-warn); }
-.lingolane-string__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.lingolane-string__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lingolane-space-2); margin-top: var(--lingolane-space-2); }
 .lingolane-string__msg { color: var(--lingolane-muted); font-size: 12px; }
 .lingolane-string__msg.is-error { color: var(--lingolane-danger); }
-.lingolane-string__actions { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; }
+.lingolane-string__actions { display: inline-flex; align-items: center; gap: var(--lingolane-space-3); margin-left: auto; }
 .lingolane-string.is-busy { opacity: .7; }
-.lingolane-subcard { padding: 16px; border: 1px solid var(--lingolane-line); border-radius: 8px; }
+.lingolane-subcard { padding: var(--lingolane-space-4); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius-sm); background: var(--lingolane-bg); }
 .lingolane-subcard h3 { margin: 0 0 6px; font-size: 14px; }
-.lingolane-subcard p { margin: 0 0 12px; color: var(--lingolane-muted); }
+.lingolane-subcard p { margin: 0 0 var(--lingolane-space-3); color: var(--lingolane-muted); }
 .lingolane-import { display: grid; gap: 14px; }
 .lingolane-import .lingolane-hint { margin: 0; }
 
-/* Guide */
+/* ------------------------------------------------------------------ Guide */
+
 .lingolane-guide { display: grid; grid-template-columns: 230px 1fr; gap: 20px; align-items: start; }
+.lingolane-guide > * { min-width: 0; }
 .lingolane-guide__toc { position: sticky; top: 46px; }
 .lingolane-guide__toc ol { margin: 0; padding-left: 18px; }
-.lingolane-guide__toc li { margin: 0 0 8px; }
-.lingolane-guide__toc a { text-decoration: none; }
+.lingolane-guide__toc li { margin: 0 0 var(--lingolane-space-2); }
+.lingolane-wrap .lingolane-guide__toc a { color: var(--lingolane-ink); text-decoration: none; }
+.lingolane-wrap .lingolane-guide__toc a:hover { color: var(--lingolane-accent-ink); }
 .lingolane-guide__body .lingolane-card { scroll-margin-top: 50px; }
 .lingolane-guide__body p { margin: 0 0 10px; line-height: 1.6; }
 .lingolane-steps { margin: 0 0 4px; padding-left: 20px; line-height: 1.6; }
 .lingolane-wrap ul.lingolane-steps { list-style: disc; }
-.lingolane-steps li { margin: 0 0 8px; }
-.lingolane-guide code, .lingolane-hint code { padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.lingolane-steps li { margin: 0 0 var(--lingolane-space-2); }
+.lingolane-guide code, .lingolane-hint code { padding: 1px 5px; border-radius: 4px; background: var(--lingolane-bg); font-size: 12px; }
 
-.lingolane-footer { margin: 28px 0 8px; color: #8c8f94; font-size: 12px; text-align: right; }
+.lingolane-footer { margin: 28px 0 8px; color: var(--lingolane-muted); font-size: 12px; text-align: right; }
 
-/* Editor side box */
+/* ------------------------------------------------------------------ Editor "Translations" box (own token root) */
+
+.lingolane-box { color: var(--lingolane-ink); }
 .lingolane-box__label { display: block; margin: 0 0 6px; font-weight: 600; }
-.lingolane-box__source { margin: 10px 0 0; font-size: 12px; color: var(--lingolane-muted); }
-.lingolane-box__note { margin: 10px 0 0; padding: 8px 10px; border-radius: 6px; background: var(--lingolane-info-bg); color: var(--lingolane-info); font-size: 12px; line-height: 1.5; }
+.lingolane-box__source { margin: 10px 0 0; color: var(--lingolane-muted); font-size: 12px; }
+.lingolane-box__note { margin: 10px 0 0; padding: 8px 10px; border-radius: var(--lingolane-radius-sm); background: var(--lingolane-info-bg); color: var(--lingolane-info); font-size: 12px; line-height: 1.5; }
 .lingolane-box__list { margin: 12px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--lingolane-line); }
-.lingolane-box__list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 0; padding: 9px 0; border-bottom: 1px solid var(--lingolane-line); }
-.lingolane-box__lang { display: inline-flex; align-items: center; gap: 6px; }
-.lingolane-box__action { display: inline-flex; align-items: center; gap: 8px; }
+.lingolane-box__list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--lingolane-space-2); margin: 0; padding: 10px 0; border-bottom: 1px solid var(--lingolane-line); }
+.lingolane-box__lang { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.lingolane-box__action { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
 .lingolane-box__muted { color: var(--lingolane-muted); font-size: 12px; }
 
-/* List table column */
+/* ------------------------------------------------------------------ Posts / Pages list column (own token root) */
+
 .column-lingolane_language { width: 150px; }
-.lingolane-col { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-.lingolane-col .lingolane-code--current { background: var(--lingolane-brand); border-color: var(--lingolane-brand); color: #fff; }
-.lingolane-col .lingolane-code--ok { background: var(--lingolane-ok-bg); border-color: transparent; color: var(--lingolane-ok); }
-.lingolane-col .lingolane-code--warn { background: var(--lingolane-warn-bg); border-color: transparent; color: var(--lingolane-warn); }
-.lingolane-col .lingolane-code--add { border-style: dashed; background: #fff; color: var(--lingolane-muted); }
-.lingolane-col a.lingolane-code:hover { border-color: var(--lingolane-accent); color: var(--lingolane-accent); }
-.lingolane-col a.lingolane-code:focus-visible { outline: 2px solid var(--lingolane-accent); outline-offset: 1px; box-shadow: none; }
+.lingolane-col { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lingolane-space-1); }
+.lingolane-col .lingolane-code { transition: border-color var(--lingolane-dur) var(--lingolane-ease), color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-col .lingolane-code--current { border-color: var(--lingolane-accent); background: var(--lingolane-accent); color: #fff; }
+.lingolane-col .lingolane-code--ok { border-color: transparent; background: var(--lingolane-ok-bg); color: var(--lingolane-ok); }
+.lingolane-col .lingolane-code--warn { border-color: transparent; background: var(--lingolane-warn-bg); color: var(--lingolane-warn); }
+.lingolane-col .lingolane-code--add { border-style: dashed; background: var(--lingolane-card); color: var(--lingolane-muted); }
+.lingolane-col a.lingolane-code:hover { border-color: var(--lingolane-accent); color: var(--lingolane-accent-ink); }
+
+/* ------------------------------------------------------------------ Responsive */
 
 @media (max-width: 960px) {
 	.lingolane-setting { grid-template-columns: 1fr; gap: 14px; }
@@ -300,8 +390,10 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 }
 @media (max-width: 782px) {
 	.lingolane-wrap { margin: 12px 10px 0 0; }
-	.lingolane-card { padding: 16px; }
+	.lingolane-header { flex-direction: column; align-items: flex-start; gap: var(--lingolane-space-3); }
 	.lingolane-header__langs { width: 100%; }
+	.lingolane-tabs { width: 100%; }
+	.lingolane-card { padding: var(--lingolane-space-4); }
 	.lingolane-filters { flex-direction: column; align-items: stretch; }
 	.lingolane-field--grow { flex: none; }
 	.lingolane-field select, .lingolane-field input { width: 100%; }
@@ -311,10 +403,5 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 	.lingolane-strings td + td { border-top: 0; padding-top: 0; }
 	.lingolane-string__actions { margin-left: 0; width: 100%; justify-content: flex-end; }
 	.lingolane-popover__panel { right: auto; left: 0; }
+	.lingolane-tool { flex-wrap: wrap; }
 }
-@media (prefers-reduced-motion: reduce) {
-	.lingolane-progress span, .lingolane-langpill { transition: none; }
-}
-
-/* Icons: align in the parent with inline-flex, align-items:center and gap (no ad-hoc margins). */
-.lingolane-icon { flex: none; display: inline-block; vertical-align: -0.2em; }

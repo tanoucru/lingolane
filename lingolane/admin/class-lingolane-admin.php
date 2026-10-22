@@ -387,7 +387,7 @@ class Lingolane_Admin {
         <div class="wrap lingolane-wrap">
             <header class="lingolane-header">
                 <div class="lingolane-header__title">
-                    <span class="lingolane-header__icon"><?php echo Lingolane_UI::icon( 'languages', 24 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></span>
+                    <span class="lingolane-logo"><?php echo Lingolane_UI::icon( 'globe', 22 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></span>
                     <div>
                         <h1><?php esc_html_e( 'Multilingual', 'lingolane' ); ?></h1>
                         <p><?php esc_html_e( 'Translate posts, pages and interface text.', 'lingolane' ); ?></p>
@@ -470,40 +470,42 @@ class Lingolane_Admin {
                         <a href="<?php echo esc_url( Lingolane_Urls::home( $code ) ); ?>" target="_blank" rel="noopener" class="lingolane-link-muted"><?php echo esc_html( wp_parse_url( Lingolane_Urls::home( $code ), PHP_URL_PATH ) ); ?> <?php echo Lingolane_UI::icon( 'external-link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></a>
                     </header>
 
-                    <div class="lingolane-metric">
-                        <div class="lingolane-metric__row">
-                            <span class="lingolane-metric__label"><?php esc_html_e( 'Posts & pages', 'lingolane' ); ?></span>
-                            <strong class="lingolane-metric__value"><?php echo esc_html( $percent ); ?>%</strong>
+                    <div class="lingolane-kpis">
+                        <div class="lingolane-kpi">
+                            <div class="lingolane-kpi__row">
+                                <span class="lingolane-kpi__label"><?php esc_html_e( 'Posts & pages', 'lingolane' ); ?></span>
+                                <strong class="lingolane-kpi__value"><?php echo esc_html( $percent ); ?>%</strong>
+                            </div>
+                            <?php echo self::progress( $percent, __( 'Post and page translation progress', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <p class="lingolane-kpi__note">
+                                <?php
+                                /* translators: 1: published translations, 2: total source items */
+                                echo esc_html( sprintf( __( '%1$s/%2$s published', 'lingolane' ), number_format_i18n( $content['published'] ), number_format_i18n( $content['total'] ) ) );
+                                if ( $content['drafts'] ) {
+                                    /* translators: %s: number of drafts */
+                                    echo ' · ' . esc_html( sprintf( __( '%s drafts', 'lingolane' ), number_format_i18n( $content['drafts'] ) ) );
+                                }
+                                ?>
+                            </p>
                         </div>
-                        <?php echo self::progress( $percent, __( 'Post and page translation progress', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-                        <p class="lingolane-metric__note">
-                            <?php
-                            /* translators: 1: published translations, 2: total source items */
-                            echo esc_html( sprintf( __( '%1$s/%2$s published', 'lingolane' ), number_format_i18n( $content['published'] ), number_format_i18n( $content['total'] ) ) );
-                            if ( $content['drafts'] ) {
-                                /* translators: %s: number of drafts */
-                                echo ' · ' . esc_html( sprintf( __( '%s drafts', 'lingolane' ), number_format_i18n( $content['drafts'] ) ) );
-                            }
-                            ?>
-                        </p>
-                    </div>
 
-                    <div class="lingolane-metric">
-                        <div class="lingolane-metric__row">
-                            <span class="lingolane-metric__label"><?php esc_html_e( 'Interface strings', 'lingolane' ); ?></span>
-                            <strong class="lingolane-metric__value"><?php echo esc_html( $s_pct ); ?>%</strong>
+                        <div class="lingolane-kpi">
+                            <div class="lingolane-kpi__row">
+                                <span class="lingolane-kpi__label"><?php esc_html_e( 'Interface strings', 'lingolane' ); ?></span>
+                                <strong class="lingolane-kpi__value"><?php echo esc_html( $s_pct ); ?>%</strong>
+                            </div>
+                            <?php echo self::progress( $s_pct, __( 'Interface string translation progress', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <p class="lingolane-kpi__note">
+                                <?php
+                                /* translators: 1: translated, 2: total */
+                                echo esc_html( sprintf( __( '%1$s/%2$s translated', 'lingolane' ), number_format_i18n( $s_done ), number_format_i18n( $s['total'] ) ) );
+                                if ( $s['inherited'] ) {
+                                    /* translators: %s: count */
+                                    echo ' · ' . esc_html( sprintf( __( '%s provided by the theme', 'lingolane' ), number_format_i18n( $s['inherited'] ) ) );
+                                }
+                                ?>
+                            </p>
                         </div>
-                        <?php echo self::progress( $s_pct, __( 'Interface string translation progress', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-                        <p class="lingolane-metric__note">
-                            <?php
-                            /* translators: 1: translated, 2: total */
-                            echo esc_html( sprintf( __( '%1$s/%2$s translated', 'lingolane' ), number_format_i18n( $s_done ), number_format_i18n( $s['total'] ) ) );
-                            if ( $s['inherited'] ) {
-                                /* translators: %s: count */
-                                echo ' · ' . esc_html( sprintf( __( '%s provided by the theme', 'lingolane' ), number_format_i18n( $s['inherited'] ) ) );
-                            }
-                            ?>
-                        </p>
                     </div>
 
                     <footer class="lingolane-langcard__actions">

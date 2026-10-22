@@ -91,4 +91,32 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		Lingolane_Admin::enqueue( 'toplevel_page_lingolane' );
 		$this->assertNotContains( 'dashicons', wp_styles()->registered['lingolane-admin']->deps );
 	}
+
+	private function render_tab( $tab ) {
+		$_GET['tab'] = $tab;
+		set_current_screen( 'toplevel_page_lingolane' );
+		ob_start();
+		Lingolane_Admin::render();
+		return ob_get_clean();
+	}
+
+	public function test_header_has_logo_tile() {
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'class="lingolane-logo"', $html );
+		$this->assertStringContainsString( 'lingolane-icon--globe', $html );
+	}
+
+	public function test_overview_uses_kpi_cards() {
+		$this->assertCount( 2, Lingolane_Languages::all(), 'fixture has two languages' );
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'lingolane-kpi', $html );
+		$this->assertStringContainsString( 'lingolane-progress', $html );
+	}
+
+	public function test_old_token_aliases_removed() {
+		$css = (string) file_get_contents( LINGOLANE_DIR . 'assets/admin.css' );
+		foreach ( array( '--lingolane-brand', '--lingolane-soft', '--lingolane-shadow:', 'var(--lingolane-shadow)' ) as $alias ) {
+			$this->assertSame( 0, substr_count( $css, $alias ), "$alias still in admin.css" );
+		}
+	}
 }
