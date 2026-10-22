@@ -474,8 +474,8 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 
 body.lingolane-tree .wp-list-table .lingolane-tree-child[hidden],
 body.lingolane-tree .wp-list-table .inline-edit-row[hidden] { display: none; }
-body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title { position: relative; padding-inline-start: var(--lingolane-space-6); }
-body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title::before {
+body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title { position: relative; padding-inline-start: var(--lingolane-space-6); }
+body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title::before {
 	content: "";
 	position: absolute;
 	inset-inline-start: var(--lingolane-space-2);
@@ -486,9 +486,9 @@ body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title::before
 	border-block-end: 1px solid var(--lingolane-line);
 	pointer-events: none;
 }
-body.lingolane-tree .wp-list-table .lingolane-tree-child.is-last td.column-title::before { border-end-start-radius: var(--lingolane-radius-sm); }
+body.lingolane-tree .wp-list-table .lingolane-tree-child.is-last .column-title::before { border-end-start-radius: var(--lingolane-radius-sm); }
 /* Carries the line on to the next sibling. */
-body.lingolane-tree .wp-list-table .lingolane-tree-child:not(.is-last) td.column-title::after {
+body.lingolane-tree .wp-list-table .lingolane-tree-child:not(.is-last) .column-title::after {
 	content: "";
 	position: absolute;
 	inset-inline-start: var(--lingolane-space-2);
@@ -529,8 +529,8 @@ body.lingolane-tree .wp-list-table .lingolane-tree-toggle:focus-visible { outlin
 body.lingolane-tree .lingolane-tree-bulk { display: inline-flex; gap: 4px; margin-inline-start: 8px; }
 
 @media (max-width: 782px) {
-	body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title::before,
-	body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title::after { display: none; }
+	body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title::before,
+	body.lingolane-tree .wp-list-table .lingolane-tree-child .column-title::after { display: none; }
 }
 
 /* ------------------------------------------------------------------ Responsive */

@@ -36,10 +36,33 @@
 		group.button.innerHTML = group.open ? cfg.icons.open : cfg.icons.closed;
 	}
 
+	function uncheckRow( row ) {
+		var checkboxes = row.querySelectorAll( 'input[type="checkbox"]' );
+		var hadChecked = false;
+		checkboxes.forEach( function ( cb ) {
+			if ( cb.checked ) {
+				cb.checked = false;
+				cb.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				hadChecked = true;
+			}
+		} );
+		if ( hadChecked ) {
+			var selectAll = document.querySelectorAll( '#cb-select-all-1, #cb-select-all-2' );
+			selectAll.forEach( function ( el ) {
+				el.checked = false;
+			} );
+		}
+	}
+
 	function render( group ) {
 		group.rows.forEach( function ( id ) {
 			var row = document.getElementById( id );
-			if ( row && row.parentNode === list ) { restoreChild( row, group ); }
+			if ( row && row.parentNode === list ) {
+				restoreChild( row, group );
+				if ( ! group.open ) {
+					uncheckRow( row );
+				}
+			}
 			// An open Quick Edit form folds with the row it edits.
 			var form = id.indexOf( 'post-' ) === 0 ? document.getElementById( 'edit-' + id.slice( 5 ) ) : null;
 			if ( form && form.parentNode === list ) { form.hidden = ! group.open; }
@@ -56,7 +79,7 @@
 
 	function restoreLeader( row, group ) {
 		row.classList.add( 'lingolane-tree-leader' );
-		var cell = row.querySelector( 'td.column-title' );
+		var cell = row.querySelector( '.column-title' );
 		if ( ! cell ) { return; }
 		var title = cell.querySelector( 'a.row-title' );
 		group.title = title ? title.textContent : '';
@@ -79,7 +102,7 @@
 	templates.forEach( function ( tpl ) {
 		var id = tpl.getAttribute( 'data-lingolane-leader' );
 		var leader = document.getElementById( 'post-' + id );
-		if ( ! leader || leader.parentNode !== list || ! leader.querySelector( 'td.column-title' ) || groups[ id ] ) { return; }
+		if ( ! leader || leader.parentNode !== list || ! leader.querySelector( '.column-title' ) || groups[ id ] ) { return; }
 		var fragment = document.importNode( tpl.content, true );
 		var rows = fragment.querySelectorAll( 'tr' );
 		if ( ! rows.length ) { tpl.remove(); return; }

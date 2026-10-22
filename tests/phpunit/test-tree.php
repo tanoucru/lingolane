@@ -254,7 +254,8 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		wp_trash_post( $en );
 		$group = Lingolane_Tree::groups( 'page', array( $id ) )[ $id ];
 		$this->assertSame( array(), $group['members'] );
-		$this->assertSame( array( 'en', 'fr' ), $group['missing'] );
+		$this->assertSame( array( 'fr' ), $group['missing'] );
+		$this->assertNotContains( 'en', $group['missing'] );
 		$this->assertSame( 1, $group['done'] );
 	}
 
@@ -344,6 +345,7 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		$this->assertStringContainsString( 'value="' . $ids['A_en'] . '"', $html );
 		$this->assertStringContainsString( 'id="inline_' . $ids['A_en'] . '"', $html );
 		$this->assertStringContainsString( 'lingolane-tree-missing', $html );
+		$this->assertStringContainsString( 'class="colspanchange" colspan="', $html );
 		$this->assertStringContainsString( 'data-lingolane-lang="fr"', $html );
 		$this->assertStringContainsString( esc_url( Lingolane_Admin::translate_url( $ids['A'], 'fr' ) ), $html );
 	}

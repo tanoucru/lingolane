@@ -141,15 +141,22 @@ class Lingolane_Tree {
 
         // Join post status and prime post caches in the same batch, leaving room for a cold settings read.
         $in = implode( ',', array_fill( 0, count( $trids ), '%d' ) );
-        $args = array_merge( array( $type ), $trids, array( $post_type, 'trash' ) );
+        $args = array_merge( array( $type ), $trids, array( $post_type ) );
         $rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $args matches the %d list built in $in.
-            "SELECT p.*, t.trid, t.language_code FROM $table t INNER JOIN {$wpdb->posts} p ON p.ID = t.element_id WHERE t.element_type = %s AND t.trid IN ($in) AND p.post_type = %s AND p.post_status <> %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- identifiers from $wpdb, $in holds only %d placeholders.
+            "SELECT p.*, t.trid, t.language_code FROM $table t INNER JOIN {$wpdb->posts} p ON p.ID = t.element_id WHERE t.element_type = %s AND t.trid IN ($in) AND p.post_type = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- identifiers from $wpdb, $in holds only %d placeholders.
             $args
         ) );
         $posts = array();
         $members = array();
+        $assigned = array();
         foreach ( $rows as $row ) {
-            $members[ (int) $row->trid ][ $row->language_code ] = (int) $row->ID;
+            $trid = (int) $row->trid;
+            $lang = $row->language_code;
+            $assigned[ $trid ][ $lang ] = true;
+            if ( 'trash' === $row->post_status ) {
+                continue;
+            }
+            $members[ $trid ][ $lang ] = (int) $row->ID;
             unset( $row->trid, $row->language_code );
             $posts[ (int) $row->ID ] = new WP_Post( $row );
         }
@@ -165,13 +172,14 @@ class Lingolane_Tree {
             if ( ! $trid || ! $leader->language_code || ! isset( $posts[ $id ] ) ) { continue; }
             $post = $posts[ $id ];
             if ( $shared_slugs && 'publish' === $post->post_status && ! $post->post_parent && in_array( $post->post_name, $shared_slugs, true ) ) { continue; }
-            $translations = $members[ $trid ];
+            $translations = isset( $members[ $trid ] ) ? $members[ $trid ] : array();
             unset( $translations[ $leader->language_code ] );
+            $existing = isset( $assigned[ $trid ] ) ? array_keys( $assigned[ $trid ] ) : array( $leader->language_code );
             $groups[ $id ] = array(
                 'trid' => $trid,
                 'lang' => $leader->language_code,
                 'members' => $translations,
-                'missing' => array_values( array_diff( $languages, array_merge( array( $leader->language_code ), array_keys( $translations ) ) ) ),
+                'missing' => array_values( array_diff( $languages, $existing ) ),
                 'done' => 1 + count( $translations ),
                 'total' => count( $languages ),
             );
@@ -283,7 +291,7 @@ class Lingolane_Tree {
                     foreach ( $group['missing'] as $code ) {
                         /* translators: %s: language name */
                         $label = sprintf( __( '%s: not translated yet', 'lingolane' ), Lingolane_Languages::name( $code ) );
-                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon is an SVG built from a fixed list, the rest is escaped.
+                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon is an SVG built from a fixed list, the rest is escaped.
                     }
                 }
                 $rows = ob_get_clean();
