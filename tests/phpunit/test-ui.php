@@ -14,13 +14,91 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 
 	public function set_up() {
 		parent::set_up();
+		Lingolane_UI::reset();
 		$this->register_shared_fixtures();
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 	}
 
 	public function tear_down() {
 		unset( $_GET['tab'] );
+		Lingolane_UI::reset();
 		parent::tear_down();
+	}
+
+	public function test_icon_references_sprite_symbol() {
+		$svg = Lingolane_UI::icon( 'globe' );
+		$this->assertStringContainsString( '<use href="#lingolane-i-globe">', $svg );
+		$this->assertStringNotContainsString( '<path', $svg );
+	}
+
+	public function test_sprite_contains_each_used_icon_once() {
+		Lingolane_UI::reset();
+		Lingolane_UI::icon( 'x' );
+		Lingolane_UI::icon( 'globe' );
+		Lingolane_UI::icon( 'globe' );
+		$sprite = Lingolane_UI::sprite();
+		$this->assertSame( 1, substr_count( $sprite, 'id="lingolane-i-globe"' ) );
+		$this->assertSame( 1, substr_count( $sprite, 'id="lingolane-i-x"' ) );
+		$this->assertStringContainsString( 'viewBox="0 0 24 24"', $sprite );
+		$this->assertStringContainsString( '<path', $sprite );
+		$this->assertLessThan( strpos( $sprite, 'id="lingolane-i-x"' ), strpos( $sprite, 'id="lingolane-i-globe"' ) );
+		$this->assertStringStartsWith( '<svg xmlns="http://www.w3.org/2000/svg" class="lingolane-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">', $sprite );
+		foreach ( array( 'globe', 'x' ) as $name ) {
+			$inline = Lingolane_UI::icon( $name, 20, '', true );
+			$inner  = preg_replace( '/^<svg[^>]*>|<\/svg>$/', '', $inline );
+			$this->assertStringContainsString( '<symbol id="lingolane-i-' . $name . '" viewBox="0 0 24 24">' . $inner . '</symbol>', $sprite );
+		}
+		Lingolane_Admin::init();
+		$this->assertSame( 1, has_action( 'admin_footer', array( 'Lingolane_UI', 'print_sprite' ) ) );
+		ob_start();
+		Lingolane_UI::print_sprite();
+		$this->assertSame( $sprite, ob_get_clean() );
+		$this->assertSame( '', Lingolane_UI::sprite() );
+	}
+
+	public function test_sprite_is_empty_when_no_icon_used() {
+		Lingolane_UI::reset();
+		$this->assertSame( '', Lingolane_UI::sprite() );
+		Lingolane_UI::icon( 'globe' );
+		Lingolane_UI::reset();
+		$this->assertSame( '', Lingolane_UI::sprite() );
+	}
+
+	public function test_inline_icon_keeps_paths() {
+		$svg = Lingolane_UI::icon( 'info', 20, '', true );
+		$this->assertStringContainsString( '<circle', $svg );
+		$this->assertStringContainsString( '<path', $svg );
+		$this->assertStringNotContainsString( '<use', $svg );
+		Lingolane_UI::reset();
+		Lingolane_UI::icon( 'info', 20, '', true );
+		$this->assertSame( '', Lingolane_UI::sprite() );
+	}
+
+	public function test_toast_icons_are_inline() {
+		Lingolane_Admin::enqueue( 'toplevel_page_lingolane' );
+		$data = (string) wp_scripts()->get_data( 'lingolane-admin', 'data' );
+		$this->assertSame( 1, preg_match( '/var lingolaneAdmin = (.*);/', $data, $matches ) );
+		$localized = json_decode( $matches[1], true );
+		$this->assertCount( 5, $localized['icons'] );
+		foreach ( $localized['icons'] as $svg ) {
+			$this->assertStringContainsString( '<svg', $svg );
+			$this->assertStringNotContainsString( '<use', $svg );
+		}
+	}
+
+	public function test_matrix_icons_are_small() {
+		for ( $i = 0; $i < 2; $i++ ) {
+			$post = $this->new_post();
+			$this->assertNotWPError( Lingolane_Elements::duplicate_post( $post, 'en', 'draft' ) );
+		}
+		$html = $this->render_tab( 'content' );
+		preg_match_all( '/<svg class="lingolane-icon\b[^>]*>.*?<\/svg>/s', $html, $matches );
+		$this->assertNotEmpty( $matches[0] );
+		foreach ( $matches[0] as $svg ) {
+			$this->assertStringContainsString( '<use href="#lingolane-i-', $svg );
+			$this->assertStringNotContainsString( '<path', $svg );
+			$this->assertLessThanOrEqual( 300, strlen( $svg ), $svg );
+		}
 	}
 
 	public function test_every_required_icon_exists() {
