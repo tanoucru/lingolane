@@ -55,6 +55,7 @@ if ( ! defined( 'LINGOLANE_NO_LEGACY' ) ) { require_once LINGOLANE_DIR . 'includ
 
 if ( is_admin() ) {
     require_once LINGOLANE_DIR . 'admin/class-lingolane-stats.php';
+    require_once LINGOLANE_DIR . 'admin/class-lingolane-ui.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-admin.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-strings-admin.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-metabox.php';

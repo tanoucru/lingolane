@@ -315,3 +315,6 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 @media (prefers-reduced-motion: reduce) {
 	.lingolane-progress span, .lingolane-langpill { transition: none; }
 }
+
+/* Icons: align in the parent with inline-flex, align-items:center and gap (no ad-hoc margins). */
+.lingolane-icon { flex: none; display: inline-block; vertical-align: -0.2em; }
