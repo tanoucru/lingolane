@@ -73,6 +73,39 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		$seen = array_merge( $this->ids( $this->tree_query() ), $this->ids( $this->tree_query( array( 'paged' => 2 ) ) ) );
 		$this->assertContains( $ids['D_en'], $seen );
 		$this->assertNotContains( $ids['D'], $seen );
+		// The All view sends an empty status, not 'any'.
+		$all = $this->ids( $this->tree_query( array( 'post_status' => '', 'posts_per_page' => -1 ) ) );
+		$this->assertContains( $ids['D_en'], $all );
+		$this->assertNotContains( $ids['A_en'], $all );
+	}
+
+	public function test_mine_and_month_views_stay_flat() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$author = self::factory()->user->create( array( 'role' => 'editor' ) );
+		wp_update_post( array( 'ID' => $ids['A_en'], 'post_author' => $author ) );
+		$this->assertSame( array( $ids['A_en'] ), $this->ids( $this->tree_query( array( 'author' => $author, 'posts_per_page' => -1 ) ) ) );
+		$month = (int) get_the_date( 'Ym', $ids['A_en'] );
+		$this->assertContains( $ids['A_en'], $this->ids( $this->tree_query( array( 'm' => $month, 'posts_per_page' => -1 ) ) ) );
+	}
+
+	public function test_translation_of_unreadable_private_source_stays_visible() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$author = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_update_post( array( 'ID' => $ids['A'], 'post_status' => 'private' ) );
+		wp_update_post( array( 'ID' => $ids['A_en'], 'post_status' => 'private', 'post_author' => $author ) );
+		wp_set_current_user( $author );
+		$found = $this->ids( $this->tree_query( array( 'post_status' => '', 'posts_per_page' => -1 ) ) );
+		$this->assertContains( $ids['A_en'], $found );
+		$this->assertNotContains( $ids['A'], $found );
+		$this->assertNotContains( $ids['B_en'], $found );
+		// A status view runs with perm=readable, which hides the same private posts.
+		$private = $this->ids( $this->tree_query( array( 'post_status' => 'private', 'perm' => 'readable', 'posts_per_page' => -1 ) ) );
+		$this->assertSame( array( $ids['A_en'] ), $private );
+		$any = $this->ids( $this->tree_query( array( 'posts_per_page' => -1 ) ) );
+		$this->assertContains( $ids['A'], $any );
+		$this->assertNotContains( $ids['A_en'], $any );
 	}
 
 	public function test_language_filter_trash_and_shared_types_are_flat() {

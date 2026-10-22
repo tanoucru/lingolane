@@ -15,8 +15,16 @@ class Lingolane_Tree {
     public static function is_tree_query( $query ) {
         if ( ! is_admin() || ! $query->is_main_query() || $query->get( 'lingolane_tree_off' ) || ! Lingolane_Columns::tree_screen() ) { return false; }
         if ( Lingolane_Languages::is_valid( Lingolane_Columns::requested_language() ) ) { return false; }
-        if ( in_array( 'trash', wp_parse_list( $query->get( 'post_status' ) ), true ) ) { return false; }
+        if ( in_array( 'trash', wp_parse_list( $query->get( 'post_status' ) ), true ) || self::narrowed( $query ) ) { return false; }
         return (bool) apply_filters( 'lingolane_tree_mode', true, $query );
+    }
+
+    /** Filters on fields a translation does not share with its source (Mine, month, terms): the list stays flat. */
+    private static function narrowed( $query ) {
+        foreach ( array( 'author', 'author_name', 'author__in', 'm', 'year', 'monthnum', 'w', 'day', 'date_query', 'meta_query', 'post_parent', 'post__in' ) as $var ) {
+            if ( $query->get( $var ) ) { return true; }
+        }
+        return $query->tax_query instanceof WP_Tax_Query && ! empty( $query->tax_query->queries );
     }
 
     /** Keeps posts with no translation row, sources, and translations whose group has no source this view can show. */
@@ -76,15 +84,23 @@ class Lingolane_Tree {
 
     /**
      * Statuses a group's source must have to lead its group in this view (alias lingolane_p).
-     * A published translation of a draft source stays in the Published view instead of vanishing.
+     * A published translation of a draft source stays in the Published view instead of vanishing,
+     * and so does one whose source is someone else's private post the user cannot read.
      */
     private static function source_status( $query ) {
         global $wpdb;
         $statuses = array_map( 'sanitize_key', wp_parse_list( $query->get( 'post_status' ) ) );
         if ( ! $statuses || in_array( 'any', $statuses, true ) ) {
-            return $wpdb->prepare( 'lingolane_p.post_status NOT IN (%s, %s)', 'trash', 'auto-draft' );
+            $sql = $wpdb->prepare( 'lingolane_p.post_status NOT IN (%s, %s)', 'trash', 'auto-draft' );
+        } else {
+            $sql = $wpdb->prepare( 'lingolane_p.post_status IN (' . implode( ',', array_fill( 0, count( $statuses ), '%s' ) ) . ')', $statuses ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- only %s placeholders, one per status.
         }
-        return $wpdb->prepare( 'lingolane_p.post_status IN (' . implode( ',', array_fill( 0, count( $statuses ), '%s' ) ) . ')', $statuses ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- only %s placeholders, one per status.
+        // Same cases where WP_Query hides other users' private posts: the All view and readable status views.
+        $type = get_post_type_object( get_current_screen()->post_type );
+        if ( ( ! $statuses || 'readable' === $query->get( 'perm' ) ) && $type && ! current_user_can( $type->cap->read_private_posts ) ) {
+            $sql .= $wpdb->prepare( ' AND ( lingolane_p.post_status <> %s OR lingolane_p.post_author = %d )', 'private', get_current_user_id() );
+        }
+        return $sql;
     }
 
     public static function groups( $post_type, $leader_ids ) {
