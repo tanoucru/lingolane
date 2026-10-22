@@ -40,6 +40,9 @@
 		group.rows.forEach( function ( id ) {
 			var row = document.getElementById( id );
 			if ( row && row.parentNode === list ) { restoreChild( row, group ); }
+			// An open Quick Edit form folds with the row it edits.
+			var form = id.indexOf( 'post-' ) === 0 ? document.getElementById( 'edit-' + id.slice( 5 ) ) : null;
+			if ( form && form.parentNode === list ) { form.hidden = ! group.open; }
 		} );
 		updateButton( group );
 	}
@@ -102,7 +105,7 @@
 	if ( ! Object.keys( groups ).length ) { return; }
 	// Pagination follows the filters in the top bar, so the last actions box is the filters one.
 	var boxes = document.querySelectorAll( '.tablenav.top .alignleft.actions' );
-	var actions = boxes[ boxes.length - 1 ];
+	var actions = boxes[ boxes.length - 1 ] || document.querySelector( '.tablenav.top' );
 	if ( actions ) {
 		var bulk = document.createElement( 'div' );
 		bulk.className = 'lingolane-tree-bulk';

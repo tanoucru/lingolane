@@ -472,7 +472,8 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 
 /* ------------------------------------------------------------------ Tree list */
 
-body.lingolane-tree .wp-list-table .lingolane-tree-child[hidden] { display: none; }
+body.lingolane-tree .wp-list-table .lingolane-tree-child[hidden],
+body.lingolane-tree .wp-list-table .inline-edit-row[hidden] { display: none; }
 body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title { position: relative; padding-inline-start: var(--lingolane-space-6); }
 body.lingolane-tree .wp-list-table .lingolane-tree-child td.column-title::before {
 	content: "";
