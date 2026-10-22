@@ -16,8 +16,113 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 	}
 
 	public function tear_down() {
+		unset( $_GET['lingolane_lang'] );
+		if ( class_exists( 'Lingolane_Tree' ) ) {
+			Lingolane_Tree::$matches = array();
+		}
 		set_current_screen( 'front' );
 		parent::tear_down();
+	}
+
+	/** A+A_en, B+B_en, C alone (no language), D_en whose source D is in the trash. */
+	private function tree_fixture() {
+		$ids = array();
+		foreach ( array( 'A', 'B', 'D' ) as $title ) {
+			$ids[ $title ] = $this->new_post( array( 'post_type' => 'page', 'post_title' => $title ) );
+			$this->assertNotWPError( Lingolane_Elements::set( 'post_page', $ids[ $title ], 'vi' ) );
+			$ids[ $title . '_en' ] = Lingolane_Elements::duplicate_post( $ids[ $title ], 'en', 'publish' );
+			$this->assertNotWPError( $ids[ $title . '_en' ] );
+		}
+		$ids['C'] = $this->new_post( array( 'post_type' => 'page', 'post_title' => 'C' ) );
+		wp_trash_post( $ids['D'] );
+		return $ids;
+	}
+
+	/** Runs a page query the way the admin list runs its main query. */
+	private function tree_query( array $args = array(), $screen = 'edit-page' ) {
+		Lingolane_Tree::init();
+		set_current_screen( $screen );
+		$GLOBALS['wp_the_query'] = new WP_Query();
+		$query = $GLOBALS['wp_the_query'];
+		$query->query( array_merge( array( 'post_type' => 'page', 'post_status' => 'any', 'posts_per_page' => 2, 'orderby' => 'title', 'order' => 'ASC' ), $args ) );
+		return $query;
+	}
+
+	private function ids( $query ) {
+		$ids = array_map( 'intval', wp_list_pluck( $query->posts, 'ID' ) );
+		sort( $ids );
+		return $ids;
+	}
+
+	public function test_tree_query_lists_leaders_and_paginates_by_group() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$first = $this->tree_query();
+		$this->assertSame( 4, (int) $first->found_posts );
+		$this->assertSame( 2, (int) $first->max_num_pages );
+		$seen = array_merge( $this->ids( $first ), $this->ids( $this->tree_query( array( 'paged' => 2 ) ) ) );
+		sort( $seen );
+		$leaders = array( $ids['A'], $ids['B'], $ids['C'], $ids['D_en'] );
+		sort( $leaders );
+		$this->assertSame( $leaders, $seen );
+	}
+
+	public function test_orphan_translation_stays_visible() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$seen = array_merge( $this->ids( $this->tree_query() ), $this->ids( $this->tree_query( array( 'paged' => 2 ) ) ) );
+		$this->assertContains( $ids['D_en'], $seen );
+		$this->assertNotContains( $ids['D'], $seen );
+	}
+
+	public function test_language_filter_trash_and_shared_types_are_flat() {
+		$this->require_tree_model();
+		$this->register_shared_fixtures();
+		$ids = $this->tree_fixture();
+		add_action( 'pre_get_posts', array( 'Lingolane_Columns', 'filter' ), 20 );
+		$_GET['lingolane_lang'] = 'en';
+		$this->assertContains( $ids['A_en'], $this->ids( $this->tree_query( array( 'posts_per_page' => -1 ) ) ) );
+		unset( $_GET['lingolane_lang'] );
+		$this->assertContains( $ids['D'], $this->ids( $this->tree_query( array( 'post_status' => 'trash' ) ) ) );
+		$query = $this->tree_query( array(), 'edit-science' );
+		$this->assertSame( ' AND 1=1', Lingolane_Tree::posts_where( ' AND 1=1', $query ) );
+		add_filter( 'lingolane_tree_mode', '__return_false' );
+		$this->assertContains( $ids['A_en'], $this->ids( $this->tree_query( array( 'posts_per_page' => -1 ) ) ) );
+		remove_filter( 'lingolane_tree_mode', '__return_false' );
+		$secondary = new WP_Query( array( 'post_type' => 'page', 'post_status' => 'any', 'posts_per_page' => -1 ) );
+		$this->assertContains( $ids['A_en'], $this->ids( $secondary ) );
+	}
+
+	public function test_search_matching_a_translation_lists_its_group() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		wp_update_post( array( 'ID' => $ids['B_en'], 'post_title' => 'Unique Zebra' ) );
+		$query = $this->tree_query( array( 's' => 'Zebra' ) );
+		$this->assertSame( array( $ids['B'] ), $this->ids( $query ) );
+		$this->assertArrayHasKey( $ids['B_en'], Lingolane_Tree::$matches );
+		$this->assertContains( 'lingolane-tree-match', get_post_class( '', $ids['B_en'] ) );
+		$this->assertNotContains( 'lingolane-tree-match', get_post_class( '', $ids['B'] ) );
+		$this->assertSame( array(), $this->ids( $this->tree_query( array( 's' => 'Nothing-matches-this' ) ) ) );
+		$this->assertSame( array(), Lingolane_Tree::$matches );
+	}
+
+	public function test_hierarchical_id_parent_query_is_filtered() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$found = $this->ids( $this->tree_query( array( 'fields' => 'id=>parent', 'posts_per_page' => -1 ) ) );
+		$this->assertContains( $ids['A'], $found );
+		$this->assertNotContains( $ids['A_en'], $found );
+		$this->assertNotContains( $ids['B_en'], $found );
+	}
+
+	public function test_status_view_keeps_translations_of_hidden_sources() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		wp_update_post( array( 'ID' => $ids['B'], 'post_status' => 'draft' ) );
+		$found = $this->ids( $this->tree_query( array( 'post_status' => 'publish', 'posts_per_page' => -1 ) ) );
+		$this->assertContains( $ids['B_en'], $found );
+		$this->assertNotContains( $ids['B'], $found );
+		$this->assertNotContains( $ids['A_en'], $found );
 	}
 
 	public function test_language_column_follows_title() {

@@ -2,7 +2,90 @@
 /** Batched translation groups for the admin post list. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 class Lingolane_Tree {
-    public static function init() {}
+    /** Post IDs that matched the current search, keyed by ID, so their rows can be highlighted. */
+    public static $matches = array();
+
+    public static function init() {
+        add_filter( 'posts_where', array( __CLASS__, 'posts_where' ), 10, 2 );
+        add_filter( 'posts_search', array( __CLASS__, 'posts_search' ), 10, 2 );
+        add_filter( 'post_class', array( __CLASS__, 'post_class' ), 10, 3 );
+    }
+
+    /** The admin list's main query, unfiltered by language and outside the trash. */
+    public static function is_tree_query( $query ) {
+        if ( ! is_admin() || ! $query->is_main_query() || $query->get( 'lingolane_tree_off' ) || ! Lingolane_Columns::tree_screen() ) { return false; }
+        if ( Lingolane_Languages::is_valid( Lingolane_Columns::requested_language() ) ) { return false; }
+        if ( in_array( 'trash', wp_parse_list( $query->get( 'post_status' ) ), true ) ) { return false; }
+        return (bool) apply_filters( 'lingolane_tree_mode', true, $query );
+    }
+
+    /** Keeps posts with no translation row, sources, and translations whose group has no source this view can show. */
+    public static function posts_where( $where, $query ) {
+        if ( ! self::is_tree_query( $query ) ) { return $where; }
+        global $wpdb;
+        $table = $wpdb->prefix . 'lingolane_translations';
+        $type = 'post_' . get_current_screen()->post_type;
+        return $where . $wpdb->prepare(
+            " AND NOT EXISTS ( SELECT 1 FROM $table lingolane_t WHERE lingolane_t.element_type = %s AND lingolane_t.element_id = {$wpdb->posts}.ID AND lingolane_t.source_language_code IS NOT NULL AND EXISTS ( SELECT 1 FROM $table lingolane_s INNER JOIN {$wpdb->posts} lingolane_p ON lingolane_p.ID = lingolane_s.element_id WHERE lingolane_s.trid = lingolane_t.trid AND lingolane_s.element_type = %s AND lingolane_s.source_language_code IS NULL AND ", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- identifiers from $wpdb.
+            $type,
+            $type
+        ) . self::source_status( $query ) . ' ) )';
+    }
+
+    /** Searches every language, then lists the groups whose members matched. */
+    public static function posts_search( $search, $query ) {
+        if ( ! self::is_tree_query( $query ) ) { return $search; }
+        self::$matches = array();
+        $term = $query->get( 's' );
+        if ( ! is_string( $term ) || '' === trim( $term ) ) { return $search; }
+        global $wpdb;
+        $post_type = get_current_screen()->post_type;
+        $found = new WP_Query( array(
+            'post_type' => $post_type,
+            'post_status' => $query->get( 'post_status' ),
+            'perm' => $query->get( 'perm' ),
+            's' => $term,
+            'fields' => 'ids',
+            'posts_per_page' => -1,
+            'no_found_rows' => true,
+            'lingolane_tree_off' => true,
+        ) );
+        $ids = array_values( array_unique( array_map( 'intval', $found->posts ) ) );
+        if ( ! $ids ) { return ' AND 1=0'; }
+        self::$matches = array_fill_keys( $ids, true );
+
+        $table = $wpdb->prefix . 'lingolane_translations';
+        $in = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+        $sources = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $ids matches the %d list built in $in.
+            "SELECT lingolane_t.element_id, lingolane_s.element_id AS source_id FROM $table lingolane_t INNER JOIN $table lingolane_s ON lingolane_s.trid = lingolane_t.trid AND lingolane_s.element_type = lingolane_t.element_type AND lingolane_s.source_language_code IS NULL INNER JOIN {$wpdb->posts} lingolane_p ON lingolane_p.ID = lingolane_s.element_id WHERE lingolane_t.element_type = %s AND lingolane_t.source_language_code IS NOT NULL AND lingolane_t.element_id IN ($in) AND ", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- identifiers from $wpdb, $in holds only %d placeholders.
+            array_merge( array( 'post_' . $post_type ), $ids )
+        ) . self::source_status( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- source_status() is prepared.
+        $map = wp_list_pluck( $sources, 'source_id', 'element_id' );
+        $leaders = array();
+        foreach ( $ids as $id ) {
+            $leaders[] = isset( $map[ $id ] ) ? (int) $map[ $id ] : $id;
+        }
+        $leaders = array_values( array_unique( $leaders ) );
+        return $wpdb->prepare( " AND {$wpdb->posts}.ID IN (" . implode( ',', array_fill( 0, count( $leaders ), '%d' ) ) . ')', $leaders ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- only %d placeholders, one per leader.
+    }
+
+    public static function post_class( $classes, $class, $post_id ) {
+        if ( isset( self::$matches[ (int) $post_id ] ) ) { $classes[] = 'lingolane-tree-match'; }
+        return $classes;
+    }
+
+    /**
+     * Statuses a group's source must have to lead its group in this view (alias lingolane_p).
+     * A published translation of a draft source stays in the Published view instead of vanishing.
+     */
+    private static function source_status( $query ) {
+        global $wpdb;
+        $statuses = array_map( 'sanitize_key', wp_parse_list( $query->get( 'post_status' ) ) );
+        if ( ! $statuses || in_array( 'any', $statuses, true ) ) {
+            return $wpdb->prepare( 'lingolane_p.post_status NOT IN (%s, %s)', 'trash', 'auto-draft' );
+        }
+        return $wpdb->prepare( 'lingolane_p.post_status IN (' . implode( ',', array_fill( 0, count( $statuses ), '%s' ) ) . ')', $statuses ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- only %s placeholders, one per status.
+    }
 
     public static function groups( $post_type, $leader_ids ) {
         global $wpdb;

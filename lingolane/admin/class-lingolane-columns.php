@@ -84,7 +84,7 @@ class Lingolane_Columns {
         echo '</div>';
     }
 
-    private static function requested_language() {
+    public static function requested_language() {
         return isset( $_GET['lingolane_lang'] ) && is_string( $_GET['lingolane_lang'] ) ? sanitize_key( wp_unslash( $_GET['lingolane_lang'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification
     }
 
