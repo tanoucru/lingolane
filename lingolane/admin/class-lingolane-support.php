@@ -7,7 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  */
 class Lingolane_Support {
     const FORUM    = 'https://wordpress.org/support/plugin/lingolane/';
-    const SECURITY = 'https://github.com/tanoucru/lingolane/security/advisories/new';
+    /** WordPress.org's guide to private reporting; works before a public repo or security inbox exists. */
+    const SECURITY = 'https://developer.wordpress.org/plugins/wordpress-org/plugin-security/reporting-plugin-security-issues/';
 
     /** Plugin folders known to clash with Lingolane: folder => [name, multilingual|cache]. */
     const KNOWN = array(
@@ -44,11 +45,20 @@ class Lingolane_Support {
         return $links;
     }
 
+    /** Active plugin files, including network-activated ones on multisite. */
+    public static function active_plugin_files() {
+        $files = (array) get_option( 'active_plugins', array() );
+        if ( is_multisite() ) {
+            $files = array_merge( $files, array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) ) );
+        }
+        return array_values( array_unique( array_filter( $files, 'is_string' ) ) );
+    }
+
     /** Active plugins that clash with Lingolane: list of [name, type]. */
     public static function conflicts() {
         $found = array();
-        foreach ( (array) get_option( 'active_plugins', array() ) as $file ) {
-            $folder = is_string( $file ) ? strtok( $file, '/' ) : '';
+        foreach ( self::active_plugin_files() as $file ) {
+            $folder = strtok( $file, '/' );
             if ( isset( self::KNOWN[ $folder ] ) ) { $found[ $folder ] = self::KNOWN[ $folder ]; }
         }
         return array_values( $found );
@@ -64,7 +74,8 @@ class Lingolane_Support {
 
     /**
      * Plain-text environment report. Labels stay in English so forum volunteers can read every report.
-     * Never includes the site address, emails or user names.
+     * Does not collect the site address, emails or user names, and masks any that third-party
+     * plugin or theme names carry (see redact()).
      */
     public static function report() {
         global $wpdb;
@@ -79,7 +90,7 @@ class Lingolane_Support {
 
         $plugins = array();
         $installed = get_plugins();
-        foreach ( (array) get_option( 'active_plugins', array() ) as $file ) {
+        foreach ( self::active_plugin_files() as $file ) {
             if ( isset( $installed[ $file ] ) ) { $plugins[] = $installed[ $file ]['Name'] . ' ' . $installed[ $file ]['Version']; }
         }
 
@@ -133,7 +144,15 @@ class Lingolane_Support {
         $lines[] = '### Active plugins (' . count( $plugins ) . ')';
         $lines   = array_merge( $lines, $plugins ? $plugins : array( '-' ) );
 
-        return (string) apply_filters( 'lingolane_support_report', implode( "\n", $lines ) );
+        return (string) apply_filters( 'lingolane_support_report', self::redact( implode( "\n", $lines ) ) );
+    }
+
+    /** Masks emails, URLs and this site's host, which free-text plugin and theme metadata can carry. */
+    public static function redact( $text ) {
+        $text = preg_replace( '/[^\s@<>()]+@[^\s@<>()]+\.[a-z]{2,}/i', '[email]', $text );
+        $text = preg_replace( '#(?:https?:)?//[^\s<>()]+#i', '[url]', $text );
+        $host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+        return '' === $host ? $text : str_ireplace( $host, '[site]', $text );
     }
 
     /* ------------------------------------------------------------------ screen */
@@ -239,7 +258,7 @@ class Lingolane_Support {
                         <button type="button" class="button" data-lingolane-copy="lingolane-report"><?php esc_html_e( 'Copy report', 'lingolane' ); ?></button>
                         <button type="button" class="button" data-lingolane-download="lingolane-report"><?php echo Lingolane_UI::icon( 'download', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Download .txt', 'lingolane' ); ?></button>
                     </div>
-                    <p class="lingolane-hint"><?php esc_html_e( 'Includes versions, theme, active plugins and Lingolane settings. It does not include passwords, email addresses, user names or your site address.', 'lingolane' ); ?></p>
+                    <p class="lingolane-hint"><?php esc_html_e( 'Includes versions, theme, active plugins and Lingolane settings. It does not collect passwords, user names or your site address, and masks email addresses and links. Read it before posting: the forum is public.', 'lingolane' ); ?></p>
                 </section>
             </div>
 

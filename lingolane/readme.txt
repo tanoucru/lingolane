@@ -42,7 +42,7 @@ Content created with the block editor and the classic editor is supported. Other
 Only to WordPress.org, the same way WordPress itself does: the Languages screen reads the list of available translations from api.wordpress.org, and adding a language downloads its translation packs from downloads.wordpress.org. No personal data is sent. Without a connection, a built-in list of common languages is shown.
 
 = Where can I get help? =
-Open Multilingual > Support in the admin. The screen helps you write a ticket and copies a system report (versions, theme, Lingolane settings and active plugins; no site address or email) that you paste into the [support forum](https://wordpress.org/support/plugin/lingolane/). Nothing is sent from your site. Please report security issues privately using the link on that screen, not in the public forum.
+Open Multilingual > Support in the admin. The screen helps you write a ticket and copies a system report (versions, theme, Lingolane settings and active plugins; site address, emails and links are left out or masked) that you review and paste into the [support forum](https://wordpress.org/support/plugin/lingolane/). Nothing is sent from your site. Please report security issues privately using the link on that screen, not in the public forum.
 
 = What happens to my data if I uninstall? =
 Translation relationships and settings are kept so nothing is lost by accident.

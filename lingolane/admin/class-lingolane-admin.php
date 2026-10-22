@@ -186,6 +186,7 @@ class Lingolane_Admin {
                 'i18n' => array(
                     'copied'     => __( 'Copied to the clipboard.', 'lingolane' ),
                     'copyFailed' => __( 'Copy failed. Select the text and copy it manually.', 'lingolane' ),
+                    'copyFailedForum' => __( 'Copy failed, so the forum was not opened. The ticket text is selected: copy it, then use the support forum link.', 'lingolane' ),
                     'required'   => __( 'Add a title and describe what happened first.', 'lingolane' ),
                     'topic'      => __( 'Topic', 'lingolane' ),
                     'summary'    => __( 'Summary', 'lingolane' ),

@@ -39,6 +39,47 @@ class Test_Lingolane_Support extends Lingolane_TestCase {
 		$this->assertStringNotContainsString( 'owner@private-site.test', $report );
 	}
 
+	/** Fakes an active third-party plugin whose header carries the given name. */
+	private function fake_plugin( $name ) {
+		wp_cache_set( 'plugins', array( '' => array( 'acme/acme.php' => array( 'Name' => $name, 'Version' => '1.0' ) ) ), 'plugins' );
+		update_option( 'active_plugins', array( 'acme/acme.php' ) );
+	}
+
+	public function test_report_masks_emails_links_and_host_in_third_party_metadata() {
+		$host = wp_parse_url( home_url(), PHP_URL_HOST );
+		$this->fake_plugin( 'Acme by owner@private-site.test https://private.example/x ' . $host );
+		$report = Lingolane_Support::report();
+		$this->assertStringContainsString( 'Acme by [email] [url] [site] 1.0', $report );
+		$this->assertStringNotContainsString( 'private-site.test', $report );
+		$this->assertStringNotContainsString( 'private.example', $report );
+	}
+
+	public function test_report_is_escaped_in_the_textarea() {
+		$this->fake_plugin( '</textarea><script>alert(1)</script>' );
+		ob_start();
+		Lingolane_Support::render();
+		$html = ob_get_clean();
+		$this->assertStringNotContainsString( '<script>alert(1)</script>', $html );
+		$this->assertStringContainsString( '&lt;/textarea&gt;&lt;script&gt;', $html );
+	}
+
+	public function test_support_tab_needs_manage_options() {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$_GET['tab'] = 'support';
+		ob_start();
+		Lingolane_Admin::render();
+		$this->assertStringNotContainsString( 'lingolane-report', ob_get_clean() );
+	}
+
+	public function test_network_active_plugins_count_on_multisite() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Multisite only.' );
+		}
+		update_option( 'active_plugins', array() );
+		update_site_option( 'active_sitewide_plugins', array( 'sitepress-multilingual-cms/sitepress.php' => time() ) );
+		$this->assertSame( array( array( 'WPML', 'multilingual' ) ), Lingolane_Support::conflicts() );
+	}
+
 	public function test_report_is_filterable() {
 		add_filter( 'lingolane_support_report', function ( $text ) {
 			return $text . "\nExtra: 1";
@@ -88,6 +129,16 @@ class Test_Lingolane_Support extends Lingolane_TestCase {
 		ob_start();
 		Lingolane_Support::render();
 		$this->assertStringContainsString( 'https://example.test/help/', ob_get_clean() );
+	}
+
+	public function test_security_link_defaults_to_wordpress_org_guide_and_is_filterable() {
+		$this->assertStringStartsWith( 'https://developer.wordpress.org/', Lingolane_Support::security_url() );
+		add_filter( 'lingolane_security_url', function () {
+			return 'https://example.test/security/';
+		} );
+		ob_start();
+		Lingolane_Support::render();
+		$this->assertStringContainsString( 'https://example.test/security/', ob_get_clean() );
 	}
 
 	public function test_row_meta_adds_link_only_for_this_plugin() {

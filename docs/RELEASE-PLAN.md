@@ -85,6 +85,7 @@ Kiểm trên site Local sạch cho từng ô, ghi kết quả vào `docs/COMPAT.
 ### M5 – Phát hành (2–3 ngày) · chờ Tan duyệt
 - Beta kín 5–10 site thật (gồm Teachme chuyển từ bản cũ), thu lỗi 1 tuần.
 - Chính sách riêng tư/khai báo dữ liệu, `SECURITY.md`, `CONTRIBUTING.md`, ảnh chụp màn hình, banner.
+  - `SECURITY.md` đã có (2026-10-23); nút "Report privately" ở tab Support trỏ tới hướng dẫn báo lỗi bảo mật của WordPress.org. **Chờ Tan:** chọn kênh nhận báo cáo riêng (email bảo mật hoặc GitHub Security Advisory khi repo public), rồi đổi hằng `Lingolane_Support::SECURITY` và `SECURITY.md`.
 - Tag `v1.0.0`, GitHub Release kèm zip; nộp WordPress.org nếu chọn kênh đó; cơ chế cập nhật (WordPress.org hoặc updater qua GitHub Releases).
 - **Xong khi:** không còn lỗi nghiêm trọng sau 7 ngày beta; Tan duyệt tạo repo public/đăng.
 
