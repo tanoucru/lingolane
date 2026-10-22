@@ -82,7 +82,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-tabs { display: flex; gap: 2px; margin: 0 0 20px; padding: 0; border-bottom: 1px solid var(--lingolane-line); overflow-x: auto; scrollbar-width: none; }
 .lingolane-tabs::-webkit-scrollbar { display: none; }
 .lingolane-tabs__item { display: inline-flex; align-items: center; gap: 7px; padding: 11px 14px; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--lingolane-muted); font-size: 14px; font-weight: 500; text-decoration: none; white-space: nowrap; }
-.lingolane-tabs__item .dashicons { font-size: 17px; width: 17px; height: 17px; }
+.lingolane-tabs__item .lingolane-icon { flex: none; }
 .lingolane-tabs__item:hover { color: var(--lingolane-ink); }
 .lingolane-tabs__item.is-active { color: var(--lingolane-ink); border-bottom-color: var(--lingolane-accent); font-weight: 600; }
 .lingolane-tabs__item:focus-visible { outline-offset: -2px; }
@@ -93,7 +93,8 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-card__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .lingolane-card__head .lingolane-card__title { margin: 0; }
 .lingolane-card__desc { margin: -6px 0 16px; color: var(--lingolane-muted); }
-.lingolane-card .button .dashicons { font-size: 16px; width: 16px; height: 16px; margin: 0 4px 0 -2px; vertical-align: text-top; }
+.lingolane-card .button { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
+.lingolane-card .button .lingolane-icon { flex: none; }
 .lingolane-empty { padding: 36px; text-align: center; }
 .lingolane-empty p { color: var(--lingolane-muted); }
 .lingolane-count { color: var(--lingolane-muted); font-size: 13px; }
@@ -110,7 +111,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-langcard__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .lingolane-langcard__head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; }
 .lingolane-link-muted { color: var(--lingolane-muted); font-size: 12px; text-decoration: none; }
-.lingolane-link-muted .dashicons { font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom; }
+.lingolane-link-muted { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
 .lingolane-metric__row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
 .lingolane-metric__label { color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-metric__value { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -118,17 +119,17 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-progress { height: 8px; border-radius: 999px; background: var(--lingolane-soft); overflow: hidden; box-shadow: inset 0 0 0 1px var(--lingolane-line); }
 .lingolane-progress span { display: block; height: 100%; border-radius: inherit; background: var(--lingolane-accent); transition: width .4s ease; }
 .lingolane-langcard__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; padding-top: 4px; }
-.lingolane-done { display: inline-flex; align-items: center; gap: 4px; color: var(--lingolane-ok); font-weight: 500; }
+.lingolane-done { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); color: var(--lingolane-ok); font-weight: 500; }
 
 .lingolane-checklist { margin: 0; padding: 0; list-style: none; }
 .lingolane-checklist li { display: flex; gap: 10px; margin: 0; padding: 10px 0; border-top: 1px solid var(--lingolane-line); }
 .lingolane-checklist li:first-child { border-top: 0; padding-top: 0; }
 .lingolane-checklist li > div { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
 .lingolane-checklist li > div span { color: var(--lingolane-muted); }
-.lingolane-checklist .dashicons { flex: none; margin-top: 1px; }
-.lingolane-checklist .is-ok .dashicons { color: var(--lingolane-ok); }
-.lingolane-checklist .is-warn .dashicons { color: var(--lingolane-warn); }
-.lingolane-checklist .is-info .dashicons { color: var(--lingolane-info); }
+.lingolane-checklist .lingolane-icon { flex: none; margin-top: 1px; }
+.lingolane-checklist .is-ok .lingolane-icon { color: var(--lingolane-ok); }
+.lingolane-checklist .is-warn .lingolane-icon { color: var(--lingolane-warn); }
+.lingolane-checklist .is-info .lingolane-icon { color: var(--lingolane-info); }
 
 .lingolane-recent { margin: 0; padding: 0; list-style: none; }
 .lingolane-recent li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 9px 0; border-top: 1px solid var(--lingolane-line); }
@@ -155,7 +156,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-field--actions { flex-direction: row; align-items: center; gap: 12px; }
 .lingolane-wrap fieldset.lingolane-field label { display: block; margin: 2px 0; font-weight: 400; }
 .lingolane-wrap fieldset.lingolane-field small { color: var(--lingolane-muted); }
-.lingolane-banner { display: flex; gap: 8px; margin: 0 0 16px; padding: 12px 14px; border-radius: 8px; background: var(--lingolane-info-bg); color: var(--lingolane-info); }
+.lingolane-banner { display: flex; align-items: flex-start; gap: var(--lingolane-space-2); margin: 0 0 16px; padding: 12px 14px; border-radius: 8px; background: var(--lingolane-info-bg); color: var(--lingolane-info); }
 .lingolane-kbd-hint { margin: -6px 0 12px; color: var(--lingolane-muted); font-size: 12px; }
 .lingolane-kbd-hint kbd { padding: 1px 5px; border: 1px solid var(--lingolane-line); border-bottom-width: 2px; border-radius: 4px; background: #fff; font-size: 11px; }
 
@@ -167,7 +168,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-table tbody tr:first-child td { border-top: 0; }
 .lingolane-table tbody tr:hover td { background: #fbfbfc; }
 .lingolane-table__empty { padding: 32px 14px !important; color: var(--lingolane-muted); text-align: center; }
-.lingolane-table__empty .dashicons { color: var(--lingolane-ok); }
+.lingolane-table__empty .lingolane-icon { color: var(--lingolane-ok); vertical-align: text-bottom; margin-right: var(--lingolane-space-2); }
 .lingolane-meta { display: block; margin-top: 3px; color: var(--lingolane-muted); font-size: 12px; }
 
 .lingolane-matrix th.lingolane-matrix__lang { text-align: center; }
@@ -180,9 +181,9 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-cell-link:hover .lingolane-cell-link__edit { text-decoration: underline; }
 .lingolane-icon-link { color: var(--lingolane-muted); text-decoration: none; vertical-align: middle; }
 .lingolane-icon-link:hover { color: var(--lingolane-accent); }
-.lingolane-icon-link .dashicons { font-size: 17px; width: 17px; height: 17px; }
-.lingolane-wrap .button.lingolane-add { display: inline-flex; align-items: center; gap: 2px; }
-.lingolane-wrap .button.lingolane-add .dashicons { margin: 0; font-size: 15px; width: 15px; height: 15px; }
+.lingolane-icon-link { display: inline-flex; align-items: center; }
+.lingolane-wrap .button.lingolane-add { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); }
+.lingolane-wrap .button.lingolane-add .lingolane-icon { flex: none; }
 
 .lingolane-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-pagination .page-numbers { display: inline-block; min-width: 32px; padding: 5px 9px; margin-left: 2px; border-radius: 6px; text-align: center; text-decoration: none; }

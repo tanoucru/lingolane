@@ -13,7 +13,7 @@ class Lingolane_Metabox {
         if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) { return; }
         $screen = get_current_screen();
         if ( ! $screen || ! in_array( $screen->post_type, Lingolane_Query::post_types(), true ) ) { return; }
-        wp_enqueue_style( 'lingolane-admin', LINGOLANE_URL . 'assets/admin.css', array( 'dashicons' ), LINGOLANE_VERSION );
+        wp_enqueue_style( 'lingolane-admin', LINGOLANE_URL . 'assets/admin.css', array(), LINGOLANE_VERSION );
     }
 
     public static function notices() {

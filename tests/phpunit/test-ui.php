@@ -5,7 +5,22 @@
 class Test_Lingolane_UI extends Lingolane_TestCase {
 
 	public static function wpSetUpBeforeClass() {
+		require_once ABSPATH . 'wp-admin/includes/admin.php';
 		require_once LINGOLANE_DIR . 'admin/class-lingolane-ui.php';
+		foreach ( array( 'stats', 'admin', 'strings-admin', 'metabox', 'columns' ) as $file ) {
+			require_once LINGOLANE_DIR . 'admin/class-lingolane-' . $file . '.php';
+		}
+	}
+
+	public function set_up() {
+		parent::set_up();
+		$this->register_shared_fixtures();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+	}
+
+	public function tear_down() {
+		unset( $_GET['tab'] );
+		parent::tear_down();
 	}
 
 	public function test_every_required_icon_exists() {
@@ -39,5 +54,35 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 	public function test_size_is_clamped() {
 		$this->assertStringContainsString( 'width="48"', Lingolane_UI::icon( 'x', 500 ) );
 		$this->assertStringContainsString( 'width="12"', Lingolane_UI::icon( 'x', 1 ) );
+	}
+
+	public function test_no_screen_uses_dashicons() {
+		foreach ( array_keys( Lingolane_Admin::tabs() ) as $tab ) {
+			$_GET['tab'] = $tab;
+			set_current_screen( 'toplevel_page_lingolane' );
+			ob_start();
+			Lingolane_Admin::render();
+			$html = ob_get_clean();
+			$this->assertStringNotContainsString( 'dashicons', $html, $tab );
+			$this->assertStringContainsString( 'lingolane-icon', $html, $tab );
+		}
+	}
+
+	public function test_metabox_and_column_use_svg_icons() {
+		$page = $this->new_post( array( 'post_type' => 'page' ) );
+		$copy = Lingolane_Elements::duplicate_post( $page, 'en', 'draft' );
+		$this->assertNotWPError( $copy );
+
+		ob_start();
+		Lingolane_Metabox::render( get_post( $page ) );
+		Lingolane_Columns::render( 'lingolane_language', $page );
+		$html = ob_get_clean();
+		$this->assertNotSame( '', $html );
+		$this->assertStringNotContainsString( 'dashicons', $html );
+	}
+
+	public function test_styles_no_longer_depend_on_dashicons() {
+		Lingolane_Admin::enqueue( 'toplevel_page_lingolane' );
+		$this->assertNotContains( 'dashicons', wp_styles()->registered['lingolane-admin']->deps );
 	}
 }

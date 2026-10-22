@@ -304,7 +304,7 @@ class Lingolane_Strings_Admin {
         <section class="lingolane-card">
             <div class="lingolane-card__head">
                 <h2 class="lingolane-card__title"><?php /* translators: %s: language */ echo esc_html( sprintf( __( 'Interface strings · %s', 'lingolane' ), $language_name ) ); ?></h2>
-                <a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=lingolane_scan_theme_strings' ), 'lingolane_scan_theme_strings' ) ); ?>"><span class="dashicons dashicons-search" aria-hidden="true"></span><?php esc_html_e( 'Scan interface', 'lingolane' ); ?></a>
+                <a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=lingolane_scan_theme_strings' ), 'lingolane_scan_theme_strings' ) ); ?>"><?php echo Lingolane_UI::icon( 'search', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Scan interface', 'lingolane' ); ?></a>
             </div>
 
             <ul class="lingolane-segments" aria-label="<?php esc_attr_e( 'Filter by status', 'lingolane' ); ?>">
@@ -367,7 +367,7 @@ class Lingolane_Strings_Admin {
                         <tr><td colspan="2" class="lingolane-table__empty">
                             <?php
                             if ( 'missing' === $status ) {
-                                echo '<span class="dashicons dashicons-yes-alt" aria-hidden="true"></span> ' . esc_html__( 'No untranslated strings left.', 'lingolane' );
+                                echo Lingolane_UI::icon( 'circle-check' ) . ' ' . esc_html__( 'No untranslated strings left.', 'lingolane' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list
                             } elseif ( ! $s['total'] ) {
                                 esc_html_e( 'The list is empty. Click “Scan interface” to collect text from your theme, or import a CSV file below.', 'lingolane' );
                             } else {
@@ -421,7 +421,7 @@ class Lingolane_Strings_Admin {
                     <h3><?php esc_html_e( '1. Export file', 'lingolane' ); ?></h3>
                     <p><?php esc_html_e( 'Download all strings and existing translations, then open them in Google Sheets or Excel to translate.', 'lingolane' ); ?></p>
                     <?php self::form( 'export' ); ?>
-                        <button type="submit" class="button"><span class="dashicons dashicons-download" aria-hidden="true"></span><?php esc_html_e( 'Download CSV', 'lingolane' ); ?></button>
+                        <button type="submit" class="button"><?php echo Lingolane_UI::icon( 'download', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Download CSV', 'lingolane' ); ?></button>
                     </form>
                 </div>
                 <div class="lingolane-subcard">
@@ -432,7 +432,7 @@ class Lingolane_Strings_Admin {
                             <input id="lingolane-csv" type="file" name="csv" accept=".csv,text/csv" required>
                         </div>
                         <p class="lingolane-hint"><?php esc_html_e( 'Use the file exported in step 1 (columns domain, context, source, language, translation).', 'lingolane' ); ?></p>
-                        <button type="submit" class="button button-primary"><span class="dashicons dashicons-upload" aria-hidden="true"></span><?php esc_html_e( 'Import translations', 'lingolane' ); ?></button>
+                        <button type="submit" class="button button-primary"><?php echo Lingolane_UI::icon( 'upload', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Import translations', 'lingolane' ); ?></button>
                         <p class="lingolane-hint"><?php esc_html_e( 'The file is validated before anything is written; if one row is invalid, no row is saved.', 'lingolane' ); ?></p>
                     </form>
                 </div>
