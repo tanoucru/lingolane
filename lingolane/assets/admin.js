@@ -35,29 +35,16 @@
 	} );
 
 	// Toasts: server-rendered ones auto-hide; window.lingolaneToast() builds the same markup for AJAX results.
-	var toastIcons = {
-		success: '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>',
-		info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
-		warning: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-		error: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'
-	};
-	var svgNS = 'http://www.w3.org/2000/svg';
-	var toastSvg = function ( name, paths, size ) {
-		var svg = document.createElementNS( svgNS, 'svg' );
-		svg.setAttribute( 'class', 'lingolane-icon lingolane-icon--' + name );
-		svg.setAttribute( 'width', size );
-		svg.setAttribute( 'height', size );
-		svg.setAttribute( 'viewBox', '0 0 24 24' );
-		svg.setAttribute( 'fill', 'none' );
-		svg.setAttribute( 'stroke', 'currentColor' );
-		svg.setAttribute( 'stroke-width', '2' );
-		svg.setAttribute( 'stroke-linecap', 'round' );
-		svg.setAttribute( 'stroke-linejoin', 'round' );
-		svg.setAttribute( 'aria-hidden', 'true' );
-		svg.setAttribute( 'focusable', 'false' );
-		// Static, trusted path data from the table above (never user input).
-		svg.innerHTML = paths; // eslint-disable-line no-unsanitized/property
-		return svg;
+	var toastTypes = [ 'success', 'info', 'warning', 'error' ];
+	var iconCache = {};
+	// Icon markup comes from PHP (trusted); parse each once and clone.
+	var toastIcon = function ( name ) {
+		if ( ! iconCache[ name ] ) {
+			var tpl = document.createElement( 'template' );
+			tpl.innerHTML = ( cfg.icons && cfg.icons[ name ] ) || '';
+			iconCache[ name ] = tpl.content.firstElementChild;
+		}
+		return iconCache[ name ] ? iconCache[ name ].cloneNode( true ) : document.createComment( '' );
 	};
 
 	var closeToast = function ( toast ) {
@@ -70,35 +57,41 @@
 		if ( hadFocus ) {
 			var target = next && next.querySelector( '.lingolane-toast__close' );
 			if ( ! target ) {
-				target = document.querySelector( '.lingolane-wrap h1' );
+				target = document.querySelector( '.lingolane-wrap h1' ) || document.querySelector( '.lingolane-wrap' );
 				if ( target && ! target.hasAttribute( 'tabindex' ) ) { target.setAttribute( 'tabindex', '-1' ); }
 			}
 			if ( target ) { target.focus(); }
 		}
-		if ( ! region.children.length ) { region.parentNode && region.parentNode.removeChild( region ); }
+		if ( ! region.children.length && region.parentNode ) { region.parentNode.removeChild( region ); }
 	};
 
 	var armToast = function ( toast ) {
 		var delay = parseInt( toast.getAttribute( 'data-autohide' ), 10 ) || 0;
+		var stop = function () { clearTimeout( toast.lingolaneTimer ); };
 		var start = function () {
-			if ( ! delay ) { return; }
-			clearTimeout( toast.lingolaneTimer );
+			stop();
+			if ( ! delay || toast.matches( ':hover' ) || toast.contains( document.activeElement ) ) { return; }
 			toast.lingolaneTimer = setTimeout( function () { closeToast( toast ); }, delay );
 		};
-		var stop = function () { clearTimeout( toast.lingolaneTimer ); };
 		toast.addEventListener( 'mouseenter', stop );
 		toast.addEventListener( 'focusin', stop );
 		toast.addEventListener( 'mouseleave', start );
-		toast.addEventListener( 'focusout', start );
+		toast.addEventListener( 'focusout', function ( event ) {
+			if ( event.relatedTarget && toast.contains( event.relatedTarget ) ) { return; }
+			start();
+		} );
 		var close = toast.querySelector( '.lingolane-toast__close' );
-		if ( close ) { close.addEventListener( 'click', function () { closeToast( toast ); } ); }
+		if ( close ) {
+			close.hidden = false;
+			close.addEventListener( 'click', function () { closeToast( toast ); } );
+		}
 		start();
 	};
 
 	document.querySelectorAll( '.lingolane-toast' ).forEach( armToast );
 
 	window.lingolaneToast = function ( message, type ) {
-		type = toastIcons[ type ] ? type : 'info';
+		type = -1 !== toastTypes.indexOf( type ) ? type : 'info';
 		var sticky = 'error' === type || 'warning' === type;
 		var region = document.querySelector( '.lingolane-toasts' );
 		if ( ! region ) {
@@ -112,15 +105,16 @@
 		toast.className = 'lingolane-toast lingolane-toast--' + type;
 		toast.setAttribute( 'role', sticky ? 'alert' : 'status' );
 		toast.setAttribute( 'data-autohide', sticky ? '0' : '5000' );
-		toast.appendChild( toastSvg( { success: 'circle-check', info: 'info' }[ type ] || 'triangle-alert', toastIcons[ type ], 20 ) );
+		toast.appendChild( toastIcon( type ) );
 		var text = document.createElement( 'p' );
 		text.textContent = String( message );
 		toast.appendChild( text );
 		var close = document.createElement( 'button' );
 		close.type = 'button';
 		close.className = 'lingolane-toast__close';
+		close.hidden = true;
 		close.setAttribute( 'aria-label', t( 'dismiss' ) );
-		close.appendChild( toastSvg( 'x', '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', 16 ) );
+		close.appendChild( toastIcon( 'close' ) );
 		toast.appendChild( close );
 		region.appendChild( toast );
 		armToast( toast );

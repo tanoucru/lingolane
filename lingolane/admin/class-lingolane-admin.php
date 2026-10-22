@@ -142,6 +142,17 @@ class Lingolane_Admin {
         return $links;
     }
 
+    /** Trusted icon markup for toasts, shared by render_notices() and admin.js. */
+    private static function toast_icons() {
+        return array(
+            'success' => Lingolane_UI::icon( 'circle-check' ),
+            'info'    => Lingolane_UI::icon( 'info' ),
+            'warning' => Lingolane_UI::icon( 'triangle-alert' ),
+            'error'   => Lingolane_UI::icon( 'triangle-alert' ),
+            'close'   => Lingolane_UI::icon( 'x', 16 ),
+        );
+    }
+
     public static function enqueue( $hook ) {
         if ( 'toplevel_page_' . self::PAGE !== $hook ) { return; }
         wp_enqueue_style( 'lingolane-admin', LINGOLANE_URL . 'assets/admin.css', array(), LINGOLANE_VERSION );
@@ -163,6 +174,7 @@ class Lingolane_Admin {
                 'notifications' => __( 'Notifications', 'lingolane' ),
                 'dismiss'     => __( 'Dismiss notification', 'lingolane' ),
             ),
+            'icons'   => self::toast_icons(),
             'presets' => self::presets(),
         ) );
     }
@@ -440,13 +452,13 @@ class Lingolane_Admin {
         delete_transient( $key );
         $type = in_array( $notice['type'], array( 'success', 'error', 'warning', 'info' ), true ) ? $notice['type'] : 'info';
         $sticky = in_array( $type, array( 'error', 'warning' ), true );
-        $icons  = array( 'success' => 'circle-check', 'info' => 'info', 'warning' => 'triangle-alert', 'error' => 'triangle-alert' );
+        $icons  = self::toast_icons();
         ?>
         <div class="lingolane-toasts" role="region" aria-label="<?php esc_attr_e( 'Notifications', 'lingolane' ); ?>">
             <div class="lingolane-toast lingolane-toast--<?php echo esc_attr( $type ); ?>" role="<?php echo $sticky ? 'alert' : 'status'; ?>" data-autohide="<?php echo $sticky ? 0 : 5000; ?>">
-                <?php echo Lingolane_UI::icon( $icons[ $type ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                <?php echo $icons[ $type ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
                 <p><?php echo esc_html( $notice['message'] ); ?></p>
-                <button type="button" class="lingolane-toast__close" aria-label="<?php esc_attr_e( 'Dismiss notification', 'lingolane' ); ?>"><?php echo Lingolane_UI::icon( 'x', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></button>
+                <button type="button" class="lingolane-toast__close" hidden aria-label="<?php esc_attr_e( 'Dismiss notification', 'lingolane' ); ?>"><?php echo $icons['close']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></button>
             </div>
         </div>
         <?php

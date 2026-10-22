@@ -144,4 +144,32 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		$this->assertStringContainsString( 'data-autohide="0"', $html );
 		$this->assertStringContainsString( 'lingolane-icon--triangle-alert', $html );
 	}
+
+	public function test_warning_and_info_toast_roles() {
+		Lingolane_Admin::flash( 'warning', 'Careful' );
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'lingolane-toast--warning', $html );
+		$this->assertStringContainsString( 'role="alert"', $html );
+		$this->assertStringContainsString( 'data-autohide="0"', $html );
+		Lingolane_Admin::flash( 'info', 'FYI' );
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'role="status"', $html );
+		$this->assertStringContainsString( 'data-autohide="5000"', $html );
+	}
+
+	public function test_toast_region_and_close_button_markup() {
+		Lingolane_Admin::flash( 'success', 'Done' );
+		$html = $this->render_tab( 'overview' );
+		$this->assertMatchesRegularExpression( '/class="lingolane-toasts" role="region" aria-label="[^"]+"/', $html );
+		$this->assertMatchesRegularExpression( '/<button type="button" class="lingolane-toast__close" hidden aria-label="[^"]+"/', $html );
+	}
+
+	public function test_toast_icons_are_localized_for_js() {
+		Lingolane_Admin::enqueue( 'toplevel_page_lingolane' );
+		$data = (string) wp_scripts()->get_data( 'lingolane-admin', 'data' );
+		$this->assertStringContainsString( '"icons"', $data );
+		foreach ( array( 'circle-check', 'triangle-alert', 'lingolane-icon--info', 'lingolane-icon--x' ) as $needle ) {
+			$this->assertStringContainsString( $needle, $data );
+		}
+	}
 }

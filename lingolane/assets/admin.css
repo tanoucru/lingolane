@@ -90,7 +90,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 	cursor: pointer;
 	transition: color var(--lingolane-dur) var(--lingolane-ease), background-color var(--lingolane-dur) var(--lingolane-ease);
 }
-.lingolane-toast__close:hover { color: var(--lingolane-ink); background: rgba(0, 0, 0, 0.06); }
+.lingolane-toast__close:hover { color: var(--lingolane-ink); background: color-mix(in srgb, var(--lingolane-ink) 8%, transparent); }
 .lingolane-toast__close:focus-visible { outline: 2px solid var(--lingolane-accent); outline-offset: 2px; }
 @keyframes lingolane-toast-in {
 	from { opacity: 0; transform: translateX(16px); }
