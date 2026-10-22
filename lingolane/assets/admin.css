@@ -45,7 +45,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-toasts {
 	position: fixed;
 	bottom: var(--lingolane-space-5);
-	right: var(--lingolane-space-5);
+	inset-inline-end: var(--lingolane-space-5);
 	z-index: 100000;
 	display: flex;
 	flex-direction: column;
@@ -62,20 +62,20 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 	background: var(--lingolane-card);
 	color: var(--lingolane-ink);
 	border: 1px solid var(--lingolane-line);
-	border-left-width: 4px;
+	border-inline-start-width: 4px;
 	border-radius: var(--lingolane-radius);
 	box-shadow: var(--lingolane-shadow-md);
 	animation: lingolane-toast-in var(--lingolane-dur) var(--lingolane-ease);
 }
 .lingolane-toast p { flex: 1; margin: 0; font-size: 13px; line-height: 1.5; }
 .lingolane-toast > .lingolane-icon { flex: none; margin-top: 1px; }
-.lingolane-toast--success { border-left-color: var(--lingolane-ok); background: var(--lingolane-ok-bg); }
+.lingolane-toast--success { border-inline-start-color: var(--lingolane-ok); background: var(--lingolane-ok-bg); }
 .lingolane-toast--success > .lingolane-icon { color: var(--lingolane-ok); }
-.lingolane-toast--info { border-left-color: var(--lingolane-info); background: var(--lingolane-info-bg); }
+.lingolane-toast--info { border-inline-start-color: var(--lingolane-info); background: var(--lingolane-info-bg); }
 .lingolane-toast--info > .lingolane-icon { color: var(--lingolane-info); }
-.lingolane-toast--warning { border-left-color: var(--lingolane-warn); background: var(--lingolane-warn-bg); }
+.lingolane-toast--warning { border-inline-start-color: var(--lingolane-warn); background: var(--lingolane-warn-bg); }
 .lingolane-toast--warning > .lingolane-icon { color: var(--lingolane-warn); }
-.lingolane-toast--error { border-left-color: var(--lingolane-danger); background: var(--lingolane-danger-bg); }
+.lingolane-toast--error { border-inline-start-color: var(--lingolane-danger); background: var(--lingolane-danger-bg); }
 .lingolane-toast--error > .lingolane-icon { color: var(--lingolane-danger); }
 .lingolane-toast__close {
 	flex: none;
@@ -100,10 +100,11 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 @media (max-width: 782px) {
 	.lingolane-toasts {
 		bottom: var(--lingolane-space-3);
-		left: var(--lingolane-space-3);
-		right: var(--lingolane-space-3);
+		inset-inline: var(--lingolane-space-3);
 		width: auto;
 	}
+	/* Keep an error toast from covering the sticky Save settings bar. */
+	.lingolane-wrap:has(.lingolane-savebar) .lingolane-toasts { bottom: 72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -162,7 +163,14 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
  * .lingolane-tabs — pill navigation in a white box; the active item uses accent-soft / accent-ink.
  * Scrolls horizontally inside its own box on narrow screens (never the page).
  */
-.lingolane-tabs { display: flex; gap: var(--lingolane-space-1); width: fit-content; max-width: 100%; margin: 0 0 var(--lingolane-space-5); padding: var(--lingolane-space-1); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-sm); overflow-x: auto; scrollbar-width: none; }
+.lingolane-tabs { display: flex; gap: var(--lingolane-space-1); width: fit-content; max-width: 100%; margin: 0 0 var(--lingolane-space-5); padding: var(--lingolane-space-1); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); box-shadow: var(--lingolane-shadow-sm); overflow-x: auto; scrollbar-width: none;
+	/* Edge fade on the side that still has tabs to scroll to (scroll shadows, no JS). */
+	background:
+		linear-gradient(to right, var(--lingolane-card) 30%, transparent) left center / 24px 100% no-repeat local,
+		linear-gradient(to left, var(--lingolane-card) 30%, transparent) right center / 24px 100% no-repeat local,
+		linear-gradient(to right, color-mix(in srgb, var(--lingolane-ink) 14%, transparent), transparent) left center / 14px 100% no-repeat scroll,
+		linear-gradient(to left, color-mix(in srgb, var(--lingolane-ink) 14%, transparent), transparent) right center / 14px 100% no-repeat scroll,
+		var(--lingolane-card); }
 .lingolane-tabs::-webkit-scrollbar { display: none; }
 .lingolane-wrap .lingolane-tabs__item { display: inline-flex; flex: none; align-items: center; gap: var(--lingolane-space-2); padding: 7px 12px; border-radius: var(--lingolane-radius-sm); color: var(--lingolane-muted); font-size: 13px; font-weight: 500; line-height: 20px; text-decoration: none; white-space: nowrap; transition: background-color var(--lingolane-dur) var(--lingolane-ease), color var(--lingolane-dur) var(--lingolane-ease); }
 .lingolane-wrap .lingolane-tabs__item:hover { background: var(--lingolane-bg); color: var(--lingolane-ink); }
@@ -301,11 +309,11 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-table tbody tr:first-child td { border-top: 0; }
 .lingolane-table tbody tr:hover td { background: var(--lingolane-bg); }
 .lingolane-table__empty { padding: 36px 16px !important; color: var(--lingolane-muted); text-align: center; }
-.lingolane-table__empty .lingolane-icon { color: var(--lingolane-ok); vertical-align: text-bottom; margin-right: var(--lingolane-space-2); }
+.lingolane-table__empty .lingolane-icon { color: var(--lingolane-ok); vertical-align: text-bottom; margin-inline-end: var(--lingolane-space-2); }
 .lingolane-meta { display: block; margin-top: 3px; color: var(--lingolane-muted); font-size: 12px; }
 
 .lingolane-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; color: var(--lingolane-muted); font-size: 13px; }
-.lingolane-pagination .page-numbers { display: inline-block; min-width: 32px; padding: 5px 9px; margin-left: 2px; border-radius: var(--lingolane-radius-sm); text-align: center; text-decoration: none; transition: background-color var(--lingolane-dur) var(--lingolane-ease); }
+.lingolane-pagination .page-numbers { display: inline-block; min-width: 32px; padding: 5px 9px; margin-inline-start: 2px; border-radius: var(--lingolane-radius-sm); text-align: center; text-decoration: none; transition: background-color var(--lingolane-dur) var(--lingolane-ease); }
 .lingolane-pagination a.page-numbers:hover { background: var(--lingolane-accent-soft); }
 .lingolane-pagination .page-numbers.current { background: var(--lingolane-accent); color: #fff; font-weight: 600; }
 
@@ -333,12 +341,12 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-recent li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 10px 0; border-top: 1px solid var(--lingolane-line); }
 .lingolane-recent li:first-child { border-top: 0; padding-top: 0; }
 .lingolane-recent a { font-weight: 500; text-decoration: none; }
-.lingolane-recent time { margin-left: auto; color: var(--lingolane-muted); font-size: 12px; }
+.lingolane-recent time { margin-inline-start: auto; color: var(--lingolane-muted); font-size: 12px; }
 
 /* ------------------------------------------------------------------ Posts & pages (matrix) */
 
 .lingolane-matrix th.lingolane-matrix__lang { text-align: center; }
-.lingolane-matrix__lang span { margin-left: 4px; }
+.lingolane-matrix__lang span { margin-inline-start: 4px; }
 .lingolane-matrix__title { min-width: 240px; }
 .lingolane-matrix__title .row-title { font-size: 14px; font-weight: 600; text-decoration: none; }
 .lingolane-matrix__cell { width: 180px; text-align: center; white-space: nowrap; }
@@ -353,12 +361,12 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-langs td:first-child { white-space: nowrap; }
 .lingolane-langs td:first-child strong { margin: 0 6px; }
 .lingolane-langs__actions { width: 1%; white-space: nowrap; text-align: right; }
-.lingolane-langs__actions > * { display: inline-block; margin-left: 6px; vertical-align: middle; }
-.lingolane-inline-form { display: inline-block; margin-left: 6px; vertical-align: middle; }
+.lingolane-langs__actions > * { display: inline-block; margin-inline-start: 6px; vertical-align: middle; }
+.lingolane-inline-form { display: inline-block; margin-inline-start: 6px; vertical-align: middle; }
 .lingolane-popover { position: relative; }
 .lingolane-popover > summary { list-style: none; cursor: pointer; }
 .lingolane-popover > summary::-webkit-details-marker { display: none; }
-.lingolane-popover__panel { position: absolute; z-index: 20; top: calc(100% + 6px); right: 0; display: grid; gap: var(--lingolane-space-3); width: 260px; padding: var(--lingolane-space-4); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-md); text-align: left; white-space: normal; }
+.lingolane-popover__panel { position: absolute; z-index: 20; top: calc(100% + 6px); inset-inline-end: 0; display: grid; gap: var(--lingolane-space-3); width: 260px; padding: var(--lingolane-space-4); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius); background: var(--lingolane-card); box-shadow: var(--lingolane-shadow-md); text-align: start; white-space: normal; }
 .lingolane-popover__panel input { width: 100%; }
 .lingolane-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: var(--lingolane-space-4); align-items: start; }
 .lingolane-form-grid .lingolane-field--actions { padding-top: 22px; }
@@ -411,7 +419,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-string__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lingolane-space-2); margin-top: var(--lingolane-space-2); }
 .lingolane-string__msg { color: var(--lingolane-muted); font-size: 12px; }
 .lingolane-string__msg.is-error { color: var(--lingolane-danger); }
-.lingolane-string__actions { display: inline-flex; align-items: center; gap: var(--lingolane-space-3); margin-left: auto; }
+.lingolane-string__actions { display: inline-flex; align-items: center; gap: var(--lingolane-space-3); margin-inline-start: auto; }
 .lingolane-string.is-busy { opacity: .7; }
 .lingolane-subcard { padding: var(--lingolane-space-4); border: 1px solid var(--lingolane-line); border-radius: var(--lingolane-radius-sm); background: var(--lingolane-bg); }
 .lingolane-subcard h3 { margin: 0 0 6px; font-size: 14px; }
@@ -424,13 +432,13 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-guide { display: grid; grid-template-columns: 230px 1fr; gap: 20px; align-items: start; }
 .lingolane-guide > * { min-width: 0; }
 .lingolane-guide__toc { position: sticky; top: 46px; }
-.lingolane-guide__toc ol { margin: 0; padding-left: 18px; }
+.lingolane-guide__toc ol { margin: 0; padding-inline-start: 18px; }
 .lingolane-guide__toc li { margin: 0 0 var(--lingolane-space-2); }
 .lingolane-wrap .lingolane-guide__toc a { color: var(--lingolane-ink); text-decoration: none; }
 .lingolane-wrap .lingolane-guide__toc a:hover { color: var(--lingolane-accent-ink); }
 .lingolane-guide__body .lingolane-card { scroll-margin-top: 50px; }
 .lingolane-guide__body p { margin: 0 0 10px; line-height: 1.6; }
-.lingolane-steps { margin: 0 0 4px; padding-left: 20px; line-height: 1.6; }
+.lingolane-steps { margin: 0 0 4px; padding-inline-start: 20px; line-height: 1.6; }
 .lingolane-wrap ul.lingolane-steps { list-style: disc; }
 .lingolane-steps li { margin: 0 0 var(--lingolane-space-2); }
 .lingolane-guide code, .lingolane-hint code { padding: 1px 5px; border-radius: 4px; background: var(--lingolane-bg); font-size: 12px; }
@@ -480,7 +488,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 	.lingolane-strings thead { display: none; }
 	.lingolane-strings tr, .lingolane-strings td { display: block; width: 100%; }
 	.lingolane-strings td + td { border-top: 0; padding-top: 0; }
-	.lingolane-string__actions { margin-left: 0; width: 100%; justify-content: flex-end; }
-	.lingolane-popover__panel { right: auto; left: 0; }
+	.lingolane-string__actions { margin-inline-start: 0; width: 100%; justify-content: flex-end; }
+	.lingolane-popover__panel { inset-inline-end: auto; inset-inline-start: 0; }
 	.lingolane-tool { flex-wrap: wrap; }
 }

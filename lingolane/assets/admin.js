@@ -70,7 +70,7 @@
 		var stop = function () { clearTimeout( toast.lingolaneTimer ); };
 		var start = function () {
 			stop();
-			if ( ! delay || toast.matches( ':hover' ) || toast.contains( document.activeElement ) ) { return; }
+			if ( ! delay || document.hidden || toast.matches( ':hover' ) || toast.contains( document.activeElement ) ) { return; }
 			toast.lingolaneTimer = setTimeout( function () { closeToast( toast ); }, delay );
 		};
 		toast.addEventListener( 'mouseenter', stop );
@@ -80,6 +80,20 @@
 			if ( event.relatedTarget && toast.contains( event.relatedTarget ) ) { return; }
 			start();
 		} );
+		// Pause while the tab is in the background; restart the countdown when it comes back.
+		var onVisibility = function () {
+			if ( ! toast.isConnected ) { document.removeEventListener( 'visibilitychange', onVisibility ); return; }
+			if ( document.hidden ) { stop(); } else { start(); }
+		};
+		document.addEventListener( 'visibilitychange', onVisibility );
+		// Announce once: assertive for sticky toasts, polite otherwise.
+		if ( ! toast.hasAttribute( 'data-lingolane-spoken' ) ) {
+			toast.setAttribute( 'data-lingolane-spoken', '1' );
+			var message = toast.querySelector( 'p' );
+			if ( message && window.wp && wp.a11y && wp.a11y.speak ) {
+				wp.a11y.speak( message.textContent, delay ? 'polite' : 'assertive' );
+			}
+		}
 		var close = toast.querySelector( '.lingolane-toast__close' );
 		if ( close ) {
 			close.hidden = false;

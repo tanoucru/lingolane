@@ -222,19 +222,42 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 
 	public function test_all_done_illustration_only_when_everything_is_translated() {
 		Lingolane_Stats::flush_strings();
+		$this->assertNotWPError( lingolane_register_string( 'ui-test', 'Hello there' ) );
 		$page = $this->new_post( array( 'post_type' => 'page' ) );
 		$html = $this->render_tab( 'overview' );
 		$this->assertStringNotContainsString( 'lingolane-empty--done', $html, 'a page is still missing its translation' );
 
 		$copy = Lingolane_Elements::duplicate_post( $page, 'en', 'publish' );
 		$this->assertNotWPError( $copy );
+		$this->assertNotWPError( Lingolane_Strings::save( 'ui-test', 'Hello there', '', 'en', 'Xin chào' ) );
 		Lingolane_Stats::flush_strings();
 		$html = $this->render_tab( 'overview' );
 		$this->assertStringContainsString( 'lingolane-empty--done', $html );
 		$this->assertStringContainsString( 'lingolane-illustration', $html );
 	}
 
+	public function test_no_all_done_card_when_no_strings_are_scanned() {
+		Lingolane_Stats::flush_strings();
+		$page = $this->new_post( array( 'post_type' => 'page' ) );
+		$this->assertNotWPError( Lingolane_Elements::duplicate_post( $page, 'en', 'publish' ) );
+		Lingolane_Stats::flush_strings();
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringNotContainsString( 'lingolane-empty--done', $html, 'content is done but no interface strings were scanned' );
+	}
+
+	public function test_welcome_card_only_before_a_second_language_exists() {
+		$with_languages = $this->render_tab( 'guide' );
+		$this->assertStringNotContainsString( 'lingolane-welcome', $with_languages );
+		$this->assertStringContainsString( 'lingolane-guide__toc', $with_languages );
+
+		remove_filter( 'pre_option_lingolane_settings', array( $this, 'filter_settings' ) );
+		add_filter( 'pre_option_lingolane_settings', array( $this, 'filter_one_language' ) );
+		$this->assertStringContainsString( 'lingolane-welcome', $this->render_tab( 'guide' ) );
+	}
+
 	public function test_guide_opens_with_welcome_illustration() {
+		remove_filter( 'pre_option_lingolane_settings', array( $this, 'filter_settings' ) );
+		add_filter( 'pre_option_lingolane_settings', array( $this, 'filter_one_language' ) );
 		$html = $this->render_tab( 'guide' );
 		$this->assertStringContainsString( 'lingolane-welcome', $html );
 		$this->assertStringContainsString( 'lingolane-illustration', $html );

@@ -13,7 +13,7 @@ zip=$(bin/build.sh)
 out="$PWD/dist/ui-preview"
 rm -rf "$out"
 mkdir -p "$out/assets"
-renderer=$(mktemp -t lingolane-preview).php
+renderer=$(mktemp "${TMPDIR:-/tmp}/lingolane-preview.XXXXXX")
 trap 'rm -f "$renderer"' EXIT
 
 cat > "$renderer" <<'PHP'

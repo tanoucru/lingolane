@@ -53,7 +53,7 @@ add_filter( 'lingolane_translatable_post_types', fn( $t ) => array_unique( array
 `is_tutor()`/`translated_tutor()` đã đổi thành `is_gated()`/`translated_gated()`.
 
 ## Kiểm thử và chất lượng
-Bộ test PHPUnit (77 test, 391 assertion) nằm ở `tests/phpunit/`, mỗi file một mảng chức năng: nhóm bản dịch, router, URL/hreflang, bản ghi dùng chung, ngôn ngữ mặc định, quản trị, chuỗi giao diện, danh mục ngôn ngữ, icon và token giao diện. Mỗi test chạy trong một transaction của DB test và tự khôi phục.
+Bộ test PHPUnit (80 test, 400 assertion) nằm ở `tests/phpunit/`, mỗi file một mảng chức năng: nhóm bản dịch, router, URL/hreflang, bản ghi dùng chung, ngôn ngữ mặc định, quản trị, chuỗi giao diện, danh mục ngôn ngữ, icon và token giao diện. Mỗi test chạy trong một transaction của DB test và tự khôi phục.
 
 ```bash
 composer install          # PHPUnit 9.6, thư viện test WordPress, WPCS

@@ -473,16 +473,18 @@ class Lingolane_Admin {
         $rows    = array();
         $sources = 0;
         $pending = 0;
+        $strings_known = true;
         foreach ( $others as $language ) {
             $code    = $language['code'];
             $content = Lingolane_Stats::content( $code );
             $s       = isset( $strings[ $code ] ) ? $strings[ $code ] : array( 'total' => 0, 'own' => 0, 'inherited' => 0, 'missing' => 0 );
             $rows[ $code ] = array( $content, $s, Lingolane_Stats::percent( $content['published'], $content['total'] ), Lingolane_Stats::percent( $s['own'] + $s['inherited'], $s['total'] ) );
             $sources = max( $sources, $content['total'] );
+            $strings_known = $strings_known && $s['total'] > 0;
             $pending += ( $rows[ $code ][2] < 100 || $rows[ $code ][3] < 100 ) ? 1 : 0;
         }
-        // Celebrate only when there is something translated: every other language at 100% for content and strings.
-        $all_done = $others && $sources > 0 && 0 === $pending;
+        // Celebrate only when there is something translated: every other language at 100% for content and strings, with strings actually scanned.
+        $all_done = $others && $sources > 0 && $strings_known && 0 === $pending;
         ?>
         <?php if ( $all_done ) : ?>
             <section class="lingolane-card lingolane-empty lingolane-empty--done">
@@ -1108,12 +1110,14 @@ class Lingolane_Admin {
         $locations = get_registered_nav_menus();
         $location = $locations ? array_keys( $locations )[0] : 'primary';
         ?>
+        <?php if ( ! Lingolane_Stats::other_languages() ) : ?>
         <section class="lingolane-card lingolane-empty lingolane-welcome">
             <?php echo Lingolane_UI::illustration( 'welcome' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
             <h2><?php esc_html_e( 'Welcome to Lingolane', 'lingolane' ); ?></h2>
             <p><?php esc_html_e( 'Translate pages, menus and interface text in a few steps. Start with the guide below or add your languages first.', 'lingolane' ); ?></p>
             <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Set up languages', 'lingolane' ); ?></a>
         </section>
+        <?php endif; ?>
         <div class="lingolane-guide">
             <nav class="lingolane-card lingolane-guide__toc" aria-label="<?php esc_attr_e( 'Guide contents', 'lingolane' ); ?>">
                 <h2 class="lingolane-card__title"><?php esc_html_e( 'Content', 'lingolane' ); ?></h2>
