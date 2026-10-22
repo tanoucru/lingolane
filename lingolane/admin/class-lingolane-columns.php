@@ -53,6 +53,7 @@ class Lingolane_Columns {
         if ( 'lingolane_language' !== $column ) { return; }
         $post = get_post( $id );
         if ( ! $post ) { return; }
+        if ( self::tree_screen() && class_exists( 'Lingolane_Tree' ) ) { Lingolane_Tree::remember( $id ); }
         $type    = 'post_' . $post->post_type;
         $current = Lingolane_Elements::get_language( $type, $id );
         $trid    = Lingolane_Elements::get_trid( $type, $id );

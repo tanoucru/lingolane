@@ -7,6 +7,8 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 	public static function wpSetUpBeforeClass() {
 		require_once ABSPATH . 'wp-admin/includes/admin.php';
 		require_once LINGOLANE_DIR . 'admin/class-lingolane-columns.php';
+		require_once LINGOLANE_DIR . 'admin/class-lingolane-ui.php';
+		require_once LINGOLANE_DIR . 'admin/class-lingolane-admin.php';
 	}
 
 	protected function settings_array() {
@@ -18,8 +20,9 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 	public function tear_down() {
 		unset( $_GET['lingolane_lang'] );
 		if ( class_exists( 'Lingolane_Tree' ) ) {
-			Lingolane_Tree::$matches = array();
+			Lingolane_Tree::reset();
 		}
+		unset( $GLOBALS['wp_list_table'] );
 		set_current_screen( 'front' );
 		parent::tear_down();
 	}
@@ -311,5 +314,125 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		$before = $wpdb->num_queries;
 		$this->assertSame( array(), Lingolane_Tree::groups( 'page', array() ) );
 		$this->assertSame( $before, $wpdb->num_queries );
+	}
+
+	/** Signs in as an administrator and builds the pages list table the admin screen would use. */
+	private function tree_list_table() {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$GLOBALS['wp_list_table'] = _get_list_table( 'WP_Posts_List_Table', array( 'screen' => 'edit-page' ) );
+		return $GLOBALS['wp_list_table'];
+	}
+
+	private function printed_templates() {
+		ob_start();
+		Lingolane_Tree::print_templates( 'bottom' );
+		return ob_get_clean();
+	}
+
+	public function test_templates_hold_real_list_rows() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$this->tree_query();
+		Lingolane_Tree::remember( $ids['A'] );
+		$html = $this->printed_templates();
+		$this->assertStringContainsString( '<template class="lingolane-tree-tpl" data-lingolane-leader="' . $ids['A'] . '"', $html );
+		$this->assertStringContainsString( 'id="post-' . $ids['A_en'] . '"', $html );
+		$this->assertStringContainsString( 'name="post[]"', $html );
+		$this->assertStringContainsString( 'value="' . $ids['A_en'] . '"', $html );
+		$this->assertStringContainsString( 'id="inline_' . $ids['A_en'] . '"', $html );
+		$this->assertStringContainsString( 'lingolane-tree-missing', $html );
+		$this->assertStringContainsString( 'data-lingolane-lang="fr"', $html );
+		$this->assertStringContainsString( esc_url( Lingolane_Admin::translate_url( $ids['A'], 'fr' ) ), $html );
+	}
+
+	public function test_templates_only_at_bottom_and_in_tree_mode() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$this->tree_query();
+		Lingolane_Tree::remember( $ids['A'] );
+		ob_start();
+		Lingolane_Tree::print_templates( 'top' );
+		$this->assertSame( '', ob_get_clean() );
+		$_GET['lingolane_lang'] = 'en';
+		$this->tree_query();
+		$this->assertSame( '', $this->printed_templates() );
+	}
+
+	public function test_progress_state_on_leader() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$this->tree_query();
+		$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
+		$this->assertArrayHasKey( 'lingolane_progress', $states );
+		$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+		$this->assertArrayNotHasKey( 'lingolane_progress', Lingolane_Tree::post_states( array(), get_post( $ids['C'] ) ) );
+	}
+
+	public function test_without_js_every_translation_is_reachable() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$this->tree_query();
+		ob_start();
+		Lingolane_Columns::render( 'lingolane_language', $ids['A'] );
+		$html = ob_get_clean();
+		$this->assertStringContainsString( esc_url( get_edit_post_link( $ids['A_en'], 'raw' ) ), $html );
+		$this->assertStringContainsString( esc_url( Lingolane_Admin::translate_url( $ids['A'], 'fr' ) ), $html );
+	}
+
+	public function test_no_missing_row_for_trashed_leader_or_without_cap() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$this->tree_query();
+		wp_trash_post( $ids['A'] );
+		Lingolane_Tree::remember( $ids['A'] );
+		$this->assertStringNotContainsString( 'lingolane-tree-missing', $this->printed_templates() );
+
+		Lingolane_Tree::reset();
+		wp_untrash_post( $ids['A'] );
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		$this->tree_query();
+		Lingolane_Tree::remember( $ids['A'] );
+		$this->assertStringNotContainsString( 'lingolane-tree-missing', $this->printed_templates() );
+	}
+
+	public function test_progress_states_use_constant_queries() {
+		$this->require_tree_model();
+		$leaders = array();
+		for ( $i = 0; $i < 6; $i++ ) {
+			list( $id ) = $this->new_translation_group();
+			$leaders[] = $id;
+		}
+		$this->tree_list_table();
+		$query = $this->tree_query( array( 'posts_per_page' => -1 ) );
+		wp_cache_flush();
+		global $wpdb;
+		$before = $wpdb->num_queries;
+		foreach ( $leaders as $id ) {
+			$states = Lingolane_Tree::post_states( array(), get_post( $id ) );
+			$this->assertArrayHasKey( 'lingolane_progress', $states );
+			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+		}
+		$this->assertLessThanOrEqual( 3, $wpdb->num_queries - $before );
+	}
+
+	public function test_private_member_row_hidden_from_users_who_cannot_read_it() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		wp_update_post( array( 'ID' => $ids['A_en'], 'post_status' => 'private', 'post_author' => get_current_user_id() ) );
+		$this->tree_query();
+		Lingolane_Tree::remember( $ids['A'] );
+		$this->assertStringContainsString( 'id="post-' . $ids['A_en'] . '"', $this->printed_templates() );
+
+		Lingolane_Tree::reset();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'author' ) ) );
+		$this->tree_query();
+		Lingolane_Tree::remember( $ids['A'] );
+		$this->assertStringNotContainsString( 'id="post-' . $ids['A_en'] . '"', $this->printed_templates() );
 	}
 }
