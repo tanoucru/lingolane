@@ -79,7 +79,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
  */
 .lingolane-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--lingolane-space-4); margin-bottom: var(--lingolane-space-5); }
 .lingolane-header__title { display: flex; align-items: center; gap: var(--lingolane-space-3); min-width: 0; }
-.lingolane-logo { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--lingolane-accent), var(--lingolane-accent-2)); color: #fff; box-shadow: 0 4px 12px rgba(79, 70, 229, .28); }
+.lingolane-logo { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--lingolane-accent), var(--lingolane-accent-2)); color: #fff; box-shadow: 0 4px 12px color-mix(in srgb, var(--lingolane-accent) 28%, transparent); }
 .lingolane-header h1 { margin: 0; padding: 0; color: var(--lingolane-ink); font-size: 22px; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; }
 .lingolane-header p { margin: 2px 0 0; color: var(--lingolane-muted); font-size: 13px; }
 .lingolane-header__langs { display: flex; flex-wrap: wrap; gap: var(--lingolane-space-2); }
@@ -127,7 +127,8 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 
 /*
  * .lingolane-button — complements WordPress .button: radius-sm, soft shadow, accent primary.
- * Applied to every .button inside .lingolane-wrap / .lingolane-box; add the class elsewhere.
+ * Applied to every .button inside .lingolane-wrap / .lingolane-box. Add .lingolane-button elsewhere only
+ * inside a token root (.lingolane-wrap, .lingolane-box, .lingolane-col, .lingolane-toasts).
  */
 .lingolane-button,
 .lingolane-wrap .button,
@@ -145,7 +146,14 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-wrap .button.button-link-delete { border-color: transparent; background: transparent; box-shadow: none; color: var(--lingolane-danger); }
 .lingolane-wrap .button.button-link-delete:hover:not(:disabled) { border-color: transparent; background: var(--lingolane-danger-bg); color: var(--lingolane-danger); }
 .lingolane-wrap .button.button-link-delete:disabled { color: var(--lingolane-muted) !important; cursor: not-allowed; }
-.lingolane-wrap .button-link { color: var(--lingolane-accent-ink); }
+.lingolane-wrap .button-link:not(.button-link-delete) { color: var(--lingolane-accent-ink); }
+/* Delete links/buttons keep the danger colour whether or not they also carry .button. */
+.lingolane-wrap .button-link-delete,
+.lingolane-wrap .button-link-delete:hover,
+.lingolane-wrap .button-link-delete:focus,
+.lingolane-box .button-link-delete,
+.lingolane-box .button-link-delete:hover,
+.lingolane-box .button-link-delete:focus { color: var(--lingolane-danger); }
 
 /*
  * .lingolane-field — label + control stack. Controls get radius-sm and an accent border on focus.
@@ -305,7 +313,7 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 .lingolane-switch span { display: flex; flex-direction: column; gap: 2px; color: var(--lingolane-muted); line-height: 1.5; }
 .lingolane-switch strong { color: var(--lingolane-ink); font-weight: 600; }
 .lingolane-setting .lingolane-field input[type="text"] { width: 100%; max-width: 480px; }
-.lingolane-savebar { position: sticky; bottom: 0; z-index: 5; margin: -4px 0 20px; padding: var(--lingolane-space-3) 0; background: linear-gradient(to top, var(--lingolane-bg) 70%, rgba(247, 248, 251, 0)); }
+.lingolane-savebar { position: sticky; bottom: 0; z-index: 5; margin: -4px 0 20px; padding: var(--lingolane-space-3) 0; background: linear-gradient(to top, var(--lingolane-bg) 70%, transparent); }
 .lingolane-tools { gap: 0; }
 .lingolane-tool { display: flex; align-items: center; justify-content: space-between; gap: var(--lingolane-space-4); padding: var(--lingolane-space-3) 0; border-top: 1px solid var(--lingolane-line); }
 .lingolane-tool:first-child { border-top: 0; padding-top: 0; }

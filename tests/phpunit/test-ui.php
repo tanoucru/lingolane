@@ -109,7 +109,7 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 	public function test_overview_uses_kpi_cards() {
 		$this->assertCount( 2, Lingolane_Languages::all(), 'fixture has two languages' );
 		$html = $this->render_tab( 'overview' );
-		$this->assertStringContainsString( 'lingolane-kpi', $html );
+		$this->assertMatchesRegularExpression( '/class="lingolane-kpi"/', $html );
 		$this->assertStringContainsString( 'lingolane-progress', $html );
 	}
 
@@ -118,5 +118,11 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		foreach ( array( '--lingolane-brand', '--lingolane-soft', '--lingolane-shadow:', 'var(--lingolane-shadow)' ) as $alias ) {
 			$this->assertSame( 0, substr_count( $css, $alias ), "$alias still in admin.css" );
 		}
+	}
+
+	public function test_delete_links_keep_danger_colour() {
+		$css = preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( LINGOLANE_DIR . 'assets/admin.css' ) );
+		$this->assertMatchesRegularExpression( '/\.lingolane-wrap \.button-link-delete\s*[,{][^}]*color:\s*var\(--lingolane-danger\)/s', $css );
+		$this->assertMatchesRegularExpression( '/\.button-link:not\(\.button-link-delete\)/', $css );
 	}
 }
