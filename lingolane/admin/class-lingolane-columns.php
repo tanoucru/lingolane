@@ -14,6 +14,24 @@ class Lingolane_Columns {
         $screen = get_current_screen();
         if ( ! $screen || ! in_array( $screen->post_type, Lingolane_Query::post_types(), true ) ) { return; }
         wp_enqueue_style( 'lingolane-admin', LINGOLANE_URL . 'assets/admin.css', array(), LINGOLANE_VERSION );
+        if ( self::tree_screen() ) {
+            wp_enqueue_script( 'lingolane-tree', LINGOLANE_URL . 'assets/tree.js', array(), LINGOLANE_VERSION, true );
+            wp_localize_script( 'lingolane-tree', 'lingolaneTree', array(
+                'postType' => $screen->post_type,
+                'i18n'     => array(
+                    'expandAll'   => __( 'Expand all', 'lingolane' ),
+                    'collapseAll' => __( 'Collapse all', 'lingolane' ),
+                    /* translators: %s: post title */
+                    'show'        => __( 'Show translations of %s', 'lingolane' ),
+                    /* translators: %s: post title */
+                    'hide'        => __( 'Hide translations of %s', 'lingolane' ),
+                ),
+                'icons'    => array(
+                    'open'   => Lingolane_UI::icon( 'chevron-down', 16, '', true ),
+                    'closed' => Lingolane_UI::icon( 'chevron-right', 16, '', true ),
+                ),
+            ) );
+        }
     }
 
     public static function register() {

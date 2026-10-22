@@ -18,6 +18,8 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 	}
 
 	public function tear_down() {
+		wp_dequeue_script( 'lingolane-tree' );
+		wp_deregister_script( 'lingolane-tree' );
 		unset( $_GET['lingolane_lang'] );
 		if ( class_exists( 'Lingolane_Tree' ) ) {
 			Lingolane_Tree::reset();
@@ -418,6 +420,31 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
 		}
 		$this->assertLessThanOrEqual( 3, $wpdb->num_queries - $before );
+	}
+
+	public function test_tree_script_enqueued_only_on_tree_screens() {
+		wp_dequeue_script( 'lingolane-tree' );
+		wp_deregister_script( 'lingolane-tree' );
+		set_current_screen( 'edit-page' );
+		Lingolane_Columns::enqueue( 'edit.php' );
+		$this->assertTrue( wp_script_is( 'lingolane-tree', 'enqueued' ) );
+		$data = wp_scripts()->get_data( 'lingolane-tree', 'data' );
+		$this->assertStringContainsString( '"postType":"page"', $data );
+		$this->assertStringContainsString( 'lingolane-icon--chevron-down', $data );
+		$this->assertStringContainsString( 'lingolane-icon--chevron-right', $data );
+		$this->assertSame( array(), wp_scripts()->registered['lingolane-tree']->deps );
+		$this->assertSame( 1, wp_scripts()->get_data( 'lingolane-tree', 'group' ) );
+
+		wp_dequeue_script( 'lingolane-tree' );
+		wp_deregister_script( 'lingolane-tree' );
+		$this->register_shared_fixtures();
+		set_current_screen( 'edit-science' );
+		Lingolane_Columns::enqueue( 'edit.php' );
+		$this->assertFalse( wp_script_is( 'lingolane-tree', 'enqueued' ) );
+
+		set_current_screen( 'page' );
+		Lingolane_Columns::enqueue( 'post.php' );
+		$this->assertFalse( wp_script_is( 'lingolane-tree', 'enqueued' ) );
 	}
 
 	public function test_private_member_row_hidden_from_users_who_cannot_read_it() {
