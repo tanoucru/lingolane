@@ -9,6 +9,7 @@ class Lingolane_Admin {
         add_action( 'admin_page_access_denied', array( __CLASS__, 'legacy_redirect' ) );
         add_filter( 'submenu_file', array( __CLASS__, 'submenu_file' ), 10, 2 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+        add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) );
         add_filter( 'plugin_action_links_' . plugin_basename( LINGOLANE_DIR . 'lingolane.php' ), array( __CLASS__, 'action_links' ) );
         add_action( 'admin_post_lingolane_save_default_language', array( __CLASS__, 'save_default_language' ) );
         add_action( 'admin_post_lingolane_save_settings', array( __CLASS__, 'save_default_language' ) );
@@ -22,6 +23,12 @@ class Lingolane_Admin {
     }
 
     /* ------------------------------------------------------------------ helpers */
+
+    /** Marks the Lingolane admin page so the page background can be themed. */
+    public static function body_class( $classes ) {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        return ( $screen && 'toplevel_page_lingolane' === $screen->id ) ? $classes . ' lingolane-screen' : $classes;
+    }
 
     public static function tabs() {
         return array(

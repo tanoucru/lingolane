@@ -1,24 +1,56 @@
-/* TeachMe Multilingual · admin */
+/* Lingolane · admin */
 
 .lingolane-wrap,
 .lingolane-box,
-.lingolane-col {
-	--lingolane-ink: #1d2327;
-	--lingolane-muted: #646970;
-	--lingolane-line: #e0e0e3;
-	--lingolane-soft: #f6f7f7;
-	--lingolane-card: #fff;
-	--lingolane-brand: #0d2240;
-	--lingolane-accent: var(--wp-admin-theme-color, #2271b1);
-	--lingolane-ok: #00704a;
-	--lingolane-ok-bg: #e6f4ea;
-	--lingolane-warn: #8a5300;
-	--lingolane-warn-bg: #fcf3dc;
-	--lingolane-info: #135e96;
-	--lingolane-info-bg: #eaf2fa;
-	--lingolane-danger: #b32d2e;
-	--lingolane-radius: 10px;
-	--lingolane-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+.lingolane-col,
+.lingolane-toasts {
+	--lingolane-bg: #f7f8fb;
+	--lingolane-card: #ffffff;
+	--lingolane-line: #e6e8ef;
+	--lingolane-ink: #1f2433;
+	--lingolane-muted: #5b6275;
+	--lingolane-accent: #4f46e5;
+	--lingolane-accent-2: #7c3aed;
+	--lingolane-accent-ink: #4338ca;
+	--lingolane-accent-soft: #eef0ff;
+	--lingolane-ok: #15803d;
+	--lingolane-ok-bg: #ecfdf3;
+	--lingolane-warn: #b45309;
+	--lingolane-warn-bg: #fffbeb;
+	--lingolane-danger: #b91c1c;
+	--lingolane-danger-bg: #fef2f2;
+	--lingolane-info: #1d4ed8;
+	--lingolane-info-bg: #eff6ff;
+	--lingolane-radius: 12px;
+	--lingolane-radius-sm: 8px;
+	--lingolane-shadow-sm: 0 1px 2px rgba(16, 24, 40, .06);
+	--lingolane-shadow-md: 0 4px 16px rgba(16, 24, 40, .10);
+	--lingolane-space-1: 4px;
+	--lingolane-space-2: 8px;
+	--lingolane-space-3: 12px;
+	--lingolane-space-4: 16px;
+	--lingolane-space-5: 24px;
+	--lingolane-space-6: 32px;
+	--lingolane-ease: cubic-bezier(.2, .8, .2, 1);
+	--lingolane-dur: 160ms;
+	--lingolane-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	/* Aliases for old tokens until Task 4 removes their last uses. */
+	--lingolane-soft: var(--lingolane-bg);
+	--lingolane-brand: var(--lingolane-accent-ink);
+	--lingolane-shadow: var(--lingolane-shadow-sm);
+	font-family: var(--lingolane-font);
+}
+
+/* Page background: body sits outside the token roots, so the literal value of --lingolane-bg is used. */
+body.lingolane-screen #wpcontent,
+body.lingolane-screen #wpbody-content { background: #f7f8fb; }
+
+@media (prefers-reduced-motion: reduce) {
+	.lingolane-wrap,
+	.lingolane-box,
+	.lingolane-col,
+	.lingolane-toasts { --lingolane-dur: 0ms; }
+	.lingolane-wrap *, .lingolane-box *, .lingolane-col *, .lingolane-toasts * { animation: none !important; }
 }
 
 .lingolane-wrap { max-width: 1240px; margin: 20px 20px 0 2px; color: var(--lingolane-ink); }
@@ -121,8 +153,8 @@
 .lingolane-field--grow { flex: 1 1 200px; }
 .lingolane-field--grow input { width: 100%; }
 .lingolane-field--actions { flex-direction: row; align-items: center; gap: 12px; }
-fieldset.lingolane-field label { display: block; margin: 2px 0; font-weight: 400; }
-fieldset.lingolane-field small { color: var(--lingolane-muted); }
+.lingolane-wrap fieldset.lingolane-field label { display: block; margin: 2px 0; font-weight: 400; }
+.lingolane-wrap fieldset.lingolane-field small { color: var(--lingolane-muted); }
 .lingolane-banner { display: flex; gap: 8px; margin: 0 0 16px; padding: 12px 14px; border-radius: 8px; background: var(--lingolane-info-bg); color: var(--lingolane-info); }
 .lingolane-kbd-hint { margin: -6px 0 12px; color: var(--lingolane-muted); font-size: 12px; }
 .lingolane-kbd-hint kbd { padding: 1px 5px; border: 1px solid var(--lingolane-line); border-bottom-width: 2px; border-radius: 4px; background: #fff; font-size: 11px; }
@@ -235,7 +267,7 @@ fieldset.lingolane-field small { color: var(--lingolane-muted); }
 .lingolane-guide__body .lingolane-card { scroll-margin-top: 50px; }
 .lingolane-guide__body p { margin: 0 0 10px; line-height: 1.6; }
 .lingolane-steps { margin: 0 0 4px; padding-left: 20px; line-height: 1.6; }
-ul.lingolane-steps { list-style: disc; }
+.lingolane-wrap ul.lingolane-steps { list-style: disc; }
 .lingolane-steps li { margin: 0 0 8px; }
 .lingolane-guide code, .lingolane-hint code { padding: 1px 5px; border-radius: 4px; font-size: 12px; }
 
