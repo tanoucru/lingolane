@@ -8,6 +8,7 @@ Plugin đa ngôn ngữ nhẹ cho WordPress, tách từ dự án Teachme. Phát t
 - Dịch chuỗi giao diện (theme, plugin), nhập/xuất CSV
 - hreflang / x-default, nút chuyển ngôn ngữ (`[lingolane_switcher]`, widget, menu `#lingolane-switcher`)
 - Viết lại link nội bộ, thống kê tiến độ dịch
+- Giao diện quản trị "SaaS sáng": token màu/kích thước trong `assets/admin.css`, icon SVG nội tuyến (`Lingolane_UI::icon()`), minh hoạ cho màn hình trống, toast cho thông báo; không font ngoài, không CDN, tôn trọng `prefers-reduced-motion`. Icons: [Lucide](https://lucide.dev) (ISC, `assets/LICENSE-lucide.txt`)
 
 Mã plugin nằm ở `lingolane/`. Yêu cầu WP ≥ 6.2, PHP ≥ 7.4. Giấy phép GPL-2.0-or-later.
 
@@ -33,6 +34,8 @@ Chuỗi gốc bằng tiếng Anh, text-domain `lingolane`. `lingolane/languages/
 ## Build
 ```bash
 bin/build.sh   # kiểm phiên bản khớp 3 nơi, lint PHP, ra dist/lingolane-<version>.zip (không gồm tests/)
+bin/ui-preview.sh   # build, cài lên site Local `check`, dựng dist/ui-preview/<tab>.html cho 6 tab quản trị
+python3 -m http.server 8765 --directory dist/ui-preview   # xem không cần đăng nhập
 ```
 
 ## Nâng cấp từ bản tiền phát hành `tml_` (Teachme)
@@ -50,7 +53,7 @@ add_filter( 'lingolane_translatable_post_types', fn( $t ) => array_unique( array
 `is_tutor()`/`translated_tutor()` đã đổi thành `is_gated()`/`translated_gated()`.
 
 ## Kiểm thử và chất lượng
-Bộ test PHPUnit (40 test, 126 assertion) nằm ở `tests/phpunit/`, mỗi file một mảng chức năng: nhóm bản dịch, router, URL/hreflang, bản ghi dùng chung, ngôn ngữ mặc định, quản trị, chuỗi giao diện. Mỗi test chạy trong một transaction của DB test và tự khôi phục.
+Bộ test PHPUnit (77 test, 391 assertion) nằm ở `tests/phpunit/`, mỗi file một mảng chức năng: nhóm bản dịch, router, URL/hreflang, bản ghi dùng chung, ngôn ngữ mặc định, quản trị, chuỗi giao diện, danh mục ngôn ngữ, icon và token giao diện. Mỗi test chạy trong một transaction của DB test và tự khôi phục.
 
 ```bash
 composer install          # PHPUnit 9.6, thư viện test WordPress, WPCS

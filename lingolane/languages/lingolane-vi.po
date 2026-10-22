@@ -848,3 +848,27 @@ msgstr "WordPress.org không có bản dịch cho %s, hoặc không tải đư�
 
 msgid "Your account cannot install translations. An administrator can install them in Dashboard > Updates."
 msgstr "Tài khoản của bạn không được cài bản dịch. Quản trị viên có thể cài ở Bảng tin > Cập nhật."
+
+msgid "Notifications"
+msgstr "Thông báo"
+
+msgid "Dismiss notification"
+msgstr "Đóng thông báo"
+
+msgid "Everything is translated"
+msgstr "Đã dịch xong tất cả"
+
+msgid "Every page and interface string is published in all your languages. New content will show up here when it needs translating."
+msgstr "Mọi trang và chuỗi giao diện đã có ở tất cả ngôn ngữ của bạn. Nội dung mới cần dịch sẽ hiện ở đây."
+
+msgid "Add another language"
+msgstr "Thêm ngôn ngữ khác"
+
+msgid "Welcome to Lingolane"
+msgstr "Chào mừng bạn đến với Lingolane"
+
+msgid "Translate pages, menus and interface text in a few steps. Start with the guide below or add your languages first."
+msgstr "Dịch trang, menu và chữ giao diện chỉ trong vài bước. Bắt đầu với phần hướng dẫn bên dưới, hoặc thêm ngôn ngữ trước."
+
+msgid "Set up languages"
+msgstr "Thiết lập ngôn ngữ"
