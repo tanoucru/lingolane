@@ -164,6 +164,12 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		$this->assertMatchesRegularExpression( '/<button type="button" class="lingolane-toast__close" hidden aria-label="[^"]+"/', $html );
 	}
 
+	public function test_footer_credit_is_developed_by_tannguyen() {
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'Developed by @tannguyen', $html );
+		$this->assertStringNotContainsString( 'TeachMe', $html );
+	}
+
 	public function test_toast_icons_are_localized_for_js() {
 		Lingolane_Admin::enqueue( 'toplevel_page_lingolane' );
 		$data = (string) wp_scripts()->get_data( 'lingolane-admin', 'data' );

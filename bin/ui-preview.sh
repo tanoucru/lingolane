@@ -46,7 +46,7 @@ $foot = ob_get_clean();
 $html = '<!doctype html><html lang="' . esc_attr( get_bloginfo( 'language' ) ) . '"><head><meta charset="utf-8">'
 	. '<meta name="viewport" content="width=device-width, initial-scale=1">'
 	. '<title>Lingolane – ' . esc_html( $tab ) . '</title>' . $head . '</head>'
-	. '<body class="wp-admin wp-core-ui lingolane-screen"><div id="wpwrap"><div id="wpcontent"><div id="wpbody"><div id="wpbody-content">'
+	. '<body class="wp-admin wp-core-ui js auto-fold lingolane-screen"><div id="wpwrap"><div id="wpcontent"><div id="wpbody"><div id="wpbody-content">'
 	. $body . '</div></div></div></div>' . $foot . '</body></html>';
 
 // Copy every local asset the page references and point the page at the copies.

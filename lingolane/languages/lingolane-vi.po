@@ -872,3 +872,6 @@ msgstr "Dịch trang, menu và chữ giao diện chỉ trong vài bước. Bắt
 
 msgid "Set up languages"
 msgstr "Thiết lập ngôn ngữ"
+
+msgid "Developed by %s"
+msgstr "Phát triển bởi %s"

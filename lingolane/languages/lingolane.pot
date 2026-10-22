@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-22T08:26:30+00:00\n"
+"POT-Creation-Date: 2026-10-22T08:44:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lingolane\n"
@@ -264,6 +264,11 @@ msgstr ""
 
 #: admin/class-lingolane-admin.php:422
 msgid "Management items"
+msgstr ""
+
+#. translators: %s: author credit
+#: admin/class-lingolane-admin.php:443
+msgid "Developed by %s"
 msgstr ""
 
 #: admin/class-lingolane-admin.php:490

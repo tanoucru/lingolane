@@ -440,7 +440,7 @@ class Lingolane_Admin {
                 ?>
             </main>
 
-            <footer class="lingolane-footer">TeachMe Multilingual · tannguyen ver.<?php echo esc_html( LINGOLANE_VERSION ); ?></footer>
+            <footer class="lingolane-footer">Lingolane <?php echo esc_html( LINGOLANE_VERSION ); ?> · <?php echo esc_html( sprintf( /* translators: %s: author credit */ __( 'Developed by %s', 'lingolane' ), '@tannguyen' ) ); ?></footer>
         </div>
         <?php
     }

@@ -1,4 +1,4 @@
-/* TeachMe Multilingual · admin */
+/* Lingolane · admin */
 ( function () {
 	'use strict';
 	var cfg = window.lingolaneAdmin || { i18n: {}, presets: {} };
