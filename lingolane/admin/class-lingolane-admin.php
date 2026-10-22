@@ -160,6 +160,8 @@ class Lingolane_Admin {
                 'deleteAsk'   => __( 'Remove this string from the list? Its saved translations are deleted as well.', 'lingolane' ),
                 'deleted'     => __( 'String deleted.', 'lingolane' ),
                 'leave'       => __( 'You have unsaved translations. Leave this page?', 'lingolane' ),
+                'notifications' => __( 'Notifications', 'lingolane' ),
+                'dismiss'     => __( 'Dismiss notification', 'lingolane' ),
             ),
             'presets' => self::presets(),
         ) );
@@ -437,7 +439,17 @@ class Lingolane_Admin {
         if ( ! is_array( $notice ) || empty( $notice['message'] ) ) { return; }
         delete_transient( $key );
         $type = in_array( $notice['type'], array( 'success', 'error', 'warning', 'info' ), true ) ? $notice['type'] : 'info';
-        printf( '<div class="notice notice-%1$s is-dismissible" role="%2$s"><p>%3$s</p></div>', esc_attr( $type ), 'error' === $type ? 'alert' : 'status', esc_html( $notice['message'] ) );
+        $sticky = in_array( $type, array( 'error', 'warning' ), true );
+        $icons  = array( 'success' => 'circle-check', 'info' => 'info', 'warning' => 'triangle-alert', 'error' => 'triangle-alert' );
+        ?>
+        <div class="lingolane-toasts" role="region" aria-label="<?php esc_attr_e( 'Notifications', 'lingolane' ); ?>">
+            <div class="lingolane-toast lingolane-toast--<?php echo esc_attr( $type ); ?>" role="<?php echo $sticky ? 'alert' : 'status'; ?>" data-autohide="<?php echo $sticky ? 0 : 5000; ?>">
+                <?php echo Lingolane_UI::icon( $icons[ $type ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                <p><?php echo esc_html( $notice['message'] ); ?></p>
+                <button type="button" class="lingolane-toast__close" aria-label="<?php esc_attr_e( 'Dismiss notification', 'lingolane' ); ?>"><?php echo Lingolane_UI::icon( 'x', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></button>
+            </div>
+        </div>
+        <?php
     }
 
     /* ------------------------------------------------------------------ overview */

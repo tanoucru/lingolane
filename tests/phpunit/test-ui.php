@@ -125,4 +125,23 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		$this->assertMatchesRegularExpression( '/\.lingolane-wrap \.button-link-delete\s*[,{][^}]*color:\s*var\(--lingolane-danger\)/s', $css );
 		$this->assertMatchesRegularExpression( '/\.button-link:not\(\.button-link-delete\)/', $css );
 	}
+
+	public function test_success_notice_renders_as_autohiding_toast() {
+		Lingolane_Admin::flash( 'success', 'Saved <b>' );
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'lingolane-toast--success', $html );
+		$this->assertStringContainsString( 'role="status"', $html );
+		$this->assertStringContainsString( 'data-autohide="5000"', $html );
+		$this->assertStringContainsString( 'Saved &lt;b&gt;', $html );
+		$this->assertStringContainsString( 'lingolane-toast__close', $html );
+		$this->assertStringNotContainsString( 'notice notice-', $html );
+	}
+
+	public function test_error_notice_stays_until_dismissed() {
+		Lingolane_Admin::flash( 'error', 'Broken' );
+		$html = $this->render_tab( 'overview' );
+		$this->assertStringContainsString( 'role="alert"', $html );
+		$this->assertStringContainsString( 'data-autohide="0"', $html );
+		$this->assertStringContainsString( 'lingolane-icon--triangle-alert', $html );
+	}
 }
