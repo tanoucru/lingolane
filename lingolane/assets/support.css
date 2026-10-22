@@ -1,0 +1,56 @@
+/* Lingolane · admin support tab (loaded only on that tab; tokens come from admin.css). */
+
+.lingolane-support { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.lingolane-support > * { min-width: 0; }
+.lingolane-support__aside { position: sticky; top: 46px; }
+
+.lingolane-support__form { display: grid; gap: var(--lingolane-space-4); }
+.lingolane-support__row { display: flex; flex-wrap: wrap; gap: var(--lingolane-space-3); }
+.lingolane-support__row > .lingolane-field:first-child { flex: 0 1 240px; }
+.lingolane-support .lingolane-field input[type="text"],
+.lingolane-support .lingolane-field input[type="url"],
+.lingolane-support .lingolane-field select,
+.lingolane-support .lingolane-field textarea { width: 100%; max-width: none; }
+.lingolane-support .lingolane-field input[type="url"] { min-height: 36px; }
+.lingolane-support .lingolane-field textarea { padding: 8px 10px; font-size: 14px; line-height: 1.5; resize: vertical; }
+.lingolane-support [aria-invalid="true"] { border-color: var(--lingolane-danger); }
+
+.lingolane-support__check { display: inline-flex; align-items: center; gap: var(--lingolane-space-2); font-weight: 600; }
+.lingolane-support__check input { margin: 0; }
+
+.lingolane-wrap textarea.lingolane-support__code {
+	display: block;
+	width: 100%;
+	padding: 10px 12px;
+	border-color: var(--lingolane-line);
+	background: var(--lingolane-bg);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 12px;
+	line-height: 1.55;
+	white-space: pre;
+	overflow: auto;
+	resize: vertical;
+}
+
+.lingolane-support__actions { display: flex; flex-wrap: wrap; gap: var(--lingolane-space-2); margin-top: var(--lingolane-space-3); }
+.lingolane-support__form .lingolane-support__actions { margin-top: 0; }
+.lingolane-support__actions .button { display: inline-flex; align-items: center; gap: 6px; }
+.lingolane-support__inline { align-self: flex-start; margin-top: var(--lingolane-space-2); }
+.lingolane-support__msg { margin: 0; color: var(--lingolane-danger); font-size: 13px; }
+.lingolane-support__msg:empty { display: none; }
+
+.lingolane-banner--warn { background: var(--lingolane-warn-bg); color: var(--lingolane-warn); }
+
+.lingolane-support__links { margin: 0; padding: 0; list-style: none; }
+.lingolane-support__links li { display: flex; align-items: center; gap: var(--lingolane-space-2); margin: 0 0 var(--lingolane-space-2); }
+.lingolane-support__aside .lingolane-hint { margin-top: 0; }
+.lingolane-support__aside .lingolane-hint + .button { margin-top: var(--lingolane-space-3); }
+
+@media (max-width: 960px) {
+	.lingolane-support { grid-template-columns: 1fr; }
+	.lingolane-support__aside { position: static; }
+}
+@media (max-width: 782px) {
+	.lingolane-support__row > .lingolane-field { flex: 1 1 100%; }
+	.lingolane-support__actions .button { justify-content: center; flex: 1 1 100%; }
+}

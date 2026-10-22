@@ -37,7 +37,8 @@ class Lingolane_Admin {
             'strings'   => array( __( 'Interface strings', 'lingolane' ), 'type' ),
             'languages' => array( __( 'Languages', 'lingolane' ), 'languages' ),
             'settings'  => array( __( 'Settings', 'lingolane' ), 'settings' ),
-            'guide'     => array( __( 'Guide', 'lingolane' ), 'life-buoy' ),
+            'guide'     => array( __( 'Guide', 'lingolane' ), 'book-open' ),
+            'support'   => array( __( 'Support', 'lingolane' ), 'life-buoy' ),
         );
     }
 
@@ -177,6 +178,24 @@ class Lingolane_Admin {
             'icons'   => self::toast_icons(),
             'presets' => self::presets(),
         ) );
+        if ( 'support' === self::current_tab() ) {
+            wp_enqueue_style( 'lingolane-support', LINGOLANE_URL . 'assets/support.css', array( 'lingolane-admin' ), LINGOLANE_VERSION );
+            wp_enqueue_script( 'lingolane-support', LINGOLANE_URL . 'assets/support.js', array( 'lingolane-admin' ), LINGOLANE_VERSION, true );
+            wp_localize_script( 'lingolane-support', 'lingolaneSupport', array(
+                'i18n' => array(
+                    'copied'     => __( 'Copied to the clipboard.', 'lingolane' ),
+                    'copyFailed' => __( 'Copy failed. Select the text and copy it manually.', 'lingolane' ),
+                    'required'   => __( 'Add a title and describe what happened first.', 'lingolane' ),
+                    'topic'      => __( 'Topic', 'lingolane' ),
+                    'summary'    => __( 'Summary', 'lingolane' ),
+                    'what'       => __( 'What happened', 'lingolane' ),
+                    'steps'      => __( 'Steps to reproduce', 'lingolane' ),
+                    'expected'   => __( 'Expected', 'lingolane' ),
+                    'page'       => __( 'Page', 'lingolane' ),
+                    'report'     => __( 'System report', 'lingolane' ),
+                ),
+            ) );
+        }
     }
 
     /** Every language of the catalog for the "add language" picker: code => [name, WordPress locale]. */
@@ -435,6 +454,7 @@ class Lingolane_Admin {
                     case 'languages': self::render_languages(); break;
                     case 'settings':  self::render_settings(); break;
                     case 'guide':     self::render_guide(); break;
+                    case 'support':   Lingolane_Support::render(); break;
                     default:          self::render_overview();
                 }
                 ?>

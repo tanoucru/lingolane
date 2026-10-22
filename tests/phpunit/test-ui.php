@@ -7,7 +7,7 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 	public static function wpSetUpBeforeClass() {
 		require_once ABSPATH . 'wp-admin/includes/admin.php';
 		require_once LINGOLANE_DIR . 'admin/class-lingolane-ui.php';
-		foreach ( array( 'stats', 'admin', 'strings-admin', 'metabox', 'columns' ) as $file ) {
+		foreach ( array( 'stats', 'admin', 'strings-admin', 'metabox', 'columns', 'support' ) as $file ) {
 			require_once LINGOLANE_DIR . 'admin/class-lingolane-' . $file . '.php';
 		}
 	}
@@ -24,7 +24,7 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 	}
 
 	public function test_every_required_icon_exists() {
-		$required = array( 'layout-dashboard', 'files', 'type', 'languages', 'settings', 'life-buoy', 'circle-check', 'eye', 'triangle-alert', 'upload', 'download', 'search', 'plus', 'info', 'users', 'external-link', 'chevron-down', 'chevron-right', 'x', 'sparkles', 'globe', 'loader' );
+		$required = array( 'layout-dashboard', 'files', 'type', 'languages', 'settings', 'book-open', 'life-buoy', 'circle-check', 'eye', 'triangle-alert', 'upload', 'download', 'search', 'plus', 'info', 'users', 'external-link', 'chevron-down', 'chevron-right', 'x', 'sparkles', 'globe', 'loader' );
 		$icons    = Lingolane_UI::icons();
 		foreach ( $required as $name ) {
 			$this->assertContains( $name, $icons, "icon $name exists" );

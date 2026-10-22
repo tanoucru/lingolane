@@ -7,7 +7,7 @@ class Test_Lingolane_Admin extends Lingolane_TestCase {
 
 	public static function wpSetUpBeforeClass() {
 		require_once ABSPATH . 'wp-admin/includes/admin.php';
-		foreach ( array( 'stats', 'admin', 'strings-admin', 'metabox', 'columns' ) as $file ) {
+		foreach ( array( 'stats', 'admin', 'strings-admin', 'metabox', 'columns', 'support' ) as $file ) {
 			require_once LINGOLANE_DIR . 'admin/class-lingolane-' . $file . '.php';
 		}
 	}
