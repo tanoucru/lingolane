@@ -15,7 +15,7 @@ class Lingolane_Languages {
             'switcher_show'             => 'flag_name',
             'switcher_flag_shape'        => 'rect',
             'untranslated_action'       => 'notice',
-            'untranslated_notice'       => __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' ),
+            'untranslated_notice'       => 'Ngôn ngữ bạn chọn hiện chưa có bản dịch',
             'untranslated_redirect_url' => '',
         );
     }
