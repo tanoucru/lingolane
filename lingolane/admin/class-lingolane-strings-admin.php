@@ -11,7 +11,7 @@ class Lingolane_Strings_Admin {
     }
 
     private static function input( $data, $key ) {
-        return isset( $data[ $key ] ) && is_string( $data[ $key ] ) ? sanitize_text_field( wp_unslash( $data[ $key ] ) ) : '';
+        return isset( $data[ $key ] ) && ( is_string( $data[ $key ] ) || is_numeric( $data[ $key ] ) ) ? sanitize_text_field( wp_unslash( (string) $data[ $key ] ) ) : '';
     }
 
     public static function theme_domain() {
@@ -29,9 +29,12 @@ class Lingolane_Strings_Admin {
 
     public static function handle() {
         global $wpdb;
-        if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403 ) ); }
+        if ( ! Lingolane_Admin::can_translate() ) { wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403 ) ); }
         $operation = self::input( $_POST, 'operation' ); // phpcs:ignore WordPress.Security.NonceVerification
         if ( ! in_array( $operation, array( 'row', 'import', 'export' ), true ) ) { Lingolane_Admin::redirect( 'strings' ); }
+        if ( ( 'import' === $operation || 'export' === $operation ) && ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403 ) );
+        }
         check_admin_referer( 'lingolane_strings_' . $operation );
         $table = $wpdb->prefix . 'lingolane_strings';
 
@@ -58,6 +61,9 @@ class Lingolane_Strings_Admin {
         if ( 'row' === $operation ) {
             $id = absint( self::input( $_POST, 'id' ) ); // phpcs:ignore WordPress.Security.NonceVerification
             $delete = isset( $_POST['delete'] ); // phpcs:ignore WordPress.Security.NonceVerification
+            if ( $delete && ! current_user_can( 'manage_options' ) ) {
+                wp_die( esc_html__( 'You do not have permission to delete strings.', 'lingolane' ), '', array( 'response' => 403 ) );
+            }
             $result = $delete ? self::delete_row( $id ) : self::save_row( $id, isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_unslash( $_POST['translation'] ) : null ); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
             if ( is_wp_error( $result ) ) {
                 Lingolane_Admin::flash( 'error', $result->get_error_message() );
@@ -112,14 +118,15 @@ class Lingolane_Strings_Admin {
         return true;
     }
 
-    private static function ajax_guard() {
-        if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'lingolane_strings_ajax', 'nonce', false ) ) {
+    private static function ajax_guard( $cap = 'lingolane_translate' ) {
+        $can = 'lingolane_translate' === $cap ? Lingolane_Admin::can_translate() : current_user_can( $cap );
+        if ( ! $can || ! check_ajax_referer( 'lingolane_strings_ajax', 'nonce', false ) ) {
             wp_send_json_error( array( 'message' => __( 'Your session has expired. Reload the page.', 'lingolane' ) ), 403 );
         }
     }
 
     public static function ajax_save() {
-        self::ajax_guard();
+        self::ajax_guard( 'lingolane_translate' );
         $translation = isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_unslash( $_POST['translation'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
         $row = self::save_row( absint( self::input( $_POST, 'id' ) ), $translation ); // phpcs:ignore WordPress.Security.NonceVerification
         if ( is_wp_error( $row ) ) { wp_send_json_error( array( 'message' => $row->get_error_message() ), 400 ); }
@@ -129,7 +136,7 @@ class Lingolane_Strings_Admin {
     }
 
     public static function ajax_delete() {
-        self::ajax_guard();
+        self::ajax_guard( 'manage_options' );
         $result = self::delete_row( absint( self::input( $_POST, 'id' ) ) ); // phpcs:ignore WordPress.Security.NonceVerification
         if ( is_wp_error( $result ) ) { wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 ); }
         wp_send_json_success();
@@ -242,7 +249,7 @@ class Lingolane_Strings_Admin {
 
     public static function render_tab_content() {
         global $wpdb;
-        if ( ! current_user_can( 'manage_options' ) ) { return; }
+        if ( ! Lingolane_Admin::can_translate() ) { return; }
         $others = Lingolane_Stats::other_languages();
         if ( ! $others ) {
             echo '<section class="lingolane-card lingolane-empty">' . Lingolane_UI::illustration( 'empty-languages' ) . '<h2>' . esc_html__( 'No language to translate into yet', 'lingolane' ) . '</h2><p>' . esc_html__( 'Add a second language in the Languages tab.', 'lingolane' ) . '</p><a class="button button-primary" href="' . esc_url( Lingolane_Admin::url( 'languages' ) ) . '">' . esc_html__( 'Add a language', 'lingolane' ) . '</a></section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list

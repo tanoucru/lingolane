@@ -90,6 +90,10 @@ class Lingolane_Install {
         if ( self::verify_tables( array( $table, $strings, $locations ) ) ) {
             update_option( 'lingolane_db_version', self::DB_VERSION );
         }
+        $role = get_role( 'administrator' );
+        if ( $role && ! $role->has_cap( 'lingolane_translate' ) ) {
+            $role->add_cap( 'lingolane_translate' );
+        }
         add_option( 'lingolane_settings', Lingolane_Languages::defaults() );
     }
 }

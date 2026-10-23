@@ -31,7 +31,16 @@ class Lingolane_Admin {
         return ( $screen && 'toplevel_page_lingolane' === $screen->id ) ? $classes . ' lingolane-screen' : $classes;
     }
 
+    public static function can_translate() {
+        return current_user_can( 'lingolane_translate' ) || current_user_can( 'manage_options' );
+    }
+
     public static function tabs() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return array(
+                'strings' => array( __( 'Interface strings', 'lingolane' ), 'type' ),
+            );
+        }
         return array(
             'overview'  => array( __( 'Overview', 'lingolane' ), 'layout-dashboard' ),
             'content'   => array( __( 'Posts & pages', 'lingolane' ), 'files' ),
@@ -50,8 +59,9 @@ class Lingolane_Admin {
     }
 
     private static function current_tab() {
-        $tab = isset( $_GET['tab'] ) && is_string( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'overview'; // phpcs:ignore WordPress.Security.NonceVerification
-        return array_key_exists( $tab, self::tabs() ) ? $tab : 'overview';
+        $default = current_user_can( 'manage_options' ) ? 'overview' : 'strings';
+        $tab = isset( $_GET['tab'] ) && is_string( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : $default; // phpcs:ignore WordPress.Security.NonceVerification
+        return array_key_exists( $tab, self::tabs() ) ? $tab : $default;
     }
 
     /** One-time message shown after a redirect. */
@@ -73,6 +83,13 @@ class Lingolane_Admin {
 
     public static function guard( $nonce ) {
         if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403, 'back_link' => true ) );
+        }
+        check_admin_referer( $nonce );
+    }
+
+    public static function translation_guard( $nonce ) {
+        if ( ! self::can_translate() ) {
             wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403, 'back_link' => true ) );
         }
         check_admin_referer( $nonce );
@@ -118,9 +135,10 @@ class Lingolane_Admin {
     /* ------------------------------------------------------------------ menu & assets */
 
     public static function menu() {
-        add_menu_page( __( 'Lingolane — Languages', 'lingolane' ), __( 'Multilingual', 'lingolane' ), 'manage_options', self::PAGE, array( __CLASS__, 'render' ), 'dashicons-translation', 27 );
+        add_menu_page( __( 'Lingolane — Languages', 'lingolane' ), __( 'Multilingual', 'lingolane' ), 'lingolane_translate', self::PAGE, array( __CLASS__, 'render' ), 'dashicons-translation', 27 );
         foreach ( self::tabs() as $tab => $meta ) {
-            add_submenu_page( self::PAGE, $meta[0], $meta[0], 'manage_options', 'overview' === $tab ? self::PAGE : 'admin.php?page=' . self::PAGE . '&tab=' . $tab, 'overview' === $tab ? array( __CLASS__, 'render' ) : null );
+            $sub_cap = ( 'settings' === $tab || 'languages' === $tab || 'support' === $tab ) ? 'manage_options' : 'lingolane_translate';
+            add_submenu_page( self::PAGE, $meta[0], $meta[0], $sub_cap, 'overview' === $tab ? self::PAGE : 'admin.php?page=' . self::PAGE . '&tab=' . $tab, 'overview' === $tab ? array( __CLASS__, 'render' ) : null );
         }
     }
 
@@ -395,7 +413,7 @@ class Lingolane_Admin {
     }
 
     public static function scan_theme_strings() {
-        self::guard( 'lingolane_scan_theme_strings' );
+        self::translation_guard( 'lingolane_scan_theme_strings' );
         $result = Lingolane_Strings_Admin::scan_theme_strings();
         Lingolane_Stats::flush_strings();
         $parts = array();
@@ -416,7 +434,7 @@ class Lingolane_Admin {
     /* ------------------------------------------------------------------ page shell */
 
     public static function render() {
-        if ( ! current_user_can( 'manage_options' ) ) { return; }
+        if ( ! self::can_translate() ) { return; }
         $tab = self::current_tab();
         ?>
         <div class="wrap lingolane-wrap">
@@ -451,13 +469,13 @@ class Lingolane_Admin {
             <main class="lingolane-body">
                 <?php
                 switch ( $tab ) {
-                    case 'content':   self::render_content(); break;
+                    case 'content':   if ( current_user_can( 'manage_options' ) ) { self::render_content(); } break;
                     case 'strings':   Lingolane_Strings_Admin::render_tab_content(); break;
-                    case 'languages': self::render_languages(); break;
-                    case 'settings':  self::render_settings(); break;
+                    case 'languages': if ( current_user_can( 'manage_options' ) ) { self::render_languages(); } break;
+                    case 'settings':  if ( current_user_can( 'manage_options' ) ) { self::render_settings(); } break;
                     case 'guide':     self::render_guide(); break;
-                    case 'support':   Lingolane_Support::render(); break;
-                    default:          self::render_overview();
+                    case 'support':   if ( current_user_can( 'manage_options' ) ) { Lingolane_Support::render(); } break;
+                    default:          if ( current_user_can( 'manage_options' ) ) { self::render_overview(); } else { Lingolane_Strings_Admin::render_tab_content(); } break;
                 }
                 ?>
             </main>
