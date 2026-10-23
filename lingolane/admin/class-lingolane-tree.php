@@ -258,6 +258,13 @@ class Lingolane_Tree {
         return $ids;
     }
 
+    /** Whether a translation may be shown or counted for the current user: core hides only private statuses it cannot read. */
+    private static function readable_member( $post ) {
+        if ( ! $post || in_array( $post->post_status, array( 'trash', 'auto-draft' ), true ) ) { return false; }
+        $status = get_post_status_object( $post->post_status );
+        return ! $status || ! $status->private || current_user_can( 'read_post', $post->ID );
+    }
+
     /**
      * Prints each printed leader's translation rows, built by the list table itself, in a template the script unfolds.
      * Translations of a source the view hides can each lead the same group (posts_where()), so a post already on
@@ -266,6 +273,22 @@ class Lingolane_Tree {
     public static function print_templates( $which ) {
         if ( 'bottom' !== $which || ! self::$remembered || self::$printing || ! self::tree_mode() || empty( $GLOBALS['wp_list_table'] ) ) { return; }
         $table = $GLOBALS['wp_list_table'];
+        $statuses = array_map( 'sanitize_key', wp_parse_list( $GLOBALS['wp_the_query']->get( 'post_status' ) ) );
+        $members = array();
+        foreach ( self::$remembered as $leader ) {
+            $group = self::group( $leader );
+            if ( ! $group ) { continue; }
+            foreach ( $group['members'] as $id ) {
+                $member = get_post( $id );
+                if ( $member ) { $members[ $id ] = $member; }
+            }
+        }
+        if ( $members ) {
+            $ids = array_keys( $members );
+            update_postmeta_cache( $ids );
+            update_object_term_cache( $ids, get_current_screen()->post_type );
+            if ( function_exists( 'update_post_author_caches' ) ) { update_post_author_caches( array_values( $members ) ); }
+        }
         $languages = Lingolane_Languages::all();
         $saved = isset( $GLOBALS['post'] ) ? $GLOBALS['post'] : null;
         $shown = array_fill_keys( self::$remembered, true );
@@ -280,8 +303,8 @@ class Lingolane_Tree {
                 foreach ( $languages as $language ) {
                     if ( ! isset( $group['members'][ $language['code'] ] ) || isset( $shown[ $group['members'][ $language['code'] ] ] ) ) { continue; }
                     $member = get_post( $group['members'][ $language['code'] ] );
-                    // Hidden like core hides other users' private posts from those who cannot read them.
-                    if ( ! $member || ( 'private' === $member->post_status && ! current_user_can( 'read_post', $member->ID ) ) ) { continue; }
+                    if ( ! self::readable_member( $member ) ) { continue; }
+                    if ( $statuses && ! in_array( 'any', $statuses, true ) && ! in_array( $member->post_status, $statuses, true ) ) { continue; }
                     $shown[ $member->ID ] = true;
                     $table->single_row( $member, 0 );
                 }
@@ -291,7 +314,7 @@ class Lingolane_Tree {
                     foreach ( $group['missing'] as $code ) {
                         /* translators: %s: language name */
                         $label = sprintf( __( '%s: not translated yet', 'lingolane' ), Lingolane_Languages::name( $code ) );
-                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon is an SVG built from a fixed list, the rest is escaped.
+                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange column-title" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon is an SVG built from a fixed list, the rest is escaped.
                     }
                 }
                 $rows = ob_get_clean();
@@ -315,9 +338,20 @@ class Lingolane_Tree {
 
     /** Adds the done/total translation count next to a leader's title. */
     public static function post_states( $states, $post ) {
-        if ( self::$printing || ! self::tree_mode() ) { return $states; }
-        $group = self::group( $post->ID );
+        if ( self::$printing ) { return $states; }
+        $inline = wp_doing_ajax() && isset( $_POST['action'] ) && 'inline-save' === $_POST['action'] && Lingolane_Columns::tree_screen(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- read-only display; core verifies inline-save.
+        if ( $inline ) {
+            $groups = self::groups( $post->post_type, array( $post->ID ) );
+            $group = isset( $groups[ $post->ID ] ) ? $groups[ $post->ID ] : false;
+        } else {
+            if ( ! self::tree_mode() ) { return $states; }
+            $group = self::group( $post->ID );
+        }
         if ( ! $group ) { return $states; }
+        $group['done'] = 1;
+        foreach ( $group['members'] as $id ) {
+            if ( self::readable_member( get_post( $id ) ) ) { ++$group['done']; }
+        }
         /* translators: 1: translated languages, 2: all languages */
         $title = sprintf( __( '%1$d of %2$d languages', 'lingolane' ), $group['done'], $group['total'] );
         $states['lingolane_progress'] = '<span class="lingolane-tree-progress" title="' . esc_attr( $title ) . '">' . esc_html( $group['done'] . '/' . $group['total'] ) . '</span>';

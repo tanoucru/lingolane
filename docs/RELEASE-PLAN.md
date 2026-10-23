@@ -85,7 +85,7 @@ Kiểm trên site Local sạch cho từng ô, ghi kết quả vào `docs/COMPAT.
 ### M5 – Phát hành (2–3 ngày) · chờ Tan duyệt
 - Beta kín 5–10 site thật (gồm Teachme chuyển từ bản cũ), thu lỗi 1 tuần.
 - Chính sách riêng tư/khai báo dữ liệu, `SECURITY.md`, `CONTRIBUTING.md`, ảnh chụp màn hình, banner.
-  - `SECURITY.md` đã có (2026-10-23); nút "Report privately" ở tab Support trỏ tới hướng dẫn báo lỗi bảo mật của WordPress.org. **Chờ Tan:** chọn kênh nhận báo cáo riêng (email bảo mật hoặc GitHub Security Advisory khi repo public), rồi đổi hằng `Lingolane_Support::SECURITY` và `SECURITY.md`.
+  - `SECURITY.md` đã có; nút "Report privately" ở tab Support trỏ tới email bảo mật `tan.oucru@gmail.com` (Tan đã duyệt 2026-10-23). Kênh nhận báo cáo bảo mật đã hoàn tất.
 - Tag `v1.0.0`, GitHub Release kèm zip; nộp WordPress.org nếu chọn kênh đó; cơ chế cập nhật (WordPress.org hoặc updater qua GitHub Releases).
 - **Xong khi:** không còn lỗi nghiêm trọng sau 7 ngày beta; Tan duyệt tạo repo public/đăng.
 
@@ -148,3 +148,9 @@ Chưa xong M0: kiểm readme bằng trình kiểm của WordPress.org; cài th�
 - Kiểm chứng offline: PHPUnit 117 test/818 assertion đạt trên cả PHP 8.2 và 7.4; `composer lint` đạt, phpcs 0 lỗi/26 cảnh báo; `node --check` đạt cho `admin.js` và `tree.js`; `bash -n` và `php -l` đoạn PHP fixture đạt. `bin/build.sh` đạt; `unzip -l` xác nhận zip có `lingolane/admin/class-lingolane-tree.php` và `lingolane/assets/tree.js`.
 - QA trình duyệt (1280px và 375px trên check.local): ĐẠT — cột Ngôn ngữ sau Tiêu đề; cây gập/mở từng nhóm và Mở tất cả/Gập tất cả chuẩn xác; nhớ trạng thái qua localStorage sau khi tải lại trang; gập nhóm tự động bỏ tick checkbox bài con để bulk action không gửi nhầm bài ẩn; bản dịch trong Thùng rác không bị tính là "chưa dịch"; Quick Edit gập/mở cùng nhóm và giữ vị trí sau khi lưu/huỷ; tìm kiếm mở nhóm và tô nổi dòng khớp; lọc ngôn ngữ tự phẳng danh sách; ở 375px không cuộn ngang cấp trang; 0 lỗi console.
 - Kiểm chứng tổng thể: chạy fixture hai lần (lần 1 tạo 15 bài, lần 2 tái sử dụng 100% không sinh trùng bài); PHPUnit đạt 117 test/820 assertion trên cả PHP 8.2 và 7.4; phpcs 0 lỗi, 26 cảnh báo; Plugin Check 0 lỗi; zip đóng gói đầy đủ mã cây và tài nguyên. Đã sửa lỗi thẻ th scope="row" của WP 7.1+ cho selector tiêu đề.
+
+**2026-10-23 · Đợt sửa hoàn tất P1 (nhánh fix/p1-followups):**
+- Đã sửa F1–F7: dòng bản dịch tuân theo view trạng thái của WP (All, Published, Drafts; loại trừ trash và auto-draft); nạp sẵn (prime) cache meta, terms, authors cho tất cả bản dịch trong trang trước khi dựng dòng; bổ sung test truy vấn thu hẹp (`is_tree_query` trả về false với tax_query, post__in, meta_query, post_parent); kiểm tra quyền `read_post` cho private post_status; nhãn tiến độ chỉ đếm bản dịch người dùng được phép đọc; nhãn tiến độ giữ nguyên chuẩn xác sau khi Sửa nhanh (inline-save AJAX) qua nhận diện screen `$_POST['screen']`; ô nhãn bản dịch thiếu có class `column-title` và `tree.js` chỉ lấy các phần tử `TR` cấp gốc của template.
+- Kiểm chứng: PHPUnit 137 test / 923 assertion đạt trên cả PHP 8.2 và 7.4 (38 test riêng cho Tree); phpcs 0 lỗi, 26 cảnh báo (đúng baseline); `node --check` đạt; Plugin Check trên check.local 0 lỗi.
+- QA trình duyệt trên check.local: Quick Edit lưu qua AJAX giữ nguyên nhãn tiến độ (2/3); tìm kiếm mở nhóm và hiển thị đúng bản dịch; phân cấp cây hiển thị chuẩn xác; 0 lỗi console.
+

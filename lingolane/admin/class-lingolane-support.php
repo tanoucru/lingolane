@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  * Nothing is sent from the site; the user copies the text and posts it in the forum.
  */
 class Lingolane_Support {
-    const FORUM    = 'https://wordpress.org/support/plugin/lingolane/';
-    /** WordPress.org's guide to private reporting; works before a public repo or security inbox exists. */
-    const SECURITY = 'https://developer.wordpress.org/plugins/wordpress-org/plugin-security/reporting-plugin-security-issues/';
+    const FORUM          = 'https://wordpress.org/support/plugin/lingolane/';
+    const SECURITY_EMAIL = 'tan.oucru@gmail.com';
+    const SECURITY       = 'mailto:tan.oucru@gmail.com?subject=%5BLingolane%20Security%5D%20Vulnerability%20Report';
 
     /** Plugin folders known to clash with Lingolane: folder => [name, multilingual|cache]. */
     const KNOWN = array(
@@ -278,7 +278,15 @@ class Lingolane_Support {
                 <section class="lingolane-card" aria-labelledby="lingolane-support-security">
                     <h2 class="lingolane-card__title" id="lingolane-support-security"><?php esc_html_e( 'Security issue?', 'lingolane' ); ?></h2>
                     <p class="lingolane-hint"><?php esc_html_e( 'Do not post security problems in the public forum. Report them privately so they can be fixed before details are shared.', 'lingolane' ); ?></p>
-                    <a class="button" href="<?php echo esc_url( self::security_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Report privately', 'lingolane' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'lingolane' ); ?></span></a>
+                    <?php $sec_url = self::security_url(); ?>
+                    <a class="button" href="<?php echo esc_url( $sec_url ); ?>"<?php echo 0 === strpos( $sec_url, 'http' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php esc_html_e( 'Report privately', 'lingolane' ); ?><?php if ( 0 === strpos( $sec_url, 'http' ) ) : ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'lingolane' ); ?></span><?php endif; ?></a>
+                    <p class="lingolane-hint lingolane-support__inline">
+                        <?php
+                        $obfuscated_email = function_exists( 'antispambot' ) ? antispambot( self::SECURITY_EMAIL ) : esc_html( self::SECURITY_EMAIL );
+                        /* translators: %s: obfuscated security contact email address */
+                        printf( esc_html__( 'Contact: %s', 'lingolane' ), $obfuscated_email ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- antispambot() outputs safe HTML entities
+                        ?>
+                    </p>
                 </section>
             </aside>
         </div>
