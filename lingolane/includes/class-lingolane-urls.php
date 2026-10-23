@@ -1,14 +1,18 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 class Lingolane_Urls {
+    public static function strip_slug( $path ) {
+        $codes = implode( '|', array_map( 'preg_quote', Lingolane_Languages::codes() ) );
+        return (string) preg_replace( '~^/(?:' . $codes . ')(?=/|[?#]|$)~', '', (string) $path );
+    }
+
     /** Replace a language directory only inside this site's home path. */
     public static function for_language( $url, $lang ) {
         if ( ! Lingolane_Languages::is_valid( $lang ) ) { return ''; }
         $root = rtrim( get_option( 'home' ), '/' );
         if ( strpos( $url, $root . '/' ) !== 0 && $url !== $root && strpos( $url, $root . '?' ) !== 0 ) { return $url; }
         $relative = substr( $url, strlen( $root ) );
-        $codes = implode( '|', array_map( 'preg_quote', Lingolane_Languages::codes() ) );
-        $relative = preg_replace( '~^/(?:' . $codes . ')(?=/|[?#]|$)~', '', $relative );
+        $relative = self::strip_slug( $relative );
         if ( $relative === '' || $relative[0] === '?' || $relative[0] === '#' ) { $relative = '/' . $relative; }
         return $root . ( $lang === Lingolane_Languages::default_code() ? '' : '/' . $lang ) . $relative;
     }
