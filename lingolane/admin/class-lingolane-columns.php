@@ -43,9 +43,22 @@ class Lingolane_Columns {
 
     public static function tree_screen() {
         $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-        return $screen && 'edit' === $screen->base
-            && in_array( $screen->post_type, Lingolane_Query::post_types(), true )
-            && ! in_array( $screen->post_type, Lingolane_Shared::post_types(), true );
+        if ( $screen ) {
+            return 'edit' === $screen->base
+                && in_array( $screen->post_type, Lingolane_Query::post_types(), true )
+                && ! in_array( $screen->post_type, Lingolane_Shared::post_types(), true );
+        }
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- read-only screen detection.
+        if ( wp_doing_ajax() && isset( $_POST['screen'] ) && is_string( $_POST['screen'] ) ) {
+            $screen_id = sanitize_key( wp_unslash( $_POST['screen'] ) );
+            if ( 0 === strpos( $screen_id, 'edit-' ) ) {
+                $post_type = substr( $screen_id, 5 );
+                return in_array( $post_type, Lingolane_Query::post_types(), true )
+                    && ! in_array( $post_type, Lingolane_Shared::post_types(), true );
+            }
+        }
+        // phpcs:enable
+        return false;
     }
 
     public static function body_class( $classes ) {

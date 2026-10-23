@@ -442,20 +442,30 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		$this->require_tree_model();
 		$ids = $this->tree_fixture();
 		$this->tree_list_table();
-		set_current_screen( 'edit-page' );
 		$GLOBALS['wp_the_query'] = new WP_Query();
 		$GLOBALS['wp_the_query']->set( 'lingolane_tree_off', true );
 		$previous = $_POST;
 		$_POST['action'] = 'inline-save';
+		$_POST['screen'] = 'edit-page';
 		add_filter( 'wp_doing_ajax', '__return_true' );
 		try {
+			// Real AJAX case: get_current_screen() is null, core sends $_POST['screen'].
+			$GLOBALS['current_screen'] = null;
 			$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
 			$this->assertArrayHasKey( 'lingolane_progress', $states );
 			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+
+			// Mocked screen case.
+			set_current_screen( 'edit-page' );
+			$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
+			$this->assertArrayHasKey( 'lingolane_progress', $states );
+			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+
 			$_POST['action'] = 'other-action';
 			$this->assertSame( array(), Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) ) );
 			$_POST['action'] = 'inline-save';
 			set_current_screen( 'front' );
+			unset( $_POST['screen'] );
 			$this->assertSame( array(), Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) ) );
 		} finally {
 			remove_filter( 'wp_doing_ajax', '__return_true' );
