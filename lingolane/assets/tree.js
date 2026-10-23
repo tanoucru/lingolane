@@ -104,7 +104,7 @@
 		var leader = document.getElementById( 'post-' + id );
 		if ( ! leader || leader.parentNode !== list || ! leader.querySelector( '.column-title' ) || groups[ id ] ) { return; }
 		var fragment = document.importNode( tpl.content, true );
-		var rows = fragment.querySelectorAll( 'tr' );
+		var rows = Array.prototype.filter.call( fragment.children, function ( el ) { return el.tagName === 'TR'; } );
 		if ( ! rows.length ) { tpl.remove(); return; }
 		var group = { id: id, rows: [], open: collapsed.indexOf( id ) === -1 };
 		if ( leader.classList.contains( 'lingolane-tree-match' ) || fragment.querySelector( '.lingolane-tree-match' ) ) { group.open = true; }

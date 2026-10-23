@@ -326,6 +326,153 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		return $GLOBALS['wp_list_table'];
 	}
 
+	public function test_tree_script_only_selects_top_level_rows() {
+		$js = file_get_contents( LINGOLANE_DIR . 'assets/tree.js' );
+		$this->assertStringContainsString( 'Array.prototype.filter.call( fragment.children, function ( el )', $js );
+		$this->assertStringContainsString( "return el.tagName === 'TR';", $js );
+	}
+
+	public function test_status_view_templates_only_hold_that_status() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		wp_update_post( array( 'ID' => $ids['A_en'], 'post_status' => 'draft' ) );
+		$this->tree_query( array( 'post_status' => 'publish' ) );
+		Lingolane_Tree::remember( $ids['A'] );
+		$this->assertStringNotContainsString( 'id="post-' . $ids['A_en'] . '"', $this->printed_templates() );
+		Lingolane_Tree::reset();
+		$this->tree_query( array( 'post_status' => array( 'draft' ) ) );
+		Lingolane_Tree::remember( $ids['A'] );
+		$this->assertStringContainsString( 'id="post-' . $ids['A_en'] . '"', $this->printed_templates() );
+	}
+
+	public function test_custom_private_status_member_needs_read_post() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$admin = get_current_user_id();
+		register_post_status( 'lingo_secret', array( 'private' => true ) );
+		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
+		get_user_by( 'id', $editor )->add_cap( 'read_private_pages', false );
+		try {
+			wp_update_post( array( 'ID' => $ids['A_en'], 'post_status' => 'lingo_secret', 'post_author' => $admin ) );
+			wp_set_current_user( $editor );
+			$this->assertFalse( current_user_can( 'read_post', $ids['A_en'] ) );
+			$this->tree_query();
+			Lingolane_Tree::remember( $ids['A'] );
+			$this->assertStringNotContainsString( 'id="post-' . $ids['A_en'] . '"', $this->printed_templates() );
+			wp_set_current_user( $admin );
+			$this->assertStringContainsString( 'id="post-' . $ids['A_en'] . '"', $this->printed_templates() );
+		} finally {
+			unset( $GLOBALS['wp_post_statuses']['lingo_secret'] );
+		}
+	}
+
+	public function test_chip_skips_unreadable_private_translations() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$admin = get_current_user_id();
+		wp_update_post( array( 'ID' => $ids['A_en'], 'post_status' => 'private', 'post_author' => $admin ) );
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'author' ) ) );
+		$this->assertFalse( current_user_can( 'read_post', $ids['A_en'] ) );
+		$this->tree_query();
+		$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
+		$this->assertStringContainsString( '1/3', $states['lingolane_progress'] );
+		wp_set_current_user( $admin );
+		$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
+		$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+	}
+
+	public function test_templates_query_count_constant() {
+		$this->require_tree_model();
+		$leaders = array();
+		$members = array();
+		$authors = array();
+		for ( $i = 0; $i < 4; $i++ ) {
+			list( $id, $en ) = $this->new_translation_group();
+			$author = self::factory()->user->create( array( 'role' => 'author' ) );
+			wp_update_post( array( 'ID' => $en, 'post_author' => $author ) );
+			$leaders[] = $id;
+			$members[] = $en;
+			$authors[] = $author;
+		}
+		$this->tree_list_table();
+		$this->tree_query( array( 'posts_per_page' => -1 ) );
+		global $wpdb;
+		$counts = array();
+		foreach ( array( 2, 4 ) as $size ) {
+			Lingolane_Tree::reset();
+			foreach ( array_slice( $leaders, 0, $size ) as $id ) {
+				Lingolane_Tree::remember( $id );
+			}
+			$this->printed_templates(); // Warm unrelated list-table caches before measuring cold member caches.
+			foreach ( array_slice( $members, 0, $size ) as $id ) {
+				wp_cache_delete( $id, 'post_meta' );
+				foreach ( get_object_taxonomies( 'page' ) as $taxonomy ) {
+					wp_cache_delete( $id, $taxonomy . '_relationships' );
+				}
+			}
+			foreach ( array_slice( $authors, 0, $size ) as $id ) {
+				clean_user_cache( $id );
+			}
+			$before = $wpdb->num_queries;
+			$html = $this->printed_templates();
+			$counts[] = $wpdb->num_queries - $before;
+			foreach ( array_slice( $members, 0, $size ) as $id ) {
+				$this->assertStringContainsString( 'id="post-' . $id . '"', $html );
+			}
+		}
+		$this->assertSame( $counts[0], $counts[1], 'Printing 2 and 4 groups must use the same number of queries.' );
+	}
+
+	public function test_narrowed_queries_stay_flat() {
+		$this->require_tree_model();
+		foreach ( array(
+			array( 'tax_query' => array( array( 'taxonomy' => 'category', 'terms' => array( 1 ) ) ) ),
+			array( 'post__in' => array( 1 ) ),
+			array( 'meta_query' => array( array( 'key' => 'tree_test', 'value' => 'yes' ) ) ),
+			array( 'post_parent' => 1 ),
+		) as $args ) {
+			$this->assertFalse( Lingolane_Tree::is_tree_query( $this->tree_query( $args ) ), wp_json_encode( $args ) );
+		}
+	}
+
+	public function test_inline_save_row_keeps_chip() {
+		$this->require_tree_model();
+		$ids = $this->tree_fixture();
+		$this->tree_list_table();
+		$GLOBALS['wp_the_query'] = new WP_Query();
+		$GLOBALS['wp_the_query']->set( 'lingolane_tree_off', true );
+		$previous = $_POST;
+		$_POST['action'] = 'inline-save';
+		$_POST['screen'] = 'edit-page';
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		try {
+			// Real AJAX case: get_current_screen() is null, core sends $_POST['screen'].
+			$GLOBALS['current_screen'] = null;
+			$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
+			$this->assertArrayHasKey( 'lingolane_progress', $states );
+			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+
+			// Mocked screen case.
+			set_current_screen( 'edit-page' );
+			$states = Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) );
+			$this->assertArrayHasKey( 'lingolane_progress', $states );
+			$this->assertStringContainsString( '2/3', $states['lingolane_progress'] );
+
+			$_POST['action'] = 'other-action';
+			$this->assertSame( array(), Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) ) );
+			$_POST['action'] = 'inline-save';
+			set_current_screen( 'front' );
+			unset( $_POST['screen'] );
+			$this->assertSame( array(), Lingolane_Tree::post_states( array(), get_post( $ids['A'] ) ) );
+		} finally {
+			remove_filter( 'wp_doing_ajax', '__return_true' );
+			$_POST = $previous;
+		}
+	}
+
 	private function printed_templates() {
 		ob_start();
 		Lingolane_Tree::print_templates( 'bottom' );
@@ -345,7 +492,7 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		$this->assertStringContainsString( 'value="' . $ids['A_en'] . '"', $html );
 		$this->assertStringContainsString( 'id="inline_' . $ids['A_en'] . '"', $html );
 		$this->assertStringContainsString( 'lingolane-tree-missing', $html );
-		$this->assertStringContainsString( 'class="colspanchange" colspan="', $html );
+		$this->assertStringContainsString( 'class="colspanchange column-title" colspan="', $html );
 		$this->assertStringContainsString( 'data-lingolane-lang="fr"', $html );
 		$this->assertStringContainsString( esc_url( Lingolane_Admin::translate_url( $ids['A'], 'fr' ) ), $html );
 	}
@@ -437,7 +584,7 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		Lingolane_Tree::remember( $ids['A_en'] );
 		Lingolane_Tree::remember( $ids['A_fr'] );
 		$html = $this->printed_templates();
-		$this->assertSame( 1, substr_count( $html, 'id="post-' . $ids['A'] . '"' ) );
+		$this->assertSame( 0, substr_count( $html, 'id="post-' . $ids['A'] . '"' ) );
 		$this->assertSame( 0, substr_count( $html, 'id="post-' . $ids['A_en'] . '"' ) );
 		$this->assertSame( 0, substr_count( $html, 'id="post-' . $ids['A_fr'] . '"' ) );
 		$this->assertStringNotContainsString( 'data-lingolane-leader="' . $ids['A_fr'] . '"', $html );
