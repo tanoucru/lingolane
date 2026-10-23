@@ -68,14 +68,15 @@ class Lingolane_Columns {
     public static function columns( $columns ) {
         unset( $columns['lingolane_language'] );
         $result = array();
-        foreach ( $columns as $key => $label ) {
-            $result[ $key ] = $label;
+        $label  = self::tree_screen() ? __( 'Language', 'lingolane' ) : __( 'Languages', 'lingolane' );
+        foreach ( $columns as $key => $title ) {
+            $result[ $key ] = $title;
             if ( 'title' === $key ) {
-                $result['lingolane_language'] = __( 'Languages', 'lingolane' );
+                $result['lingolane_language'] = $label;
             }
         }
         if ( ! isset( $result['lingolane_language'] ) ) {
-            $result['lingolane_language'] = __( 'Languages', 'lingolane' );
+            $result['lingolane_language'] = $label;
         }
         return $result;
     }
@@ -89,6 +90,25 @@ class Lingolane_Columns {
         $current = Lingolane_Elements::get_language( $type, $id );
         $trid    = Lingolane_Elements::get_trid( $type, $id );
         $shared  = Lingolane_Shared::post( $post ) && ! $trid;
+
+        // In tree mode: display flag for the post's own language only (no clutter of other languages).
+        if ( self::tree_screen() ) {
+            echo '<div class="lingolane-col lingolane-col--tree">';
+            if ( $shared ) {
+                echo '<span class="lingolane-chip lingolane-chip--muted" title="' . esc_attr__( 'Shown in every language', 'lingolane' ) . '">' . esc_html__( 'Shared', 'lingolane' ) . '</span>';
+            } else {
+                $lang_name = Lingolane_Languages::name( $current );
+                $flag_svg  = class_exists( 'Lingolane_Flags' ) ? Lingolane_Flags::get_flag_svg( $current, 24, 18, 'lingolane-flag--shadow' ) : '';
+                /* translators: 1: language name, 2: uppercase code */
+                $title     = sprintf( __( 'Written in %1$s (%2$s)', 'lingolane' ), $lang_name, strtoupper( $current ) );
+                echo '<span class="lingolane-tree-flag" title="' . esc_attr( $title ) . '">';
+                echo $flag_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG vector flag.
+                echo '<span class="lingolane-tree-flag__name">' . esc_html( $lang_name ) . '</span>';
+                echo '</span>';
+            }
+            echo '</div>';
+            return;
+        }
 
         echo '<div class="lingolane-col">';
         /* translators: %s: language */
