@@ -131,8 +131,8 @@ class Test_Lingolane_Support extends Lingolane_TestCase {
 		$this->assertStringContainsString( 'https://example.test/help/', ob_get_clean() );
 	}
 
-	public function test_security_link_defaults_to_wordpress_org_guide_and_is_filterable() {
-		$this->assertStringStartsWith( 'https://developer.wordpress.org/', Lingolane_Support::security_url() );
+	public function test_security_link_defaults_to_author_email_and_is_filterable() {
+		$this->assertStringStartsWith( 'mailto:' . Lingolane_Support::SECURITY_EMAIL, Lingolane_Support::security_url() );
 		add_filter( 'lingolane_security_url', function () {
 			return 'https://example.test/security/';
 		} );
