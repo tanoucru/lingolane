@@ -40,6 +40,7 @@ require_once LINGOLANE_DIR . 'includes/class-lingolane-strings.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-locations.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-sources.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-blocks.php';
+require_once LINGOLANE_DIR . 'admin/class-lingolane-string-scan.php';
 
 register_activation_hook( __FILE__, array( 'Lingolane_Install', 'activate' ) );
 add_action( 'plugins_loaded', array( 'Lingolane_Install', 'maybe_upgrade' ) );
@@ -54,6 +55,7 @@ Lingolane_Links::init();
 Lingolane_Strings::init();
 Lingolane_String_Sources::init();
 Lingolane_String_Blocks::init();
+Lingolane_String_Scan::init();
 Lingolane_Packs::init();
 
 if ( ! defined( 'LINGOLANE_NO_LEGACY' ) ) { require_once LINGOLANE_DIR . 'includes/compat-legacy.php'; }
