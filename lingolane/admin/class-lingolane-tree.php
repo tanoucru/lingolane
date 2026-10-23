@@ -97,7 +97,24 @@ class Lingolane_Tree {
     }
 
     public static function post_class( $classes, $class, $post_id ) {
-        if ( isset( self::$matches[ (int) $post_id ] ) ) { $classes[] = 'lingolane-tree-match'; }
+        $post_id = (int) $post_id;
+        if ( isset( self::$matches[ $post_id ] ) ) { $classes[] = 'lingolane-tree-match'; }
+        if ( Lingolane_Columns::tree_screen() ) {
+            self::remember( $post_id );
+            $post = get_post( $post_id );
+            if ( $post ) {
+                $type = 'post_' . $post->post_type;
+                $lang = Lingolane_Elements::get_language( $type, $post_id );
+                if ( $lang ) {
+                    $classes[] = 'lingolane-lang-' . sanitize_html_class( $lang );
+                }
+                $trid   = Lingolane_Elements::get_trid( $type, $post_id );
+                $shared = Lingolane_Shared::post( $post ) && ! $trid;
+                if ( $shared ) {
+                    $classes[] = 'lingolane-lang-shared';
+                }
+            }
+        }
         return $classes;
     }
 

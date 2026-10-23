@@ -15,9 +15,23 @@ class Lingolane_Columns {
         if ( ! $screen || ! in_array( $screen->post_type, Lingolane_Query::post_types(), true ) ) { return; }
         wp_enqueue_style( 'lingolane-admin', LINGOLANE_URL . 'assets/admin.css', array(), LINGOLANE_VERSION );
         if ( self::tree_screen() ) {
+            $flags = array();
+            if ( class_exists( 'Lingolane_Flags' ) ) {
+                foreach ( Lingolane_Languages::all() as $language ) {
+                    $code = $language['code'];
+                    $name = $language['name'];
+                    $flags[ $code ] = array(
+                        'name'  => $name,
+                        /* translators: 1: language name, 2: uppercase code */
+                        'title' => sprintf( __( 'Written in %1$s (%2$s)', 'lingolane' ), $name, strtoupper( $code ) ),
+                        'svg'   => Lingolane_Flags::get_flag_svg( $code, 18, 13, 'lingolane-flag--shadow' ),
+                    );
+                }
+            }
             wp_enqueue_script( 'lingolane-tree', LINGOLANE_URL . 'assets/tree.js', array(), LINGOLANE_VERSION, true );
             wp_localize_script( 'lingolane-tree', 'lingolaneTree', array(
                 'postType' => $screen->post_type,
+                'flags'    => $flags,
                 'i18n'     => array(
                     'expandAll'   => __( 'Expand all', 'lingolane' ),
                     'collapseAll' => __( 'Collapse all', 'lingolane' ),
@@ -25,6 +39,7 @@ class Lingolane_Columns {
                     'show'        => __( 'Show translations of %s', 'lingolane' ),
                     /* translators: %s: post title */
                     'hide'        => __( 'Hide translations of %s', 'lingolane' ),
+                    'shared'      => __( 'Shared', 'lingolane' ),
                 ),
                 'icons'    => array(
                     'open'   => Lingolane_UI::icon( 'chevron-down', 16, '', true ),
@@ -67,8 +82,11 @@ class Lingolane_Columns {
 
     public static function columns( $columns ) {
         unset( $columns['lingolane_language'] );
+        if ( self::tree_screen() ) {
+            return $columns;
+        }
         $result = array();
-        $label  = self::tree_screen() ? __( 'Language', 'lingolane' ) : __( 'Languages', 'lingolane' );
+        $label  = __( 'Languages', 'lingolane' );
         foreach ( $columns as $key => $title ) {
             $result[ $key ] = $title;
             if ( 'title' === $key ) {
