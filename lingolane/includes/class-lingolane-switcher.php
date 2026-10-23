@@ -13,6 +13,7 @@ class Lingolane_Switcher {
     private static $dialog_printed = false;
 
     public static function init() {
+        add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_assets' ) );
         add_shortcode( 'lingolane_switcher', array( __CLASS__, 'shortcode' ) );
         add_action( 'widgets_init', array( __CLASS__, 'register_widget' ) );
         add_filter( 'wp_nav_menu_objects', array( __CLASS__, 'menu_items' ), 10, 2 );
@@ -21,10 +22,21 @@ class Lingolane_Switcher {
         add_action( 'wp_footer', array( __CLASS__, 'print_dialog' ) );
     }
 
+    public static function register_assets() {
+        wp_register_style( 'lingolane-switcher', LINGOLANE_URL . 'assets/switcher.css', array(), LINGOLANE_VERSION );
+        wp_register_script( 'lingolane-switcher', LINGOLANE_URL . 'assets/switcher.js', array(), LINGOLANE_VERSION, true );
+    }
+
     /**
      * Print CSS and JS once, only on pages that render the switcher.
      */
     public static function assets() {
+        if ( wp_style_is( 'lingolane-switcher', 'registered' ) ) {
+            wp_enqueue_style( 'lingolane-switcher' );
+        }
+        if ( wp_script_is( 'lingolane-switcher', 'registered' ) ) {
+            wp_enqueue_script( 'lingolane-switcher' );
+        }
         if ( self::$assets_printed ) { return ''; }
         self::$assets_printed = true;
 
