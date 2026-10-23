@@ -37,6 +37,7 @@ require_once LINGOLANE_DIR . 'includes/class-lingolane-switcher.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-seo.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-links.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-strings.php';
+require_once LINGOLANE_DIR . 'includes/class-lingolane-string-locations.php';
 
 register_activation_hook( __FILE__, array( 'Lingolane_Install', 'activate' ) );
 add_action( 'plugins_loaded', array( 'Lingolane_Install', 'maybe_upgrade' ) );

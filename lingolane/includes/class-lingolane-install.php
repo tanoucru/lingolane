@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 class Lingolane_Install {
-    const DB_VERSION = '0.4.0';
+    const DB_VERSION = '0.5.0';
 
     /** Adopts data written by the pre-release "tml_" builds (tables and settings), once. */
     public static function migrate_legacy() {
@@ -23,6 +23,16 @@ class Lingolane_Install {
 
     public static function maybe_upgrade() {
         if ( get_option( 'lingolane_db_version' ) !== self::DB_VERSION ) { self::activate(); }
+    }
+
+    public static function verify_tables( $tables ) {
+        global $wpdb;
+        foreach ( (array) $tables as $table ) {
+            if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) ) !== $table ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static function activate() {
@@ -57,7 +67,27 @@ class Lingolane_Install {
             PRIMARY KEY  (id),
             UNIQUE KEY string_language (domain,source_hash,language_code)
         ) $charset;" );
-        if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $strings ) ) ) === $strings && $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) ) === $table ) {
+        $locations = $wpdb->prefix . 'lingolane_string_locations';
+        dbDelta( "CREATE TABLE $locations (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            domain varchar(100) NOT NULL,
+            source_hash char(32) NOT NULL,
+            occurrence_hash char(64) NOT NULL,
+            group_key varchar(20) NOT NULL,
+            subgroup varchar(100) NOT NULL DEFAULT '',
+            provider varchar(30) NOT NULL DEFAULT '',
+            object_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            field varchar(100) NOT NULL DEFAULT '',
+            page_path text NOT NULL,
+            locator text NOT NULL,
+            supported tinyint(1) NOT NULL DEFAULT 1,
+            last_seen datetime NOT NULL,
+            PRIMARY KEY  (id),
+            UNIQUE KEY domain_source_occ (domain,source_hash,occurrence_hash),
+            KEY group_subgroup (group_key,subgroup),
+            KEY group_domain_source (group_key,domain,source_hash)
+        ) $charset;" );
+        if ( self::verify_tables( array( $table, $strings, $locations ) ) ) {
             update_option( 'lingolane_db_version', self::DB_VERSION );
         }
         add_option( 'lingolane_settings', Lingolane_Languages::defaults() );
