@@ -60,7 +60,15 @@ Cài đè trực tiếp lên check.local, không sao lưu trước (đã thống
 2. Trạng thái kiểm tra qua WP-CLI:
    - Trạng thái plugin: **Active**
    - Bảng cơ sở dữ liệu: `wp_lingolane_string_locations`, `wp_lingolane_strings`, `wp_lingolane_translations` đã sẵn sàng và liên kết khoá ngoại toàn vẹn.
-   - Dữ liệu 10 nhóm vị trí: Khởi tạo đầy đủ và phản hồi chính xác số lượng chuỗi cho giao diện admin.
+   - Dữ liệu 10 nhóm vị trí: Khởi tạo đầy đủ và phản hồi chính xác số lượng chuỗi cho giao diện admin (`lingolane-groups-nav` và `lingolane-groups-list` render thành công 42,498 bytes HTML).
+3. Đã phát hiện và xử lý dứt điểm 2 lỗi giao thức frontend:
+   - **Lỗi ánh xạ Token phiên quét (Scan Session Handshake):** `string-groups.js` truyền query string `?lingolane_scan=1&token=<sessionId>`, PHP backend đã được hoàn thiện để trích xuất cả `$_GET['token']` lẫn `$_GET['lingolane_scan']` thay vì giá trị mặc định `1`.
+   - **Lỗi nạp lớp Lingolane_Admin ở Frontend:** Chuyển `require_once class-lingolane-admin.php` ra ngoài điều kiện `is_admin()` trong `lingolane.php` để hook `wp_enqueue_scripts` của `Lingolane_String_Scan::enqueue_frontend_scripts()` gọi `can_translate()` an toàn trên frontend iframe mà không bị fatal error.
+4. Kiểm thử quét end-to-end trực tiếp trên `check.local`:
+   - `Lingolane_String_Scan::pages()`: Khám phá thành công 8 trang hợp lệ (Home, Posts, Pages, Archive).
+   - `Lingolane_String_Scan::start()`: Khởi tạo session thành công với transient TTL 900s.
+   - `Lingolane_String_Scan::accept()`: Tiếp nhận 1 item, lưu trữ hoàn chỉnh vào `wp_lingolane_string_locations` (id=1, group_key=site, subgroup=header, locator=option:blogname, supported=1).
+   - Kiểm tra Enqueue: `lingolane-string-scan` script & style được nạp chính xác cho admin/translator và bị từ chối triệt để đối với khách vãng lai (guest).
 
 ---
 

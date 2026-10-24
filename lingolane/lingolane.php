@@ -40,6 +40,7 @@ require_once LINGOLANE_DIR . 'includes/class-lingolane-strings.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-locations.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-sources.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-blocks.php';
+require_once LINGOLANE_DIR . 'admin/class-lingolane-admin.php';
 require_once LINGOLANE_DIR . 'admin/class-lingolane-string-scan.php';
 
 register_activation_hook( __FILE__, array( 'Lingolane_Install', 'activate' ) );
@@ -63,7 +64,6 @@ if ( ! defined( 'LINGOLANE_NO_LEGACY' ) ) { require_once LINGOLANE_DIR . 'includ
 if ( is_admin() ) {
     require_once LINGOLANE_DIR . 'admin/class-lingolane-stats.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-ui.php';
-    require_once LINGOLANE_DIR . 'admin/class-lingolane-admin.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-strings-admin.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-metabox.php';
     require_once LINGOLANE_DIR . 'admin/class-lingolane-columns.php';
