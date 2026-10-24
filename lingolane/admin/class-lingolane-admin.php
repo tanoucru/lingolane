@@ -503,9 +503,10 @@ class Lingolane_Admin {
 
     public static function save_ai_settings() {
         self::guard( 'lingolane_save_ai_settings' );
-        $api_key      = isset( $_POST['gemini_api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['gemini_api_key'] ) ) : '';
-        $model        = isset( $_POST['gemini_model'] ) ? sanitize_text_field( wp_unslash( $_POST['gemini_model'] ) ) : 'gemini-2.5-flash';
-        $auto_approve = ! empty( $_POST['auto_approve'] ) ? 1 : 0;
+        $api_key      = self::post_text( 'gemini_api_key' );
+        $model        = self::post_text( 'gemini_model' );
+        $model        = '' !== $model ? $model : 'gemini-2.5-flash';
+        $auto_approve = ! empty( $_POST['auto_approve'] ) ? 1 : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
         Lingolane_AI::save_settings( array(
             'gemini_api_key' => $api_key,
