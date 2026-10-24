@@ -43,6 +43,7 @@ require_once LINGOLANE_DIR . 'includes/class-lingolane-string-sources.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-string-blocks.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-incontext.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-ai.php';
+require_once LINGOLANE_DIR . 'includes/class-lingolane-ai-post.php';
 require_once LINGOLANE_DIR . 'admin/class-lingolane-admin.php';
 require_once LINGOLANE_DIR . 'admin/class-lingolane-string-scan.php';
 
@@ -62,6 +63,7 @@ Lingolane_String_Blocks::init();
 Lingolane_String_Scan::init();
 Lingolane_Incontext::init();
 Lingolane_AI::init();
+Lingolane_AI_Post::init();
 Lingolane_Packs::init();
 
 if ( ! defined( 'LINGOLANE_NO_LEGACY' ) ) { require_once LINGOLANE_DIR . 'includes/compat-legacy.php'; }
