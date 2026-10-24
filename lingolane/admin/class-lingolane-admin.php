@@ -21,6 +21,7 @@ class Lingolane_Admin {
         add_action( 'admin_post_lingolane_save_full_settings', array( __CLASS__, 'save_full_settings' ) );
         add_action( 'admin_post_lingolane_flush_cache', array( __CLASS__, 'flush_cache' ) );
         add_action( 'admin_post_lingolane_scan_theme_strings', array( __CLASS__, 'scan_theme_strings' ) );
+        add_action( 'admin_post_lingolane_save_ai_settings', array( __CLASS__, 'save_ai_settings' ) );
     }
 
     /* ------------------------------------------------------------------ helpers */
@@ -31,12 +32,22 @@ class Lingolane_Admin {
         return ( $screen && 'toplevel_page_lingolane' === $screen->id ) ? $classes . ' lingolane-screen' : $classes;
     }
 
+    public static function can_translate() {
+        return current_user_can( 'lingolane_translate' ) || current_user_can( 'manage_options' );
+    }
+
     public static function tabs() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return array(
+                'strings' => array( __( 'Interface strings', 'lingolane' ), 'type' ),
+            );
+        }
         return array(
             'overview'  => array( __( 'Overview', 'lingolane' ), 'layout-dashboard' ),
             'content'   => array( __( 'Posts & pages', 'lingolane' ), 'files' ),
             'strings'   => array( __( 'Interface strings', 'lingolane' ), 'type' ),
             'languages' => array( __( 'Languages', 'lingolane' ), 'languages' ),
+            'ai'        => array( __( 'Dịch AI', 'lingolane' ), 'sparkles' ),
             'settings'  => array( __( 'Settings', 'lingolane' ), 'settings' ),
             'guide'     => array( __( 'Guide', 'lingolane' ), 'book-open' ),
             'support'   => array( __( 'Support', 'lingolane' ), 'life-buoy' ),
@@ -50,8 +61,9 @@ class Lingolane_Admin {
     }
 
     private static function current_tab() {
-        $tab = isset( $_GET['tab'] ) && is_string( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'overview'; // phpcs:ignore WordPress.Security.NonceVerification
-        return array_key_exists( $tab, self::tabs() ) ? $tab : 'overview';
+        $default = current_user_can( 'manage_options' ) ? 'overview' : 'strings';
+        $tab = isset( $_GET['tab'] ) && is_string( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : $default; // phpcs:ignore WordPress.Security.NonceVerification
+        return array_key_exists( $tab, self::tabs() ) ? $tab : $default;
     }
 
     /** One-time message shown after a redirect. */
@@ -78,8 +90,19 @@ class Lingolane_Admin {
         check_admin_referer( $nonce );
     }
 
+    public static function translation_guard( $nonce ) {
+        if ( ! self::can_translate() ) {
+            wp_die( esc_html__( 'You do not have permission to perform this action.', 'lingolane' ), '', array( 'response' => 403, 'back_link' => true ) );
+        }
+        check_admin_referer( $nonce );
+    }
+
     private static function post_text( $key ) {
         return isset( $_POST[ $key ] ) && is_string( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+    }
+
+    private static function post_url( $key ) {
+        return isset( $_POST[ $key ] ) && is_string( $_POST[ $key ] ) ? esc_url_raw( sanitize_url( wp_unslash( $_POST[ $key ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
     }
 
     private static function settings() {
@@ -118,9 +141,10 @@ class Lingolane_Admin {
     /* ------------------------------------------------------------------ menu & assets */
 
     public static function menu() {
-        add_menu_page( __( 'Lingolane — Languages', 'lingolane' ), __( 'Multilingual', 'lingolane' ), 'manage_options', self::PAGE, array( __CLASS__, 'render' ), 'dashicons-translation', 27 );
+        add_menu_page( __( 'Lingolane — Languages', 'lingolane' ), __( 'Multilingual', 'lingolane' ), 'lingolane_translate', self::PAGE, array( __CLASS__, 'render' ), 'dashicons-translation', 27 );
         foreach ( self::tabs() as $tab => $meta ) {
-            add_submenu_page( self::PAGE, $meta[0], $meta[0], 'manage_options', 'overview' === $tab ? self::PAGE : 'admin.php?page=' . self::PAGE . '&tab=' . $tab, 'overview' === $tab ? array( __CLASS__, 'render' ) : null );
+            $sub_cap = ( 'settings' === $tab || 'languages' === $tab || 'support' === $tab ) ? 'manage_options' : 'lingolane_translate';
+            add_submenu_page( self::PAGE, $meta[0], $meta[0], $sub_cap, 'overview' === $tab ? self::PAGE : 'admin.php?page=' . self::PAGE . '&tab=' . $tab, 'overview' === $tab ? array( __CLASS__, 'render' ) : null );
         }
     }
 
@@ -179,6 +203,34 @@ class Lingolane_Admin {
             'icons'   => self::toast_icons(),
             'presets' => self::presets(),
         ) );
+        wp_enqueue_script( 'lingolane-ai-translate', LINGOLANE_URL . 'assets/ai-translate.js', array( 'jquery' ), LINGOLANE_VERSION, true );
+        wp_localize_script( 'lingolane-ai-translate', 'lingolaneAIConfig', array(
+            'ajax'  => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( Lingolane_AI::NONCE_ACTION ),
+        ) );
+        if ( 'strings' === self::current_tab() ) {
+            wp_enqueue_script( 'lingolane-string-groups', LINGOLANE_URL . 'assets/string-groups.js', array( 'lingolane-admin', 'lingolane-ai-translate' ), LINGOLANE_VERSION, true );
+            wp_localize_script( 'lingolane-string-groups', 'lingolaneStringGroups', array(
+                'ajax_url'            => admin_url( 'admin-ajax.php' ),
+                'nonce_save'          => wp_create_nonce( 'lingolane_strings_ajax' ),
+                'nonce_save_identity' => wp_create_nonce( 'lingolane_strings_save_identity' ),
+                'nonce_save_term'     => wp_create_nonce( 'lingolane_terms_ajax' ),
+                'nonce_scan'          => wp_create_nonce( 'lingolane_scan_ajax' ),
+                'home_url'            => home_url( '/' ),
+                'i18n'                => array(
+                    'saving'       => __( 'Saving…', 'lingolane' ),
+                    'saved'        => __( 'Saved', 'lingolane' ),
+                    'failed'       => __( 'Could not save. Please try again.', 'lingolane' ),
+                    'unsaved'      => __( 'You have unsaved translations. Leave anyway?', 'lingolane' ),
+                    'copied'       => __( 'Copied identifier: ', 'lingolane' ),
+                    'scanning'     => __( 'Scanning…', 'lingolane' ),
+                    'scanComplete' => __( 'Scan complete! Strings updated.', 'lingolane' ),
+                    'selectPages'  => __( 'Please select at least one page to scan.', 'lingolane' ),
+                    /* translators: 1: current page index, 2: total pages, 3: page path */
+                    'pageProgress' => __( 'Scanning page %1$d of %2$d: %3$s', 'lingolane' ),
+                ),
+            ) );
+        }
         if ( 'support' === self::current_tab() ) {
             wp_enqueue_style( 'lingolane-support', LINGOLANE_URL . 'assets/support.css', array( 'lingolane-admin' ), LINGOLANE_VERSION );
             wp_enqueue_script( 'lingolane-support', LINGOLANE_URL . 'assets/support.js', array( 'lingolane-admin' ), LINGOLANE_VERSION, true );
@@ -195,6 +247,19 @@ class Lingolane_Admin {
                     'expected'   => __( 'Expected', 'lingolane' ),
                     'page'       => __( 'Page', 'lingolane' ),
                     'report'     => __( 'System report', 'lingolane' ),
+                ),
+            ) );
+        }
+        if ( 'ai' === self::current_tab() ) {
+            wp_enqueue_script( 'lingolane-ai-settings', LINGOLANE_URL . 'assets/ai-settings.js', array( 'jquery', 'lingolane-admin' ), LINGOLANE_VERSION, true );
+            wp_localize_script( 'lingolane-ai-settings', 'lingolaneAISettings', array(
+                'ajax'    => admin_url( 'admin-ajax.php' ),
+                'nonce'   => wp_create_nonce( Lingolane_AI::NONCE_ACTION ),
+                'i18n'    => array(
+                    'testing'     => __( 'Đang kiểm tra kết nối...', 'lingolane' ),
+                    'testSuccess' => __( 'Kết nối thành công!', 'lingolane' ),
+                    'testFailed'  => __( 'Lỗi kết nối:', 'lingolane' ),
+                    'emptyKey'    => __( 'Vui lòng nhập API Key trước khi kiểm tra.', 'lingolane' ),
                 ),
             ) );
         }
@@ -377,6 +442,29 @@ class Lingolane_Admin {
         $settings['fallback_to_untranslated'] = ! empty( $_POST['fallback_to_untranslated'] ); // phpcs:ignore WordPress.Security.NonceVerification
         $settings['url_mode'] = 'directory';
 
+        // Switcher display options.
+        $switcher_style = self::post_text( 'switcher_style' );
+        if ( in_array( $switcher_style, array( 'list', 'dropdown', 'pills', 'select' ), true ) ) {
+            $settings['switcher_style'] = $switcher_style;
+        }
+        $switcher_show = self::post_text( 'switcher_show' );
+        if ( in_array( $switcher_show, array( 'flag_name', 'flag_code', 'flag_only', 'name', 'code' ), true ) ) {
+            $settings['switcher_show'] = $switcher_show;
+        }
+        $switcher_shape = self::post_text( 'switcher_flag_shape' );
+        if ( in_array( $switcher_shape, array( 'rect', 'round', 'square' ), true ) ) {
+            $settings['switcher_flag_shape'] = $switcher_shape;
+        }
+
+        // Untranslated behavior options.
+        $untrans_action = self::post_text( 'untranslated_action' );
+        $settings['untranslated_action'] = ( 'redirect' === $untrans_action ) ? 'redirect' : 'notice';
+
+        $untrans_notice = self::post_text( 'untranslated_notice' );
+        $settings['untranslated_notice'] = '' !== $untrans_notice ? $untrans_notice : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+
+        $settings['untranslated_redirect_url'] = self::post_url( 'untranslated_redirect_url' );
+
         update_option( 'lingolane_settings', $settings );
         Lingolane_Strings::flush_cache();
         Lingolane_Stats::flush_strings();
@@ -395,7 +483,7 @@ class Lingolane_Admin {
     }
 
     public static function scan_theme_strings() {
-        self::guard( 'lingolane_scan_theme_strings' );
+        self::translation_guard( 'lingolane_scan_theme_strings' );
         $result = Lingolane_Strings_Admin::scan_theme_strings();
         Lingolane_Stats::flush_strings();
         $parts = array();
@@ -413,10 +501,27 @@ class Lingolane_Admin {
         self::redirect( 'strings', array( 'status' => 'missing' ) );
     }
 
+    public static function save_ai_settings() {
+        self::guard( 'lingolane_save_ai_settings' );
+        $api_key      = self::post_text( 'gemini_api_key' );
+        $model        = self::post_text( 'gemini_model' );
+        $model        = '' !== $model ? $model : 'gemini-2.5-flash';
+        $auto_approve = ! empty( $_POST['auto_approve'] ) ? 1 : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+        Lingolane_AI::save_settings( array(
+            'gemini_api_key' => $api_key,
+            'gemini_model'   => $model,
+            'auto_approve'   => $auto_approve,
+        ) );
+
+        self::flash( 'success', __( 'Đã lưu thiết lập Dịch AI thành công.', 'lingolane' ) );
+        self::redirect( 'ai' );
+    }
+
     /* ------------------------------------------------------------------ page shell */
 
     public static function render() {
-        if ( ! current_user_can( 'manage_options' ) ) { return; }
+        if ( ! self::can_translate() ) { return; }
         $tab = self::current_tab();
         ?>
         <div class="wrap lingolane-wrap">
@@ -451,13 +556,14 @@ class Lingolane_Admin {
             <main class="lingolane-body">
                 <?php
                 switch ( $tab ) {
-                    case 'content':   self::render_content(); break;
+                    case 'content':   if ( current_user_can( 'manage_options' ) ) { self::render_content(); } break;
                     case 'strings':   Lingolane_Strings_Admin::render_tab_content(); break;
-                    case 'languages': self::render_languages(); break;
-                    case 'settings':  self::render_settings(); break;
+                    case 'languages': if ( current_user_can( 'manage_options' ) ) { self::render_languages(); } break;
+                    case 'ai':        if ( current_user_can( 'manage_options' ) ) { self::render_ai(); } break;
+                    case 'settings':  if ( current_user_can( 'manage_options' ) ) { self::render_settings(); } break;
                     case 'guide':     self::render_guide(); break;
-                    case 'support':   Lingolane_Support::render(); break;
-                    default:          self::render_overview();
+                    case 'support':   if ( current_user_can( 'manage_options' ) ) { Lingolane_Support::render(); } break;
+                    default:          if ( current_user_can( 'manage_options' ) ) { self::render_overview(); } else { Lingolane_Strings_Admin::render_tab_content(); } break;
                 }
                 ?>
             </main>
@@ -1028,6 +1134,12 @@ class Lingolane_Admin {
         $types    = Lingolane_Query::post_types();
         $taxes    = Lingolane_Query::taxonomies();
         $fallback = ! empty( $settings['fallback_to_untranslated'] );
+        $sw_style = isset( $settings['switcher_style'] ) ? $settings['switcher_style'] : 'list';
+        $sw_show  = isset( $settings['switcher_show'] ) ? $settings['switcher_show'] : 'flag_name';
+        $sw_shape = isset( $settings['switcher_flag_shape'] ) ? $settings['switcher_flag_shape'] : 'rect';
+        $untrans_action = isset( $settings['untranslated_action'] ) ? $settings['untranslated_action'] : 'notice';
+        $untrans_notice = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+        $untrans_url    = ! empty( $settings['untranslated_redirect_url'] ) ? $settings['untranslated_redirect_url'] : '';
         $skip_types = array( 'attachment', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'wp_font_family', 'wp_font_face' );
         $skip_taxes = array( 'nav_menu', 'link_category', 'post_format', 'wp_theme', 'wp_template_part_area', 'wp_pattern_category' );
         ?>
@@ -1049,10 +1161,70 @@ class Lingolane_Admin {
 
             <section class="lingolane-card lingolane-setting">
                 <div class="lingolane-setting__intro">
-                    <h2><?php esc_html_e( 'When a translation is missing', 'lingolane' ); ?></h2>
-                    <p><?php esc_html_e( 'Untranslated pages always open the original with a small notice for visitors and never return a 404 error.', 'lingolane' ); ?></p>
+                    <h2><?php esc_html_e( 'Language switcher display', 'lingolane' ); ?></h2>
+                    <p><?php esc_html_e( 'Configure how the language switcher button appears across the site by default.', 'lingolane' ); ?></p>
                 </div>
                 <div class="lingolane-setting__control">
+                    <p>
+                        <label for="lingolane-switcher-style"><strong><?php esc_html_e( 'Display style', 'lingolane' ); ?></strong></label><br>
+                        <select id="lingolane-switcher-style" name="switcher_style" class="regular-text">
+                            <option value="list" <?php selected( $sw_style, 'list' ); ?>><?php esc_html_e( 'Horizontal list (inline items)', 'lingolane' ); ?></option>
+                            <option value="dropdown" <?php selected( $sw_style, 'dropdown' ); ?>><?php esc_html_e( 'Dropdown menu (clean select panel)', 'lingolane' ); ?></option>
+                            <option value="pills" <?php selected( $sw_style, 'pills' ); ?>><?php esc_html_e( 'Pills / Rounded button group', 'lingolane' ); ?></option>
+                            <option value="select" <?php selected( $sw_style, 'select' ); ?>><?php esc_html_e( 'Native select box', 'lingolane' ); ?></option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="lingolane-switcher-show"><strong><?php esc_html_e( 'Items to display', 'lingolane' ); ?></strong></label><br>
+                        <select id="lingolane-switcher-show" name="switcher_show" class="regular-text">
+                            <option value="flag_name" <?php selected( $sw_show, 'flag_name' ); ?>><?php esc_html_e( 'Flag & Language name (e.g. 🇻🇳 Tiếng Việt)', 'lingolane' ); ?></option>
+                            <option value="flag_code" <?php selected( $sw_show, 'flag_code' ); ?>><?php esc_html_e( 'Flag & Language code (e.g. 🇻🇳 VI)', 'lingolane' ); ?></option>
+                            <option value="flag_only" <?php selected( $sw_show, 'flag_only' ); ?>><?php esc_html_e( 'Flag only (e.g. 🇻🇳)', 'lingolane' ); ?></option>
+                            <option value="name" <?php selected( $sw_show, 'name' ); ?>><?php esc_html_e( 'Language name only', 'lingolane' ); ?></option>
+                            <option value="code" <?php selected( $sw_show, 'code' ); ?>><?php esc_html_e( 'Language code only', 'lingolane' ); ?></option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="lingolane-switcher-shape"><strong><?php esc_html_e( 'Flag shape', 'lingolane' ); ?></strong></label><br>
+                        <select id="lingolane-switcher-shape" name="switcher_flag_shape" class="regular-text">
+                            <option value="rect" <?php selected( $sw_shape, 'rect' ); ?>><?php esc_html_e( 'Rectangle (standard ratio)', 'lingolane' ); ?></option>
+                            <option value="round" <?php selected( $sw_shape, 'round' ); ?>><?php esc_html_e( 'Circle / Round', 'lingolane' ); ?></option>
+                            <option value="square" <?php selected( $sw_shape, 'square' ); ?>><?php esc_html_e( 'Square', 'lingolane' ); ?></option>
+                        </select>
+                    </p>
+                    <p class="lingolane-hint">
+                        <?php echo wp_kses( __( 'Template tag to place anywhere in source code: <code>&lt;?php if ( function_exists( \'lingolane_switcher\' ) ) { lingolane_switcher(); } ?&gt;</code> or shortcode <code>[lingolane_switcher]</code>.', 'lingolane' ), array( 'code' => array() ) ); ?>
+                    </p>
+                </div>
+            </section>
+
+            <section class="lingolane-card lingolane-setting">
+                <div class="lingolane-setting__intro">
+                    <h2><?php esc_html_e( 'When a translation is missing', 'lingolane' ); ?></h2>
+                    <p><?php esc_html_e( 'Choose what happens when visitors click a language switcher option for a page that has not been translated yet.', 'lingolane' ); ?></p>
+                </div>
+                <div class="lingolane-setting__control">
+                    <p>
+                        <label>
+                            <input type="radio" name="untranslated_action" value="notice" <?php checked( 'notice', $untrans_action ); ?>>
+                            <strong><?php esc_html_e( 'Stay on current page & display notice dialog', 'lingolane' ); ?></strong>
+                        </label>
+                    </p>
+                    <p style="margin-inline-start: 24px;">
+                        <label for="lingolane-untranslated-notice"><strong><?php esc_html_e( 'Notice message:', 'lingolane' ); ?></strong></label><br>
+                        <input type="text" id="lingolane-untranslated-notice" name="untranslated_notice" value="<?php echo esc_attr( $untrans_notice ); ?>" class="large-text" placeholder="<?php esc_attr_e( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' ); ?>">
+                    </p>
+                    <p>
+                        <label>
+                            <input type="radio" name="untranslated_action" value="redirect" <?php checked( 'redirect', $untrans_action ); ?>>
+                            <strong><?php esc_html_e( 'Redirect to custom fallback link', 'lingolane' ); ?></strong>
+                        </label>
+                    </p>
+                    <p style="margin-inline-start: 24px;">
+                        <label for="lingolane-untranslated-url"><strong><?php esc_html_e( 'Fallback redirect URL:', 'lingolane' ); ?></strong></label><br>
+                        <input type="url" id="lingolane-untranslated-url" name="untranslated_redirect_url" value="<?php echo esc_attr( $untrans_url ); ?>" class="large-text" placeholder="https://example.com/untranslated">
+                    </p>
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--lingolane-line);">
                     <label class="lingolane-switch">
                         <input type="checkbox" name="fallback_to_untranslated" value="1" <?php checked( $fallback ); ?>>
                         <span><strong><?php esc_html_e( 'Show untranslated posts in lists', 'lingolane' ); ?></strong>
@@ -1184,13 +1356,14 @@ class Lingolane_Admin {
 
                 <section class="lingolane-card" id="switcher">
                     <h2 class="lingolane-card__title"><?php esc_html_e( '4. Language switcher', 'lingolane' ); ?></h2>
-                    <p><?php esc_html_e( 'To place a language switcher anywhere:', 'lingolane' ); ?></p>
+                    <p><?php esc_html_e( 'To place a language switcher anywhere on your site:', 'lingolane' ); ?></p>
                     <ul class="lingolane-steps">
-                        <li><?php echo wp_kses( __( 'Shortcode: <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style="dropdown"]</code>, codes only <code>[lingolane_switcher show="code"]</code>.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( '<strong>PHP Template Tag:</strong> <code>&lt;?php if ( function_exists( \'lingolane_switcher\' ) ) { lingolane_switcher(); } ?&gt;</code> (supports <code>style</code>, <code>show</code>, <code>shape</code>, <code>class</code> options).', 'lingolane' ), array( 'strong' => array(), 'code' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( '<strong>Shortcode:</strong> <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style="dropdown"]</code>, flags only <code>[lingolane_switcher show="flag_only"]</code>, pills style <code>[lingolane_switcher style="pills"]</code>.', 'lingolane' ), array( 'strong' => array(), 'code' => array() ) ); ?></li>
                         <li><?php esc_html_e( 'Widget: Appearance › Widgets › “Select language”.', 'lingolane' ); ?></li>
                         <li><?php echo wp_kses( __( 'In a menu: add a Custom Link with the URL <code>#lingolane-switcher</code> and the label <code>{{lingolane}}</code>; it expands into one item per language.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
                     </ul>
-                    <p class="lingolane-hint"><?php esc_html_e( 'The switcher always links to the matching translation of the current page; untranslated pages link to the original with a notice.', 'lingolane' ); ?></p>
+                    <p class="lingolane-hint"><?php esc_html_e( 'The switcher always links to the matching translation of the current page; untranslated pages gracefully alert visitors or redirect to your configured fallback.', 'lingolane' ); ?></p>
                 </section>
 
                 <section class="lingolane-card" id="shared">
@@ -1205,6 +1378,123 @@ class Lingolane_Admin {
                         <li><?php esc_html_e( 'Every translated page automatically gets hreflang, x-default and canonical tags in the right language; Yoast SEO uses the same values.', 'lingolane' ); ?></li>
                         <li><?php esc_html_e( 'Internal links inside content automatically switch to the matching translation when one exists.', 'lingolane' ); ?></li>
                     </ul>
+                </section>
+            </div>
+        </div>
+        <?php
+    }
+
+    private static function render_ai() {
+        $settings = Lingolane_AI::get_settings();
+        $api_key  = Lingolane_AI::mask_key( $settings['gemini_api_key'] );
+        $model    = ! empty( $settings['gemini_model'] ) ? $settings['gemini_model'] : 'gemini-2.5-flash';
+        $auto_app = ! empty( $settings['auto_approve'] );
+        ?>
+        <div class="lingolane-guide lingolane-ai-settings-page">
+            <div class="lingolane-guide__intro">
+                <h2><?php esc_html_e( 'Cấu hình Dịch thuật AI (Song cơ chế: Chrome On-Device & Gemini)', 'lingolane' ); ?></h2>
+                <p><?php esc_html_e( 'Lingolane kết hợp trí tuệ nhân tạo on-device trực tiếp trên trình duyệt Chrome (miễn phí, tốc độ cao, bảo mật 100% không gửi dữ liệu ra ngoài) và đám mây Google Gemini Flash (chất lượng dịch cao, miễn phí từ Google AI Studio) để tự động dịch chuỗi giao diện và bài viết.', 'lingolane' ); ?></p>
+            </div>
+
+            <div class="lingolane-guide__cards">
+                <!-- Card 1: Chrome On-Device AI -->
+                <section class="lingolane-card" id="ai-chrome">
+                    <div class="lingolane-card__head" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="lingolane-card__title" style="margin:0; display:flex; align-items:center; gap:8px;">
+                            <?php echo Lingolane_UI::icon( 'sparkles', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php esc_html_e( '1. AI trên trình duyệt (Chrome On-Device Translator API)', 'lingolane' ); ?>
+                        </h2>
+                        <span id="lingolane-chrome-ai-badge" class="lingolane-chip lingolane-chip--neutral"><?php esc_html_e( 'Đang kiểm tra...', 'lingolane' ); ?></span>
+                    </div>
+                    <p><?php esc_html_e( 'Mô hình dịch ngôn ngữ tích hợp sẵn trong Google Chrome 138+ (hoặc kích hoạt cờ thử nghiệm trên Chrome 128+). Xử lý tức thì trên máy tính biên dịch viên, không tiêu tốn tài nguyên máy chủ và không mất bất kỳ chi phí nào.', 'lingolane' ); ?></p>
+                    <div id="lingolane-chrome-ai-status" class="lingolane-field-hint" style="margin-top:10px;">
+                        <?php esc_html_e( 'Trình duyệt đang khởi tạo kiểm tra tính khả dụng của Translation API...', 'lingolane' ); ?>
+                    </div>
+                </section>
+
+                <!-- Card 2: Google Gemini AI Settings -->
+                <section class="lingolane-card" id="ai-gemini">
+                    <div class="lingolane-card__head">
+                        <h2 class="lingolane-card__title" style="display:flex; align-items:center; gap:8px;">
+                            <?php echo Lingolane_UI::icon( 'sparkles', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php esc_html_e( '2. AI đám mây (Google Gemini Flash API)', 'lingolane' ); ?>
+                        </h2>
+                    </div>
+                    <p><?php esc_html_e( 'Được sử dụng làm nguồn dịch chất lượng cao hoặc dự phòng khi người dùng không sử dụng Chrome có AI trên thiết bị. Mọi yêu cầu được gửi an toàn từ máy chủ WordPress.', 'lingolane' ); ?></p>
+
+                    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="lingolane-settings-form" style="margin-top: 16px;">
+                        <input type="hidden" name="action" value="lingolane_save_ai_settings">
+                        <?php wp_nonce_field( 'lingolane_save_ai_settings' ); ?>
+
+                        <div class="lingolane-form-group" style="margin-bottom: 20px;">
+                            <label for="gemini_api_key" style="display:block; font-weight:600; margin-bottom:6px;">
+                                <?php esc_html_e( 'Google Gemini API Key', 'lingolane' ); ?>
+                            </label>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <input type="text" id="gemini_api_key" name="gemini_api_key" value="<?php echo esc_attr( $api_key ); ?>" placeholder="AIzaSy..." class="regular-text" style="font-family:monospace; min-width:320px;" autocomplete="off">
+                                <button type="button" id="lingolane-test-gemini-btn" class="button button-secondary">
+                                    <?php esc_html_e( 'Kiểm tra kết nối', 'lingolane' ); ?>
+                                </button>
+                            </div>
+                            <p class="description" style="margin-top:6px;">
+                                <?php esc_html_e( 'Khoá API được mã hoá lưu trữ an toàn trong cơ sở dữ liệu và chỉ gửi từ máy chủ.', 'lingolane' ); ?>
+                                <span id="lingolane-gemini-test-result" style="margin-left:8px; font-weight:600;"></span>
+                            </p>
+                        </div>
+
+                        <div class="lingolane-form-group" style="margin-bottom: 20px;">
+                            <label for="gemini_model" style="display:block; font-weight:600; margin-bottom:6px;">
+                                <?php esc_html_e( 'Phiên bản mô hình (Gemini Model)', 'lingolane' ); ?>
+                            </label>
+                            <select id="gemini_model" name="gemini_model" style="min-width:240px;">
+                                <option value="gemini-2.5-flash" <?php selected( $model, 'gemini-2.5-flash' ); ?>>gemini-2.5-flash (Khuyên dùng - Nhanh, chuẩn xác & tiết kiệm)</option>
+                                <option value="gemini-1.5-flash" <?php selected( $model, 'gemini-1.5-flash' ); ?>>gemini-1.5-flash (Ổn định)</option>
+                                <option value="gemini-1.5-pro" <?php selected( $model, 'gemini-1.5-pro' ); ?>>gemini-1.5-pro (Mô hình suy luận sâu)</option>
+                            </select>
+                        </div>
+
+                        <div class="lingolane-form-group" style="margin-bottom: 20px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="checkbox" name="auto_approve" value="1" <?php checked( $auto_app ); ?>>
+                                <span><?php esc_html_e( 'Tự động duyệt bản dịch máy', 'lingolane' ); ?></span>
+                            </label>
+                            <p class="description" style="margin-left: 24px;">
+                                <?php esc_html_e( 'Nếu bỏ chọn, các chuỗi và bài viết dịch bằng AI sẽ mang cờ "Máy dịch – chờ duyệt" để biên dịch viên rà soát lại trước khi xuất bản.', 'lingolane' ); ?>
+                            </p>
+                        </div>
+
+                        <p class="submit" style="margin:0; padding:0;">
+                            <button type="submit" class="button button-primary">
+                                <?php esc_html_e( 'Lưu thiết lập AI', 'lingolane' ); ?>
+                            </button>
+                        </p>
+                    </form>
+                </section>
+
+                <!-- Card 3: Free Gemini Key Guide -->
+                <section class="lingolane-card" id="ai-guide">
+                    <div class="lingolane-card__head">
+                        <h2 class="lingolane-card__title">
+                            <?php esc_html_e( '3. Hướng dẫn lấy API Key Gemini miễn phí', 'lingolane' ); ?>
+                        </h2>
+                    </div>
+                    <ol class="lingolane-steps">
+                        <li>
+                            <?php echo wp_kses( __( 'Truy cập <strong>Google AI Studio</strong> tại <a href="https://aistudio.google.com/" target="_blank" rel="noopener">aistudio.google.com</a> và đăng nhập bằng tài khoản Google.', 'lingolane' ), array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?>
+                        </li>
+                        <li>
+                            <?php esc_html_e( 'Bấm vào nút "Get API key" ở thanh điều hướng bên trái, sau đó chọn "Create API key".', 'lingolane' ); ?>
+                        </li>
+                        <li>
+                            <?php esc_html_e( 'Sao chép đoạn mã khoá (bắt đầu bằng AIzaSy...) và dán vào ô Google Gemini API Key bên trên.', 'lingolane' ); ?>
+                        </li>
+                        <li>
+                            <?php esc_html_e( 'Bấm nút "Kiểm tra kết nối" để xác nhận cấu hình hoạt động tốt, sau đó nhấn "Lưu thiết lập AI".', 'lingolane' ); ?>
+                        </li>
+                    </ol>
+                    <p class="lingolane-hint">
+                        <?php esc_html_e( 'Ghi chú về hạn mức: Google AI Studio cấp quota miễn phí 15 yêu cầu/phút và 1.500 yêu cầu/ngày cho mô hình Flash, hoàn toàn đáp ứng trọn vẹn nhu cầu dịch website.', 'lingolane' ); ?>
+                    </p>
                 </section>
             </div>
         </div>

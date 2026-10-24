@@ -4,7 +4,7 @@
 	var cfg = window.lingolaneTree;
 	var list = document.getElementById( 'the-list' );
 	var templates = document.querySelectorAll( 'template.lingolane-tree-tpl' );
-	if ( ! cfg || ! list || ! templates.length ) { return; }
+	if ( ! cfg || ! list ) { return; }
 
 	var groups = Object.create( null );
 	var children = Object.create( null );
@@ -23,10 +23,40 @@
 		try { window.localStorage.setItem( storageKey, JSON.stringify( collapsed ) ); } catch ( error ) { /* Storage may be disabled. */ }
 	}
 
+	function attachFlag( row, cell, anchor ) {
+		if ( ! cell || cell.querySelector( '.lingolane-title-flag' ) ) { return; }
+		var match = row.className.match( /\blingolane-lang-([a-z0-9_-]+)\b/ );
+		if ( ! match || ! match[1] ) { return; }
+		var code = match[1];
+		var wrap = document.createElement( 'span' );
+		wrap.className = 'lingolane-title-flag';
+		if ( 'shared' === code ) {
+			wrap.className += ' lingolane-title-flag--shared';
+			wrap.title = ( cfg.i18n && cfg.i18n.shared ) || 'Shared';
+			wrap.innerHTML = '<span class="lingolane-chip lingolane-chip--muted">' + ( ( cfg.i18n && cfg.i18n.shared ) || 'Shared' ) + '</span>';
+		} else {
+			var flagInfo = cfg.flags && cfg.flags[ code ];
+			if ( ! flagInfo || ! flagInfo.svg ) { return; }
+			wrap.title = flagInfo.title || code.toUpperCase();
+			wrap.innerHTML = flagInfo.svg;
+		}
+		if ( anchor && anchor.nextSibling ) {
+			cell.insertBefore( wrap, anchor.nextSibling );
+		} else if ( cell.firstChild ) {
+			cell.insertBefore( wrap, cell.firstChild );
+		} else {
+			cell.appendChild( wrap );
+		}
+	}
+
 	function restoreChild( row, group ) {
 		row.classList.add( 'lingolane-tree-child' );
 		row.classList.toggle( 'is-last', row.id === group.rows[ group.rows.length - 1 ] );
 		row.hidden = ! group.open;
+		var cell = row.querySelector( '.column-title' );
+		if ( cell && ! row.classList.contains( 'lingolane-tree-missing' ) ) {
+			attachFlag( row, cell, null );
+		}
 	}
 
 	function updateButton( group ) {
@@ -97,6 +127,7 @@
 		group.button = button;
 		button.setAttribute( 'aria-controls', group.rows.join( ' ' ) );
 		updateButton( group );
+		attachFlag( row, cell, button );
 	}
 
 	templates.forEach( function ( tpl ) {
@@ -125,25 +156,39 @@
 		tpl.remove();
 	} );
 
-	if ( ! Object.keys( groups ).length ) { return; }
-	// Pagination follows the filters in the top bar, so the last actions box is the filters one.
-	var boxes = document.querySelectorAll( '.tablenav.top .alignleft.actions' );
-	var actions = boxes[ boxes.length - 1 ] || document.querySelector( '.tablenav.top' );
-	if ( actions ) {
-		var bulk = document.createElement( 'div' );
-		bulk.className = 'lingolane-tree-bulk';
-		[ true, false ].forEach( function ( open ) {
-			var button = document.createElement( 'button' );
-			button.type = 'button';
-			button.className = 'button';
-			button.textContent = open ? cfg.i18n.expandAll : cfg.i18n.collapseAll;
-			button.addEventListener( 'click', function () {
-				Object.keys( groups ).forEach( function ( id ) { setOpen( groups[ id ], open ); } );
-				save();
-			} );
-			bulk.appendChild( button );
+	function decorateAllRows() {
+		var rows = list.querySelectorAll( 'tr' );
+		rows.forEach( function ( row ) {
+			if ( row.classList.contains( 'lingolane-tree-missing' ) ) { return; }
+			var cell = row.querySelector( '.column-title' );
+			var button = row.querySelector( '.lingolane-tree-toggle' );
+			if ( cell ) {
+				attachFlag( row, cell, button );
+			}
 		} );
-		actions.appendChild( bulk );
+	}
+	decorateAllRows();
+
+	if ( Object.keys( groups ).length ) {
+		// Pagination follows the filters in the top bar, so the last actions box is the filters one.
+		var boxes = document.querySelectorAll( '.tablenav.top .alignleft.actions' );
+		var actions = boxes[ boxes.length - 1 ] || document.querySelector( '.tablenav.top' );
+		if ( actions ) {
+			var bulk = document.createElement( 'div' );
+			bulk.className = 'lingolane-tree-bulk';
+			[ true, false ].forEach( function ( open ) {
+				var button = document.createElement( 'button' );
+				button.type = 'button';
+				button.className = 'button';
+				button.textContent = open ? cfg.i18n.expandAll : cfg.i18n.collapseAll;
+				button.addEventListener( 'click', function () {
+					Object.keys( groups ).forEach( function ( id ) { setOpen( groups[ id ], open ); } );
+					save();
+				} );
+				bulk.appendChild( button );
+			} );
+			actions.appendChild( bulk );
+		}
 	}
 
 	// Core replaces Quick Edit rows in place; restore decoration without moving them.
@@ -155,6 +200,9 @@
 					restoreChild( row, groups[ children[ row.id ] ] );
 				} else if ( row.id.indexOf( 'post-' ) === 0 && groups[ row.id.slice( 5 ) ] ) {
 					restoreLeader( row, groups[ row.id.slice( 5 ) ] );
+				} else {
+					var cell = row.querySelector( '.column-title' );
+					if ( cell ) { attachFlag( row, cell, null ); }
 				}
 			} );
 		} );

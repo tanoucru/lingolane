@@ -1,0 +1,550 @@
+/**
+ * Lingolane In-Context Translation Frontend Styles (P4)
+ *
+ * Modern SaaS floating toolbar, highlight outlines, popover editor & toast notifications.
+ *
+ * @package Lingolane
+ */
+
+:root {
+	--ll-ic-accent: #4f46e5;
+	--ll-ic-accent-hover: #4338ca;
+	--ll-ic-accent-soft: #eef0ff;
+	--ll-ic-ok: #15803d;
+	--ll-ic-ok-bg: #ecfdf3;
+	--ll-ic-ok-border: #a7f3d0;
+	--ll-ic-warn: #b45309;
+	--ll-ic-warn-bg: #fffbeb;
+	--ll-ic-warn-border: #fde68a;
+	--ll-ic-ink: #1f2433;
+	--ll-ic-muted: #64748b;
+	--ll-ic-card: #ffffff;
+	--ll-ic-line: #e2e8f0;
+	--ll-ic-radius: 12px;
+	--ll-ic-radius-sm: 8px;
+	--ll-ic-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+	--ll-ic-shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.12), 0 2px 6px -1px rgba(15, 23, 42, 0.08);
+	--ll-ic-shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+	--ll-ic-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 1. In-Context Floating Toolbar */
+#lingolane-incontext-toolbar {
+	position: fixed;
+	top: 44px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 999998;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 16px;
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid var(--ll-ic-line);
+	border-radius: 9999px;
+	box-shadow: var(--ll-ic-shadow-md);
+	font-family: var(--ll-ic-font);
+	font-size: 13px;
+	color: var(--ll-ic-ink);
+	line-height: 1.4;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	user-select: none;
+}
+
+body.admin-bar #lingolane-incontext-toolbar {
+	top: 44px;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar #lingolane-incontext-toolbar {
+		top: 56px;
+		max-width: 95vw;
+		padding: 6px 12px;
+		gap: 8px;
+	}
+}
+
+.lingolane-ic-toolbar__brand {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-weight: 700;
+	color: var(--ll-ic-accent);
+	letter-spacing: -0.01em;
+}
+
+.lingolane-ic-toolbar__brand svg {
+	width: 18px;
+	height: 18px;
+}
+
+.lingolane-ic-toolbar__divider {
+	width: 1px;
+	height: 20px;
+	background: var(--ll-ic-line);
+}
+
+.lingolane-ic-toolbar__target {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.lingolane-ic-toolbar__label {
+	color: var(--ll-ic-muted);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.lingolane-ic-toolbar__lang-select {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	background: #f8fafc;
+	border: 1px solid var(--ll-ic-line);
+	border-radius: 20px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--ll-ic-ink);
+	cursor: pointer;
+	transition: border-color 0.15s, background-color 0.15s;
+}
+
+.lingolane-ic-toolbar__lang-select:hover {
+	border-color: var(--ll-ic-accent);
+	background: #ffffff;
+}
+
+.lingolane-ic-toolbar__lang-select select {
+	border: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--ll-ic-ink);
+	cursor: pointer;
+	outline: none;
+	padding: 0;
+	margin: 0;
+}
+
+.lingolane-ic-toolbar__counter {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 8px;
+	background: var(--ll-ic-accent-soft);
+	color: var(--ll-ic-accent);
+	font-size: 11px;
+	font-weight: 700;
+	border-radius: 12px;
+}
+
+.lingolane-ic-toolbar__filters {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background: #f1f5f9;
+	padding: 2px;
+	border-radius: 8px;
+}
+
+.lingolane-ic-toolbar__filter-btn {
+	padding: 3px 8px;
+	border: none;
+	background: transparent;
+	color: var(--ll-ic-muted);
+	font-size: 12px;
+	font-weight: 500;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.lingolane-ic-toolbar__filter-btn.is-active {
+	background: #ffffff;
+	color: var(--ll-ic-ink);
+	font-weight: 600;
+	box-shadow: var(--ll-ic-shadow-sm);
+}
+
+.lingolane-ic-toolbar__exit {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 10px;
+	background: #f1f5f9;
+	border: none;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--ll-ic-muted);
+	text-decoration: none;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.lingolane-ic-toolbar__exit:hover {
+	background: #fee2e2;
+	color: #b91c1c;
+}
+
+/* 2. Highlight Overlay Box */
+.lingolane-ic-highlight-box {
+	position: absolute;
+	pointer-events: none;
+	z-index: 999990;
+	border: 2px dashed var(--ll-ic-accent);
+	border-radius: 4px;
+	background: rgba(79, 70, 229, 0.04);
+	transition: all 0.1s ease-out;
+}
+
+.lingolane-ic-highlight-box--translated {
+	border-style: solid;
+	border-color: var(--ll-ic-ok);
+	background: rgba(21, 128, 61, 0.04);
+}
+
+.lingolane-ic-highlight-box--missing {
+	border-style: dashed;
+	border-color: #f59e0b;
+	background: rgba(245, 158, 11, 0.06);
+}
+
+.lingolane-ic-highlight-box--entry-content {
+	border-style: dashed;
+	border-color: #3b82f6;
+	background: rgba(59, 130, 246, 0.05);
+}
+
+/* Edit Pen Trigger Button attached to highlighted element */
+.lingolane-ic-pen-btn {
+	position: absolute;
+	top: -14px;
+	right: -10px;
+	z-index: 999995;
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	background: var(--ll-ic-accent);
+	color: #ffffff;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	box-shadow: var(--ll-ic-shadow-md);
+	cursor: pointer;
+	transform: scale(0.9);
+	transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s;
+}
+
+.lingolane-ic-pen-btn:hover {
+	transform: scale(1.1);
+	background: var(--ll-ic-accent-hover);
+}
+
+.lingolane-ic-pen-btn--ok {
+	background: var(--ll-ic-ok);
+}
+
+.lingolane-ic-pen-btn--missing {
+	background: #f59e0b;
+}
+
+.lingolane-ic-pen-btn svg {
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+}
+
+/* 3. Modal Popover Editor */
+.lingolane-ic-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	background: rgba(15, 23, 42, 0.5);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	animation: lingolane-ic-fade-in 0.15s ease-out;
+}
+
+.lingolane-ic-popover {
+	position: relative;
+	width: 100%;
+	max-width: 560px;
+	background: #ffffff;
+	border-radius: var(--ll-ic-radius);
+	box-shadow: var(--ll-ic-shadow-lg);
+	overflow: hidden;
+	font-family: var(--ll-ic-font);
+	color: var(--ll-ic-ink);
+	display: flex;
+	flex-direction: column;
+	animation: lingolane-ic-scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lingolane-ic-popover__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--ll-ic-line);
+	background: #f8fafc;
+}
+
+.lingolane-ic-popover__title-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.lingolane-ic-popover__title {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--ll-ic-ink);
+}
+
+.lingolane-ic-popover__badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	background: #e2e8f0;
+	color: #475569;
+	font-size: 11px;
+	font-weight: 600;
+	border-radius: 6px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.lingolane-ic-popover__close {
+	background: transparent;
+	border: none;
+	width: 28px;
+	height: 28px;
+	border-radius: 6px;
+	color: var(--ll-ic-muted);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 20px;
+	line-height: 1;
+	transition: background 0.15s, color 0.15s;
+}
+
+.lingolane-ic-popover__close:hover {
+	background: #e2e8f0;
+	color: var(--ll-ic-ink);
+}
+
+.lingolane-ic-popover__body {
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.lingolane-ic-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.lingolane-ic-field__label {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--ll-ic-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.lingolane-ic-field__source {
+	padding: 10px 14px;
+	background: #f8fafc;
+	border: 1px solid var(--ll-ic-line);
+	border-radius: var(--ll-ic-radius-sm);
+	font-size: 14px;
+	line-height: 1.5;
+	color: #334155;
+	white-space: pre-wrap;
+	word-break: break-word;
+	max-height: 140px;
+	overflow-y: auto;
+}
+
+.lingolane-ic-field__textarea {
+	width: 100%;
+	box-sizing: border-box;
+	min-height: 90px;
+	padding: 10px 14px;
+	border: 1px solid #cbd5e1;
+	border-radius: var(--ll-ic-radius-sm);
+	font-family: inherit;
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--ll-ic-ink);
+	resize: vertical;
+	outline: none;
+	transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.lingolane-ic-field__textarea:focus {
+	border-color: var(--ll-ic-accent);
+	box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.lingolane-ic-field__ai-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	background: transparent;
+	border: none;
+	color: var(--ll-ic-accent);
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 2px 4px;
+	border-radius: 4px;
+}
+
+.lingolane-ic-field__ai-btn:hover {
+	background: var(--ll-ic-accent-soft);
+}
+
+.lingolane-ic-popover__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 20px;
+	border-top: 1px solid var(--ll-ic-line);
+	background: #f8fafc;
+}
+
+.lingolane-ic-popover__hint {
+	font-size: 12px;
+	color: var(--ll-ic-muted);
+}
+
+.lingolane-ic-popover__actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.lingolane-ic-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 600;
+	border-radius: var(--ll-ic-radius-sm);
+	cursor: pointer;
+	border: none;
+	transition: all 0.15s ease;
+}
+
+.lingolane-ic-btn--secondary {
+	background: #ffffff;
+	border: 1px solid var(--ll-ic-line);
+	color: #475569;
+}
+
+.lingolane-ic-btn--secondary:hover {
+	background: #f1f5f9;
+	color: var(--ll-ic-ink);
+}
+
+.lingolane-ic-btn--primary {
+	background: var(--ll-ic-accent);
+	color: #ffffff;
+	box-shadow: var(--ll-ic-shadow-sm);
+}
+
+.lingolane-ic-btn--primary:hover {
+	background: var(--ll-ic-accent-hover);
+}
+
+.lingolane-ic-btn--primary:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Post Content Callout Notice */
+.lingolane-ic-post-callout {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 16px;
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: var(--ll-ic-radius-sm);
+	color: #1e40af;
+}
+
+.lingolane-ic-post-callout svg {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin-top: 2px;
+}
+
+.lingolane-ic-post-callout__text {
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* 4. Toast Notifications */
+.lingolane-ic-toast {
+	position: fixed;
+	bottom: 24px;
+	right: 24px;
+	z-index: 1000000;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 18px;
+	background: #ffffff;
+	color: var(--ll-ic-ink);
+	border: 1px solid var(--ll-ic-line);
+	border-left: 4px solid var(--ll-ic-ok);
+	border-radius: var(--ll-ic-radius-sm);
+	box-shadow: var(--ll-ic-shadow-lg);
+	font-family: var(--ll-ic-font);
+	font-size: 13px;
+	font-weight: 600;
+	animation: lingolane-ic-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lingolane-ic-toast--error {
+	border-left-color: #ef4444;
+}
+
+@keyframes lingolane-ic-fade-in {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+@keyframes lingolane-ic-scale-in {
+	from { opacity: 0; transform: scale(0.96) translateY(4px); }
+	to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes lingolane-ic-slide-up {
+	from { opacity: 0; transform: translateY(12px); }
+	to   { opacity: 1; transform: translateY(0); }
+}

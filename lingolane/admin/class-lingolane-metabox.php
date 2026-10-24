@@ -80,13 +80,23 @@ class Lingolane_Metabox {
                     <li>
                         <span class="lingolane-box__lang"><?php echo Lingolane_Admin::code( $code ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $language['name'] ); ?></span>
                         <?php if ( $id && current_user_can( 'edit_post', $id ) ) :
-                            $status = get_post_status( $id ); ?>
+                            $status = get_post_status( $id );
+                            $is_ai  = (bool) get_post_meta( $id, '_lingolane_machine_translated', true ); ?>
                             <span class="lingolane-box__action">
+                                <?php if ( $is_ai ) : ?>
+                                    <?php echo Lingolane_Admin::chip( __( 'Máy dịch', 'lingolane' ), 'neutral', __( 'Bản dịch máy – chờ duyệt', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                <?php endif; ?>
                                 <?php echo Lingolane_Admin::chip( Lingolane_Admin::status_label( $status ), 'publish' === $status ? 'ok' : 'warn' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
                                 <a href="<?php echo esc_url( get_edit_post_link( $id, 'raw' ) ); ?>"><?php esc_html_e( 'Edit', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
                             </span>
                         <?php elseif ( ! $id && 'auto-draft' !== $post->post_status ) : ?>
-                            <a class="button button-small" href="<?php echo esc_url( Lingolane_Admin::translate_url( $post->ID, $code ) ); ?>"><?php esc_html_e( 'Create translation', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
+                            <div style="display:inline-flex; gap:6px; align-items:center;">
+                                <a class="button button-small" href="<?php echo esc_url( Lingolane_Admin::translate_url( $post->ID, $code ) ); ?>"><?php esc_html_e( 'Create translation', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
+                                <a class="button button-small button-secondary" href="<?php echo esc_url( Lingolane_AI_Post::action_url( $post->ID, $code ) ); ?>" style="display:inline-flex; align-items:center; gap:4px;" title="<?php esc_attr_e( 'Dịch toàn bộ bài viết bằng AI', 'lingolane' ); ?>">
+                                    <?php echo Lingolane_UI::icon( 'sparkles', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php esc_html_e( 'Dịch AI', 'lingolane' ); ?>
+                                </a>
+                            </div>
                         <?php elseif ( ! $id ) : ?>
                             <span class="lingolane-box__muted"><?php esc_html_e( 'Save the post first', 'lingolane' ); ?></span>
                         <?php endif; ?>

@@ -97,7 +97,24 @@ class Lingolane_Tree {
     }
 
     public static function post_class( $classes, $class, $post_id ) {
-        if ( isset( self::$matches[ (int) $post_id ] ) ) { $classes[] = 'lingolane-tree-match'; }
+        $post_id = (int) $post_id;
+        if ( isset( self::$matches[ $post_id ] ) ) { $classes[] = 'lingolane-tree-match'; }
+        if ( Lingolane_Columns::tree_screen() ) {
+            self::remember( $post_id );
+            $post = get_post( $post_id );
+            if ( $post ) {
+                $type = 'post_' . $post->post_type;
+                $lang = Lingolane_Elements::get_language( $type, $post_id );
+                if ( $lang ) {
+                    $classes[] = 'lingolane-lang-' . sanitize_html_class( $lang );
+                }
+                $trid   = Lingolane_Elements::get_trid( $type, $post_id );
+                $shared = Lingolane_Shared::post( $post ) && ! $trid;
+                if ( $shared ) {
+                    $classes[] = 'lingolane-lang-shared';
+                }
+            }
+        }
         return $classes;
     }
 
@@ -313,8 +330,9 @@ class Lingolane_Tree {
                     $offered[ $group['trid'] ] = true;
                     foreach ( $group['missing'] as $code ) {
                         /* translators: %s: language name */
-                        $label = sprintf( __( '%s: not translated yet', 'lingolane' ), Lingolane_Languages::name( $code ) );
-                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange column-title" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon is an SVG built from a fixed list, the rest is escaped.
+                        $label    = sprintf( __( '%s: not translated yet', 'lingolane' ), Lingolane_Languages::name( $code ) );
+                        $flag_svg = class_exists( 'Lingolane_Flags' ) ? Lingolane_Flags::get_flag_svg( $code, 18, 13, 'lingolane-flag--shadow' ) . ' ' : '';
+                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange column-title" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . $flag_svg . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon and flag are SVGs, the rest is escaped.
                     }
                 }
                 $rows = ob_get_clean();

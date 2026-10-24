@@ -109,7 +109,12 @@ class Lingolane_Stats {
         return $stats;
     }
 
-    public static function flush_strings() { delete_transient( self::STRINGS_KEY ); }
+    public static function flush_strings() {
+        delete_transient( self::STRINGS_KEY );
+        if ( class_exists( 'Lingolane_String_Locations' ) ) {
+            Lingolane_String_Locations::invalidate();
+        }
+    }
 
     public static function percent( $part, $total ) {
         return $total > 0 ? (int) floor( 100 * $part / $total ) : 100;

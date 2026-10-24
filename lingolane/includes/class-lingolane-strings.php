@@ -130,8 +130,35 @@ class Lingolane_Strings {
             "INSERT INTO $table (domain, context, source_hash, source, language_code, translation, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY UPDATE $update",
             $domain, $context, self::hash( $source, $context ), $source, $language, $translation, current_time( 'mysql', true )
         ) );
-        if ( $result !== 0 ) { self::invalidate( $language ); }
+        if ( $result !== 0 ) {
+            self::invalidate( $language );
+            if ( class_exists( 'Lingolane_String_Locations' ) ) {
+                Lingolane_String_Locations::invalidate();
+            }
+        }
         return false === $result ? new WP_Error( 'lingolane_string_db', __( 'Could not save the string translation.', 'lingolane' ) ) : true;
+    }
+
+    public static function get( $domain, $source, $context, $language ) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lingolane_strings';
+        $hash = self::hash( $source, $context );
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table identifier from prefix.
+        return (string) $wpdb->get_var( $wpdb->prepare(
+            "SELECT translation FROM $table WHERE domain = %s AND source_hash = %s AND language_code = %s",
+            $domain, $hash, $language
+        ) );
+        // phpcs:enable
+    }
+
+    public static function delete( $domain, $hash ) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lingolane_strings';
+        $wpdb->delete( $table, array( 'domain' => $domain, 'source_hash' => $hash ), array( '%s', '%s' ) );
+        self::flush_cache();
+        if ( class_exists( 'Lingolane_String_Locations' ) ) {
+            Lingolane_String_Locations::forget( $domain, $hash );
+        }
     }
 }
 

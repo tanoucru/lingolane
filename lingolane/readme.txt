@@ -49,5 +49,12 @@ Translation relationships and settings are kept so nothing is lost by accident.
 
 == Changelog ==
 
+= 1.1.0 =
+* Location-based string translation: 10 logical location groups (Site Info, Header, Menus, Footer, Widgets, Theme, Plugins, Categories & Tags, Media, Other) for intuitive string discovery.
+* Frontend page scan mode: automatically discover translatable strings and record exact locations on live pages.
+* Multilingual translation table: inline editing with dirty state tracking, keyboard shortcuts, and instant saving.
+* Taxonomy terms integration: direct editing and synchronization of categories and tags within string translation.
+* Developer assistance: copy element identifiers and highlight frontend strings directly in context.
+
 = 1.0.0 =
 * First public release. Based on the multilingual module of the Teachme project, rebuilt as a standalone plugin.

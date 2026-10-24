@@ -1,14 +1,18 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 class Lingolane_Urls {
+    public static function strip_slug( $path ) {
+        $codes = implode( '|', array_map( 'preg_quote', Lingolane_Languages::codes() ) );
+        return (string) preg_replace( '~^/(?:' . $codes . ')(?=/|[?#]|$)~', '', (string) $path );
+    }
+
     /** Replace a language directory only inside this site's home path. */
     public static function for_language( $url, $lang ) {
         if ( ! Lingolane_Languages::is_valid( $lang ) ) { return ''; }
         $root = rtrim( get_option( 'home' ), '/' );
         if ( strpos( $url, $root . '/' ) !== 0 && $url !== $root && strpos( $url, $root . '?' ) !== 0 ) { return $url; }
         $relative = substr( $url, strlen( $root ) );
-        $codes = implode( '|', array_map( 'preg_quote', Lingolane_Languages::codes() ) );
-        $relative = preg_replace( '~^/(?:' . $codes . ')(?=/|[?#]|$)~', '', $relative );
+        $relative = self::strip_slug( $relative );
         if ( $relative === '' || $relative[0] === '?' || $relative[0] === '#' ) { $relative = '/' . $relative; }
         return $root . ( $lang === Lingolane_Languages::default_code() ? '' : '/' . $lang ) . $relative;
     }
@@ -61,11 +65,41 @@ class Lingolane_Urls {
         if ( ! $url && is_singular() ) {
             $post = get_queried_object();
             if ( $post instanceof WP_Post && 'publish' === $post->post_status && ! Lingolane_Elements::get_translation( 'post_' . $post->post_type, $post->ID, $lang ) ) {
+                $settings = get_option( 'lingolane_settings', array() );
+                $action   = isset( $settings['untranslated_action'] ) ? $settings['untranslated_action'] : 'notice';
+                if ( 'redirect' === $action && ! empty( $settings['untranslated_redirect_url'] ) ) {
+                    return apply_filters( 'lingolane_missing_translation_url', esc_url_raw( $settings['untranslated_redirect_url'] ), $lang );
+                }
                 $source = self::for_language( get_permalink( $post ), Lingolane_Elements::get_language( 'post_' . $post->post_type, $post->ID ) );
                 return apply_filters( 'lingolane_missing_translation_url', add_query_arg( 'lingolane_untranslated', $lang, $source ), $lang );
             }
         }
         return $url ? $url : apply_filters( 'lingolane_missing_translation_url', self::home( $lang ), $lang );
     }
+
+    /**
+     * Check whether a translation exists and is published for the current queried page.
+     *
+     * @param string $lang Language code.
+     * @return bool True if translation is available or current page is already in $lang.
+     */
+    public static function has_translation( $lang ) {
+        $lang = is_string( $lang ) ? sanitize_key( $lang ) : '';
+        if ( ! Lingolane_Languages::is_valid( $lang ) ) { return false; }
+        if ( $lang === Lingolane_Languages::current() ) { return true; }
+        if ( is_singular() ) {
+            $post = get_queried_object();
+            if ( $post instanceof WP_Post ) {
+                $post_lang = Lingolane_Elements::get_language( 'post_' . $post->post_type, $post->ID );
+                if ( $lang === $post_lang ) { return true; }
+                $trans_id = Lingolane_Elements::get_translation( 'post_' . $post->post_type, $post->ID, $lang );
+                if ( ! $trans_id ) { return false; }
+                $trans_post = get_post( $trans_id );
+                return $trans_post && 'publish' === $trans_post->post_status;
+            }
+        }
+        return (bool) self::published_url( $lang );
+    }
 }
 function lingolane_get_translation_url( $lang ) { return Lingolane_Urls::translation_url( $lang ); }
+function lingolane_has_translation( $lang ) { return Lingolane_Urls::has_translation( $lang ); }

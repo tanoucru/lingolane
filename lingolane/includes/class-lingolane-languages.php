@@ -11,6 +11,12 @@ class Lingolane_Languages {
                 array( 'code' => 'vi', 'locale' => 'vi', 'name' => 'Tiếng Việt' ),
             ),
             'url_mode' => 'directory',
+            'switcher_style'            => 'list',
+            'switcher_show'             => 'flag_name',
+            'switcher_flag_shape'        => 'rect',
+            'untranslated_action'       => 'notice',
+            'untranslated_notice'       => 'Ngôn ngữ bạn chọn hiện chưa có bản dịch',
+            'untranslated_redirect_url' => '',
         );
     }
 
