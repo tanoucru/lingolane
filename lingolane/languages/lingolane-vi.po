@@ -900,3 +900,447 @@ msgstr "Thiết lập ngôn ngữ"
 
 msgid "Developed by %s"
 msgstr "Phát triển bởi %s"
+
+msgid "1. Open …\n2. Click …"
+msgstr "1. Mở …\n2. Bấm …"
+
+msgid "@tannguyen"
+msgstr "@tannguyen"
+
+msgid "Add a title and describe what happened first."
+msgstr "Vui lòng nhập tiêu đề và mô tả vấn đề trước."
+
+msgid "All menus"
+msgstr "Tất cả menu"
+
+msgid "All plugins"
+msgstr "Tất cả plugin"
+
+msgid "Also active: %s. Running two multilingual plugins at once is not supported; deactivate one and test again."
+msgstr "Cũng đang kích hoạt: %s. Không hỗ trợ chạy hai plugin đa ngôn ngữ cùng lúc; hãy tắt một plugin và thử lại."
+
+msgid "Attachment not found."
+msgstr "Không tìm thấy tệp đính kèm."
+
+msgid "Before you open a ticket"
+msgstr "Trước khi gửi yêu cầu hỗ trợ"
+
+msgid "Bug"
+msgstr "Lỗi"
+
+msgid "Cancel"
+msgstr "Huỷ"
+
+msgid "Categories & Tags"
+msgstr "Chuyên mục & Thẻ"
+
+msgid "Categories and tags are synchronized directly with WordPress taxonomy elements."
+msgstr "Chuyên mục và thẻ được đồng bộ trực tiếp với các phần tử taxonomy của WordPress."
+
+msgid "Chép slug"
+msgstr "Chép slug"
+
+msgid "Chưa quan sát trên trang"
+msgstr "Chưa quan sát trên trang"
+
+msgid "Clear"
+msgstr "Xoá bộ lọc"
+
+msgid "Clear the Lingolane cache"
+msgstr "Xoá cache Lingolane"
+
+msgid "Close"
+msgstr "Đóng"
+
+msgid "Close & refresh"
+msgstr "Đóng & tải lại"
+
+msgid "Compatibility with a theme or plugin"
+msgstr "Tương thích với theme hoặc plugin"
+
+msgid "Contact: %s"
+msgstr "Liên hệ: %s"
+
+msgid "Context"
+msgstr "Ngữ cảnh"
+
+msgid "Copied identifier: "
+msgstr "Đã chép mã định danh: "
+
+msgid "Copied to the clipboard."
+msgstr "Đã chép vào bộ nhớ tạm."
+
+msgid "Copy and open the support forum"
+msgstr "Chép và mở diễn đàn hỗ trợ"
+
+msgid "Copy failed, so the forum was not opened. The ticket text is selected: copy it, then use the support forum link."
+msgstr "Sao chép thất bại nên chưa mở diễn đàn. Nội dung yêu cầu đã được chọn: hãy sao chép rồi bấm liên kết diễn đàn hỗ trợ."
+
+msgid "Copy failed. Select the text and copy it manually."
+msgstr "Sao chép thất bại. Vui lòng bôi đen và sao chép thủ công."
+
+msgid "Copy identifier for developers"
+msgstr "Chép mã định danh cho lập trình viên"
+
+msgid "Copy report"
+msgstr "Chép báo cáo"
+
+msgid "Copy ticket"
+msgstr "Chép nội dung yêu cầu"
+
+msgid "Could not acquire lock for saving term translation."
+msgstr "Không thể lấy khoá để lưu bản dịch term."
+
+msgid "Cần developer hỗ trợ dịch"
+msgstr "Cần developer hỗ trợ dịch"
+
+msgid "Cần hỗ trợ"
+msgstr "Cần hỗ trợ"
+
+msgid "Description (optional)"
+msgstr "Mô tả (tuỳ chọn)"
+
+msgid "Developer assistance required:"
+msgstr "Cần lập trình viên hỗ trợ:"
+
+msgid "Do not post security problems in the public forum. Report them privately so they can be fixed before details are shared."
+msgstr "Không đăng các lỗi bảo mật lên diễn đàn công khai. Hãy báo cáo riêng để được xử lý trước khi công bố thông tin."
+
+msgid "Domain and source cannot be empty."
+msgstr "Domain và chuỗi gốc không được để trống."
+
+msgid "Download .txt"
+msgstr "Tải file .txt"
+
+msgid "Example: Language switcher missing on the shop page"
+msgstr "Ví dụ: Nút chuyển ngôn ngữ bị mất trên trang cửa hàng"
+
+msgid "Expected"
+msgstr "Kết quả mong đợi"
+
+msgid "Feature request"
+msgstr "Đề xuất tính năng"
+
+msgid "Field is not supported for media."
+msgstr "Trường này không được hỗ trợ cho tệp đa phương tiện."
+
+msgid "Field is not supported for site options."
+msgstr "Trường này không được hỗ trợ cho cài đặt trang."
+
+msgid "Footer"
+msgstr "Chân trang"
+
+msgid "Forbidden"
+msgstr "Không có quyền"
+
+msgid "Forbidden."
+msgstr "Không có quyền truy cập."
+
+msgid "Guide tab"
+msgstr "tab Hướng dẫn"
+
+msgid "Header"
+msgstr "Đầu trang"
+
+msgid "Highlight on frontend page"
+msgstr "Đánh dấu trên trang frontend"
+
+msgid "Highlighted element"
+msgstr "Đã đánh dấu phần tử"
+
+msgid "Home"
+msgstr "Trang chủ"
+
+msgid "How-to question"
+msgstr "Câu hỏi hướng dẫn"
+
+msgid "Identity and occurrence must be arrays."
+msgstr "Định danh và vị trí phải là dạng mảng."
+
+msgid "If possible, switch to a default theme and deactivate other plugins on a staging copy. Say in the ticket whether the problem remains."
+msgstr "Nếu có thể, hãy chuyển về theme mặc định và tắt các plugin khác trên bản sao staging. Hãy ghi rõ trong yêu cầu xem vấn đề còn xảy ra không."
+
+msgid "In the forum, choose “Create Topic”: paste the title into the Title field and the copied text into the message. Nothing is sent from this site."
+msgstr "Trên diễn đàn, chọn “Create Topic”: dán tiêu đề vào ô Title và nội dung đã chép vào khung tin nhắn. Không có dữ liệu nào tự động gửi từ website này."
+
+msgid "Include the system report"
+msgstr "Đính kèm báo cáo hệ thống"
+
+msgid "Includes versions, theme, active plugins and Lingolane settings. It does not collect passwords, user names or your site address, and masks email addresses and links. Read it before posting: the forum is public."
+msgstr "Bao gồm các phiên bản, theme, plugin đang bật và cài đặt Lingolane. Báo cáo không thu thập mật khẩu, tên đăng nhập hay địa chỉ site, đồng thời ẩn email và liên kết. Hãy đọc lại trước khi đăng: diễn đàn là công khai."
+
+msgid "Invalid scan session."
+msgstr "Phiên quét không hợp lệ."
+
+msgid "Invalid source term ID."
+msgstr "ID term gốc không hợp lệ."
+
+msgid "Invalid target language."
+msgstr "Ngôn ngữ đích không hợp lệ."
+
+msgid "Item payload exceeds maximum per request limit."
+msgstr "Dữ liệu chuỗi vượt quá giới hạn mỗi yêu cầu."
+
+msgid "Lingolane"
+msgstr "Lingolane"
+
+msgid "Location groups"
+msgstr "Nhóm vị trí"
+
+msgid "Manage menus in WordPress"
+msgstr "Quản lý menu trong WordPress"
+
+msgid "Maximum request count reached for this session."
+msgstr "Đã đạt số lượng yêu cầu tối đa cho phiên này."
+
+msgid "Media"
+msgstr "Đa phương tiện"
+
+msgid "Menu item not found."
+msgstr "Không tìm thấy mục menu."
+
+msgid "Menus"
+msgstr "Menu điều hướng"
+
+msgid "Missing translation."
+msgstr "Thiếu bản dịch."
+
+msgid "Most questions are answered in the %s."
+msgstr "Phần lớn câu hỏi đã được giải đáp trong %s."
+
+msgid "Một số chuỗi được phát hiện trong mã nguồn nhưng cần developer hỗ trợ bọc hàm dịch hoặc đăng ký gettext."
+msgstr "Một số chuỗi được phát hiện trong mã nguồn nhưng cần developer hỗ trợ bọc hàm dịch hoặc đăng ký gettext."
+
+msgid "No strings found in this group"
+msgstr "Không tìm thấy chuỗi nào trong nhóm này"
+
+msgid "Notice:"
+msgstr "Lưu ý:"
+
+msgid "Occurrence not found."
+msgstr "Không tìm thấy vị trí chuỗi."
+
+msgid "Other"
+msgstr "Khác"
+
+msgid "Page"
+msgstr "Trang"
+
+msgid "Page cache detected (%s). Purge it after changing languages or translations, then check again."
+msgstr "Phát hiện bộ nhớ đệm trang (%s). Hãy xoá cache sau khi đổi ngôn ngữ hoặc bản dịch, rồi kiểm tra lại."
+
+msgid "Page where it happens (optional)"
+msgstr "Trang xảy ra lỗi (tuỳ chọn)"
+
+msgid "Path is disallowed or invalid."
+msgstr "Đường dẫn không hợp lệ hoặc không được phép."
+
+msgid "Please select at least one page to scan."
+msgstr "Vui lòng chọn ít nhất một trang để quét."
+
+msgid "Please wait at least 1 second between requests."
+msgstr "Vui lòng đợi ít nhất 1 giây giữa các yêu cầu."
+
+msgid "Plugins"
+msgstr "Plugin"
+
+msgid "Preparing scan…"
+msgstr "Đang chuẩn bị quét…"
+
+msgid "Provider not supported."
+msgstr "Nguồn chuỗi không được hỗ trợ."
+
+msgid "Read the guide"
+msgstr "Đọc hướng dẫn"
+
+msgid "Report privately"
+msgstr "Báo cáo riêng tư"
+
+msgid "Rule out a conflict"
+msgstr "Loại trừ xung đột"
+
+msgid "Scan active theme code for gettext calls"
+msgstr "Quét mã nguồn giao diện đang kích hoạt để tìm chuỗi gettext"
+
+msgid "Scan complete! Strings updated."
+msgstr "Quét hoàn tất! Đã cập nhật chuỗi."
+
+msgid "Scan frontend pages"
+msgstr "Quét các trang frontend"
+
+msgid "Scan frontend pages or your active theme to automatically discover translatable strings."
+msgstr "Quét các trang frontend hoặc giao diện để tự động phát hiện các chuỗi có thể dịch."
+
+msgid "Scan frontend pages to discover strings and positions"
+msgstr "Quét các trang frontend để phát hiện chuỗi và vị trí"
+
+msgid "Scan mode active..."
+msgstr "Chế độ quét đang hoạt động..."
+
+msgid "Scan pages"
+msgstr "Quét trang"
+
+msgid "Scan pages now"
+msgstr "Quét trang ngay"
+
+msgid "Scan session has expired or does not exist."
+msgstr "Phiên quét đã hết hạn hoặc không tồn tại."
+
+msgid "Scan theme"
+msgstr "Quét giao diện"
+
+msgid "Scanning page %1$d of %2$d: %3$s"
+msgstr "Đang quét trang %1$d / %2$d: %3$s"
+
+msgid "Scanning…"
+msgstr "Đang quét…"
+
+msgid "Search source or translation…"
+msgstr "Tìm chuỗi gốc hoặc bản dịch…"
+
+msgid "Security issue?"
+msgstr "Vấn đề bảo mật?"
+
+msgid "Select all discovered pages"
+msgstr "Chọn tất cả các trang đã tìm thấy"
+
+msgid "Select pages to scan. Lingolane will discover strings on these pages, map their exact locations, and check whether they can be translated automatically."
+msgstr "Chọn các trang cần quét. Lingolane sẽ phát hiện các chuỗi trên các trang này, định vị chính xác và kiểm tra khả năng dịch tự động."
+
+msgid "Session ceiling of maximum occurrences exceeded."
+msgstr "Đã vượt quá số lượng vị trí tối đa cho phép trong phiên."
+
+msgid "Session does not belong to the current user."
+msgstr "Phiên quét không thuộc về người dùng hiện tại."
+
+msgid "Site Info"
+msgstr "Thông tin trang"
+
+msgid "Source term cannot be modified through the translation tool."
+msgstr "Không thể chỉnh sửa term gốc qua công cụ dịch."
+
+msgid "Source term does not belong to the default language."
+msgstr "Term gốc không thuộc về ngôn ngữ mặc định."
+
+msgid "Source term not found."
+msgstr "Không tìm thấy term gốc."
+
+msgid "Start scan"
+msgstr "Bắt đầu quét"
+
+msgid "Steps to reproduce"
+msgstr "Các bước tái hiện"
+
+msgid "String location groups"
+msgstr "Các nhóm vị trí chuỗi"
+
+msgid "Summary"
+msgstr "Tóm tắt"
+
+msgid "Support"
+msgstr "Hỗ trợ"
+
+msgid "Support channels"
+msgstr "Kênh hỗ trợ"
+
+msgid "Support forum on WordPress.org"
+msgstr "Diễn đàn hỗ trợ trên WordPress.org"
+
+msgid "Support is given by volunteers in the public forum. Please do not post passwords or private data."
+msgstr "Hỗ trợ được thực hiện bởi các tình nguyện viên trên diễn đàn công khai. Vui lòng không đăng mật khẩu hoặc dữ liệu riêng tư."
+
+msgid "System report"
+msgstr "Báo cáo hệ thống"
+
+msgid "Target language:"
+msgstr "Ngôn ngữ đích:"
+
+msgid "Taxonomy Terms:"
+msgstr "Thuật ngữ phân loại:"
+
+msgid "Taxonomy is not supported or not public."
+msgstr "Taxonomy không được hỗ trợ hoặc không công khai."
+
+msgid "Term name"
+msgstr "Tên thuật ngữ"
+
+msgid "Term name cannot be empty."
+msgstr "Tên term không được để trống."
+
+msgid "Term translation saved."
+msgstr "Đã lưu bản dịch term."
+
+msgid "Text no longer found. Scan this page again."
+msgstr "Không còn tìm thấy văn bản trên trang. Hãy quét lại trang này."
+
+msgid "The forum is public. Leave this empty if the address should stay private."
+msgstr "Diễn đàn là công khai. Hãy để trống nếu muốn giữ kín địa chỉ website."
+
+msgid "Theme"
+msgstr "Giao diện"
+
+msgid "Ticket preview"
+msgstr "Xem trước yêu cầu"
+
+msgid "Title"
+msgstr "Tiêu đề"
+
+msgid "Topic"
+msgstr "Chủ đề"
+
+msgid "Translations are cached; clearing makes the site read them again."
+msgstr "Bản dịch được lưu đệm; xoá cache sẽ buộc website đọc lại từ đầu."
+
+msgid "Unknown string source provider."
+msgstr "Nguồn cung cấp chuỗi không xác định."
+
+msgid "Unsupported"
+msgstr "Chưa hỗ trợ"
+
+msgid "Update to the latest version"
+msgstr "Cập nhật phiên bản mới nhất"
+
+msgid "Using a separate menu for this language. Translations entered here apply to the shared menu."
+msgstr "Đang dùng menu riêng cho ngôn ngữ này. Bản dịch nhập tại đây chỉ áp dụng cho menu dùng chung."
+
+msgid "What did you expect?"
+msgstr "Bạn mong đợi điều gì?"
+
+msgid "What happened"
+msgstr "Điều gì đã xảy ra"
+
+msgid "What happened?"
+msgstr "Điều gì đã xảy ra?"
+
+msgid "Widgets"
+msgstr "Widget"
+
+msgid "Write your ticket"
+msgstr "Soạn yêu cầu hỗ trợ"
+
+msgid "Xem vị trí"
+msgstr "Xem vị trí"
+
+msgid "You are running Lingolane %s. The problem may already be fixed."
+msgstr "Bạn đang chạy Lingolane %s. Vấn đề có thể đã được khắc phục ở bản mới."
+
+msgid "You do not have permission to delete strings."
+msgstr "Bạn không có quyền xoá chuỗi."
+
+msgid "You do not have permission to edit translations."
+msgstr "Bạn không có quyền chỉnh sửa bản dịch."
+
+msgid "You do not have permission to preview strings."
+msgstr "Bạn không có quyền xem trước chuỗi."
+
+msgid "You do not have permission to start a scan session."
+msgstr "Bạn không có quyền bắt đầu phiên quét."
+
+msgid "You have unsaved translations. Leave anyway?"
+msgstr "Bạn có bản dịch chưa lưu. Vẫn muốn rời đi?"
+
+msgid "https://github.com/tanoucru"
+msgstr "https://github.com/tanoucru"
+
+msgid "https://github.com/tanoucru/lingolane"
+msgstr "https://github.com/tanoucru/lingolane"

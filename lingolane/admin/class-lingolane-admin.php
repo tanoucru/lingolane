@@ -215,6 +215,7 @@ class Lingolane_Admin {
                     'scanning'     => __( 'Scanning…', 'lingolane' ),
                     'scanComplete' => __( 'Scan complete! Strings updated.', 'lingolane' ),
                     'selectPages'  => __( 'Please select at least one page to scan.', 'lingolane' ),
+                    /* translators: 1: current page index, 2: total pages, 3: page path */
                     'pageProgress' => __( 'Scanning page %1$d of %2$d: %3$s', 'lingolane' ),
                 ),
             ) );
