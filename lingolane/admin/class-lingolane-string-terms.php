@@ -19,6 +19,18 @@ class Lingolane_String_Terms {
         return in_array( $taxonomy, $supported, true );
     }
 
+    public static function taxonomies() {
+        $tax_slugs = Lingolane_Query::taxonomies();
+        $list = array();
+        foreach ( (array) $tax_slugs as $slug ) {
+            if ( taxonomy_exists( $slug ) ) {
+                $tax_obj = get_taxonomy( $slug );
+                $list[ $slug ] = $tax_obj && ! empty( $tax_obj->labels->name ) ? $tax_obj->labels->name : $slug;
+            }
+        }
+        return $list;
+    }
+
     public static function page( $taxonomy, $language, $keyword = '', $page = 1, $per_page = 20 ) {
         if ( ! self::is_supported_taxonomy( $taxonomy ) || ! Lingolane_Languages::is_valid( $language ) ) {
             return array( 'items' => array(), 'total' => 0 );

@@ -251,8 +251,36 @@ class Lingolane_String_Locations {
         self::invalidate();
     }
 
-    public static function invalidate() {
-        self::$cached_groups = array();
+    public static function flush_groups_cache( $language = '' ) {
+        if ( '' !== $language ) {
+            unset( self::$cached_groups[ $language ] );
+        } else {
+            self::$cached_groups = array();
+        }
         wp_cache_delete( 'groups', 'lingolane_locations' );
+    }
+
+    public static function invalidate() {
+        self::flush_groups_cache();
+    }
+
+    public static function subgroups( $group ) {
+        global $wpdb;
+        $loc_table = $wpdb->prefix . 'lingolane_string_locations';
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $rows = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT subgroup FROM $loc_table WHERE group_key = %s AND subgroup != '' ORDER BY subgroup ASC", $group ) );
+        return is_array( $rows ) ? $rows : array();
+    }
+
+    public static function occurrences( $domain, $source_hash ) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lingolane_string_locations';
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, group_key, subgroup, provider, object_id, field, page_path, locator, supported FROM $table WHERE domain = %s AND source_hash = %s ORDER BY id ASC",
+            $domain,
+            $source_hash
+        ), ARRAY_A );
+        return is_array( $rows ) ? $rows : array();
     }
 }

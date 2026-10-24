@@ -197,6 +197,28 @@ class Lingolane_Admin {
             'icons'   => self::toast_icons(),
             'presets' => self::presets(),
         ) );
+        if ( 'strings' === self::current_tab() ) {
+            wp_enqueue_script( 'lingolane-string-groups', LINGOLANE_URL . 'assets/string-groups.js', array( 'lingolane-admin' ), LINGOLANE_VERSION, true );
+            wp_localize_script( 'lingolane-string-groups', 'lingolaneStringGroups', array(
+                'ajax_url'            => admin_url( 'admin-ajax.php' ),
+                'nonce_save'          => wp_create_nonce( 'lingolane_strings_ajax' ),
+                'nonce_save_identity' => wp_create_nonce( 'lingolane_strings_save_identity' ),
+                'nonce_save_term'     => wp_create_nonce( 'lingolane_terms_ajax' ),
+                'nonce_scan'          => wp_create_nonce( 'lingolane_scan_ajax' ),
+                'home_url'            => home_url( '/' ),
+                'i18n'                => array(
+                    'saving'       => __( 'Saving…', 'lingolane' ),
+                    'saved'        => __( 'Saved', 'lingolane' ),
+                    'failed'       => __( 'Could not save. Please try again.', 'lingolane' ),
+                    'unsaved'      => __( 'You have unsaved translations. Leave anyway?', 'lingolane' ),
+                    'copied'       => __( 'Copied identifier: ', 'lingolane' ),
+                    'scanning'     => __( 'Scanning…', 'lingolane' ),
+                    'scanComplete' => __( 'Scan complete! Strings updated.', 'lingolane' ),
+                    'selectPages'  => __( 'Please select at least one page to scan.', 'lingolane' ),
+                    'pageProgress' => __( 'Scanning page %1$d of %2$d: %3$s', 'lingolane' ),
+                ),
+            ) );
+        }
         if ( 'support' === self::current_tab() ) {
             wp_enqueue_style( 'lingolane-support', LINGOLANE_URL . 'assets/support.css', array( 'lingolane-admin' ), LINGOLANE_VERSION );
             wp_enqueue_script( 'lingolane-support', LINGOLANE_URL . 'assets/support.js', array( 'lingolane-admin' ), LINGOLANE_VERSION, true );
