@@ -28,6 +28,8 @@ class Test_Lingolane_AI extends Lingolane_TestCase {
 
 	public static function wpSetUpBeforeClass() {
 		require_once LINGOLANE_DIR . 'includes/class-lingolane-ai.php';
+		require_once LINGOLANE_DIR . 'admin/class-lingolane-ui.php';
+		require_once LINGOLANE_DIR . 'admin/class-lingolane-admin.php';
 	}
 
 	public function set_up() {
@@ -153,5 +155,59 @@ class Test_Lingolane_AI extends Lingolane_TestCase {
 		$result = Lingolane_AI::translate_text( 'Test text', 'en', 'vi' );
 		$this->assertWPError( $result );
 		$this->assertSame( 'missing_api_key', $result->get_error_code() );
+	}
+
+	public function test_admin_tabs_includes_ai_tab_for_admin() {
+		wp_set_current_user( $this->subscriber_id );
+		$tabs = Lingolane_Admin::tabs();
+		$this->assertArrayNotHasKey( 'ai', $tabs );
+
+		wp_set_current_user( $this->admin_id );
+		$tabs = Lingolane_Admin::tabs();
+		$this->assertArrayHasKey( 'ai', $tabs );
+
+		$_GET['tab'] = 'ai';
+		ob_start();
+		Lingolane_Admin::render();
+		$output = ob_get_clean();
+		unset( $_GET['tab'] );
+
+		$this->assertStringContainsString( 'gemini_api_key', $output );
+		$this->assertStringContainsString( 'gemini_model', $output );
+		$this->assertStringContainsString( 'Chrome', $output );
+	}
+
+	public function test_save_ai_settings_action() {
+		wp_set_current_user( $this->admin_id );
+
+		$_POST = array(
+			'_wpnonce'       => wp_create_nonce( 'lingolane_save_ai_settings' ),
+			'gemini_api_key' => 'AIzaSyNewSavedKey1234567890XYZ',
+			'gemini_model'   => 'gemini-1.5-flash',
+			'auto_approve'   => '1',
+		);
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+
+		// Catch redirect.
+		add_filter(
+			'wp_redirect',
+			function( $location ) {
+				throw new Exception( 'REDIRECT:' . $location );
+			}
+		);
+
+		try {
+			Lingolane_Admin::save_ai_settings();
+		} catch ( Exception $e ) {
+			$this->assertStringContainsString( 'REDIRECT:', $e->getMessage() );
+		}
+
+		remove_all_filters( 'wp_redirect' );
+		$_POST = array();
+
+		$saved = Lingolane_AI::get_settings();
+		$this->assertSame( 'AIzaSyNewSavedKey1234567890XYZ', $saved['gemini_api_key'] );
+		$this->assertSame( 'gemini-1.5-flash', $saved['gemini_model'] );
+		$this->assertSame( 1, $saved['auto_approve'] );
 	}
 }
