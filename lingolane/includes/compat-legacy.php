@@ -19,3 +19,10 @@ if ( ! function_exists( 'tml_register_string' ) ) {
     function tml_register_string( $domain, $source, $context = '' ) { return lingolane_register_string( $domain, $source, $context ); }
 }
 add_action( 'init', function () { add_shortcode( 'tml_switcher', array( 'Lingolane_Switcher', 'shortcode' ) ); }, 20 );
+
+// Bridge legacy query parameter for themes checking $_GET['tml_untranslated'].
+// phpcs:disable WordPress.Security.NonceVerification.Recommended
+if ( ! is_admin() && isset( $_GET['lingolane_untranslated'] ) && ! isset( $_GET['tml_untranslated'] ) ) {
+    $_GET['tml_untranslated'] = sanitize_key( wp_unslash( $_GET['lingolane_untranslated'] ) );
+}
+// phpcs:enable
