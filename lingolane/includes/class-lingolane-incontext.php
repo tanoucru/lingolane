@@ -117,7 +117,12 @@ class Lingolane_Incontext {
 		}
 
 		wp_enqueue_style( 'lingolane-incontext', LINGOLANE_URL . 'assets/incontext.css', array(), LINGOLANE_VERSION );
-		wp_enqueue_script( 'lingolane-incontext', LINGOLANE_URL . 'assets/incontext.js', array( 'jquery' ), LINGOLANE_VERSION, true );
+		wp_enqueue_script( 'lingolane-ai-translate', LINGOLANE_URL . 'assets/ai-translate.js', array( 'jquery' ), LINGOLANE_VERSION, true );
+		wp_localize_script( 'lingolane-ai-translate', 'lingolaneAIConfig', array(
+			'ajax'  => admin_url( 'admin-ajax.php' ),
+			'nonce' => class_exists( 'Lingolane_AI' ) ? wp_create_nonce( Lingolane_AI::NONCE_ACTION ) : '',
+		) );
+		wp_enqueue_script( 'lingolane-incontext', LINGOLANE_URL . 'assets/incontext.js', array( 'jquery', 'lingolane-ai-translate' ), LINGOLANE_VERSION, true );
 
 		$current_lang = class_exists( 'Lingolane_Languages' ) ? Lingolane_Languages::current() : 'en';
 		$languages    = class_exists( 'Lingolane_Languages' ) ? Lingolane_Languages::all() : array();

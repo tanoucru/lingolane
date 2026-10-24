@@ -203,8 +203,13 @@ class Lingolane_Admin {
             'icons'   => self::toast_icons(),
             'presets' => self::presets(),
         ) );
+        wp_enqueue_script( 'lingolane-ai-translate', LINGOLANE_URL . 'assets/ai-translate.js', array( 'jquery' ), LINGOLANE_VERSION, true );
+        wp_localize_script( 'lingolane-ai-translate', 'lingolaneAIConfig', array(
+            'ajax'  => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( Lingolane_AI::NONCE_ACTION ),
+        ) );
         if ( 'strings' === self::current_tab() ) {
-            wp_enqueue_script( 'lingolane-string-groups', LINGOLANE_URL . 'assets/string-groups.js', array( 'lingolane-admin' ), LINGOLANE_VERSION, true );
+            wp_enqueue_script( 'lingolane-string-groups', LINGOLANE_URL . 'assets/string-groups.js', array( 'lingolane-admin', 'lingolane-ai-translate' ), LINGOLANE_VERSION, true );
             wp_localize_script( 'lingolane-string-groups', 'lingolaneStringGroups', array(
                 'ajax_url'            => admin_url( 'admin-ajax.php' ),
                 'nonce_save'          => wp_create_nonce( 'lingolane_strings_ajax' ),
