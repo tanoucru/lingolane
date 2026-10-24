@@ -517,10 +517,38 @@
 				}
 			} );
 
-			// Hook for future AI translation suggestion
-			$m.on( 'click', '#lingolane-ic-ai-suggest', function ( e ) {
+			// AI translation suggestion
+			$m.on( 'click', '#lingolane-ic-ai-suggest', async function ( e ) {
 				e.preventDefault();
-				showToast( 'Tính năng Gợi ý AI sẽ sẵn sàng khi tích hợp mô hình dịch AI (P6).', false );
+				var $btn = $( this );
+				var $input = $( '#lingolane-ic-translation-input' );
+				var sourceText = $( '#lingolane-ic-source-text' ).text() || '';
+
+				if ( ! sourceText.trim() ) {
+					return;
+				}
+
+				var origHtml = $btn.html();
+				$btn.prop( 'disabled', true ).html( '<span>Đang dịch AI...</span>' );
+
+				try {
+					if ( window.LingolaneAI && typeof window.LingolaneAI.translate === 'function' ) {
+						var res = await window.LingolaneAI.translate( sourceText, 'auto', state.targetLang );
+						if ( res && res.translation ) {
+							$input.val( res.translation ).trigger( 'input' ).focus();
+							var engineLabel = res.engine === 'chrome-ondevice' ? 'Chrome On-Device AI' : 'Gemini AI';
+							showToast( 'Đã gợi ý bản dịch từ ' + engineLabel, false );
+						} else {
+							showToast( 'Không nhận được bản dịch từ AI.', true );
+						}
+					} else {
+						showToast( 'Chưa nạp module LingolaneAI.', true );
+					}
+				} catch ( err ) {
+					showToast( 'Lỗi dịch AI: ' + ( err.message || err ), true );
+				} finally {
+					$btn.prop( 'disabled', false ).html( origHtml );
+				}
 			} );
 		}
 

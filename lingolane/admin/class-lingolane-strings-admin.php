@@ -713,6 +713,10 @@ class Lingolane_Strings_Admin {
                             <?php endif; ?>
                             <input type="search" name="keyword" value="<?php echo esc_attr( $keyword ); ?>" placeholder="<?php esc_attr_e( 'Search source or translation…', 'lingolane' ); ?>">
                             <button type="submit" class="button"><?php esc_html_e( 'Search', 'lingolane' ); ?></button>
+                            <button type="button" class="button button-secondary lingolane-batch-ai-btn" style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;" title="<?php esc_attr_e( 'Dịch nháp tất cả chuỗi còn thiếu trên trang này', 'lingolane' ); ?>">
+                                <?php echo Lingolane_UI::icon( 'sparkles', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                <?php esc_html_e( 'Dịch AI còn thiếu', 'lingolane' ); ?>
+                            </button>
                             <?php if ( '' !== $keyword ) : ?>
                                 <a href="<?php echo esc_url( Lingolane_Admin::url( 'strings', array_filter( array( 'group' => $group, 'subgroup' => $subgroup, 'language' => $language, 'status' => $status ) ) ) ); ?>" class="button button-link"><?php esc_html_e( 'Clear', 'lingolane' ); ?></a>
                             <?php endif; ?>
@@ -831,8 +835,12 @@ class Lingolane_Strings_Admin {
                                                             <div class="lingolane-input-stack">
                                                                 <input type="text" name="name" class="regular-text lingolane-term-name-input" value="<?php echo esc_attr( $val ); ?>" placeholder="<?php esc_attr_e( 'Term name', 'lingolane' ); ?>" data-orig="<?php echo esc_attr( $val ); ?>">
                                                                 <textarea name="description" rows="2" class="large-text lingolane-term-desc-input" placeholder="<?php esc_attr_e( 'Description (optional)', 'lingolane' ); ?>"><?php echo esc_textarea( isset( $item['trans_desc'] ) ? $item['trans_desc'] : '' ); ?></textarea>
-                                                                <div class="lingolane-row-actions">
+                                <div class="lingolane-row-actions">
                                                                     <button type="submit" class="button button-small button-primary lingolane-save-term-btn"><?php esc_html_e( 'Save', 'lingolane' ); ?></button>
+                                                                    <button type="button" class="button button-small lingolane-ai-term-btn" title="<?php esc_attr_e( 'Gợi ý dịch AI', 'lingolane' ); ?>">
+                                                                        <?php echo Lingolane_UI::icon( 'sparkles', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                                                        <?php esc_html_e( 'AI', 'lingolane' ); ?>
+                                                                    </button>
                                                                     <span class="lingolane-save-status" aria-live="polite"></span>
                                                                 </div>
                                                             </div>
@@ -854,6 +862,10 @@ class Lingolane_Strings_Admin {
                                                                 <textarea name="translation" rows="2" class="large-text lingolane-translation-input" lang="<?php echo esc_attr( $l_code ); ?>" data-domain="<?php echo esc_attr( $item['domain'] ); ?>" data-source="<?php echo esc_attr( $item['source'] ); ?>" data-context="<?php echo esc_attr( $item['context'] ); ?>" data-lang="<?php echo esc_attr( $l_code ); ?>" data-orig="<?php echo esc_attr( $val ); ?>" placeholder="<?php esc_attr_e( 'Enter translation…', 'lingolane' ); ?>"><?php echo esc_textarea( $val ); ?></textarea>
                                                                 <div class="lingolane-row-actions">
                                                                     <button type="submit" class="button button-small button-primary lingolane-save-btn"><?php esc_html_e( 'Save', 'lingolane' ); ?></button>
+                                                                    <button type="button" class="button button-small lingolane-ai-btn" title="<?php esc_attr_e( 'Gợi ý dịch AI', 'lingolane' ); ?>">
+                                                                        <?php echo Lingolane_UI::icon( 'sparkles', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                                                        <?php esc_html_e( 'AI', 'lingolane' ); ?>
+                                                                    </button>
                                                                     <span class="lingolane-save-status" aria-live="polite"></span>
                                                                 </div>
                                                             </div>
