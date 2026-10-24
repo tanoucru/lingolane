@@ -17,7 +17,8 @@ class Lingolane_Install {
         }
         $settings = get_option( 'tml_settings', null );
         if ( is_array( $settings ) && false === get_option( 'lingolane_settings', false ) ) {
-            add_option( 'lingolane_settings', $settings );
+            $merged = wp_parse_args( $settings, Lingolane_Languages::defaults() );
+            add_option( 'lingolane_settings', $merged );
         }
     }
 

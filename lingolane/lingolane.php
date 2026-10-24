@@ -33,6 +33,7 @@ require_once LINGOLANE_DIR . 'includes/class-lingolane-elements.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-router.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-query.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-urls.php';
+require_once LINGOLANE_DIR . 'includes/class-lingolane-flags.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-switcher.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-seo.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-links.php';

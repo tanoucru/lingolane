@@ -177,6 +177,24 @@ class Test_Lingolane_Tree extends Lingolane_TestCase {
 		);
 	}
 
+	public function test_language_column_hidden_on_tree_screens() {
+		set_current_screen( 'edit-page' );
+		$columns = Lingolane_Columns::columns( array( 'cb' => '', 'title' => 'T', 'author' => 'A', 'date' => 'D' ) );
+		$this->assertArrayNotHasKey( 'lingolane_language', $columns );
+		set_current_screen( 'edit-post' );
+		$columns = Lingolane_Columns::columns( array( 'cb' => '', 'title' => 'T', 'author' => 'A', 'date' => 'D' ) );
+		$this->assertArrayNotHasKey( 'lingolane_language', $columns );
+	}
+
+	public function test_post_class_includes_language_slug() {
+		$ids = $this->tree_fixture();
+		set_current_screen( 'edit-page' );
+		$classes_vi = Lingolane_Tree::post_class( array(), '', $ids['A'] );
+		$this->assertContains( 'lingolane-lang-vi', $classes_vi );
+		$classes_en = Lingolane_Tree::post_class( array(), '', $ids['A_en'] );
+		$this->assertContains( 'lingolane-lang-en', $classes_en );
+	}
+
 	public function test_body_class_only_on_translatable_lists() {
 		$this->assertTrue( is_callable( array( 'Lingolane_Columns', 'body_class' ) ) );
 		$this->register_shared_fixtures();

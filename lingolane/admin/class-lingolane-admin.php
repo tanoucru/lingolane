@@ -99,6 +99,10 @@ class Lingolane_Admin {
         return isset( $_POST[ $key ] ) && is_string( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
     }
 
+    private static function post_url( $key ) {
+        return isset( $_POST[ $key ] ) && is_string( $_POST[ $key ] ) ? esc_url_raw( sanitize_url( wp_unslash( $_POST[ $key ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+    }
+
     private static function settings() {
         $settings = get_option( 'lingolane_settings', Lingolane_Languages::defaults() );
         return is_array( $settings ) ? $settings : Lingolane_Languages::defaults();
@@ -417,6 +421,29 @@ class Lingolane_Admin {
         $settings['taxonomies'] = $taxonomies;
         $settings['fallback_to_untranslated'] = ! empty( $_POST['fallback_to_untranslated'] ); // phpcs:ignore WordPress.Security.NonceVerification
         $settings['url_mode'] = 'directory';
+
+        // Switcher display options.
+        $switcher_style = self::post_text( 'switcher_style' );
+        if ( in_array( $switcher_style, array( 'list', 'dropdown', 'pills', 'select' ), true ) ) {
+            $settings['switcher_style'] = $switcher_style;
+        }
+        $switcher_show = self::post_text( 'switcher_show' );
+        if ( in_array( $switcher_show, array( 'flag_name', 'flag_code', 'flag_only', 'name', 'code' ), true ) ) {
+            $settings['switcher_show'] = $switcher_show;
+        }
+        $switcher_shape = self::post_text( 'switcher_flag_shape' );
+        if ( in_array( $switcher_shape, array( 'rect', 'round', 'square' ), true ) ) {
+            $settings['switcher_flag_shape'] = $switcher_shape;
+        }
+
+        // Untranslated behavior options.
+        $untrans_action = self::post_text( 'untranslated_action' );
+        $settings['untranslated_action'] = ( 'redirect' === $untrans_action ) ? 'redirect' : 'notice';
+
+        $untrans_notice = self::post_text( 'untranslated_notice' );
+        $settings['untranslated_notice'] = '' !== $untrans_notice ? $untrans_notice : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+
+        $settings['untranslated_redirect_url'] = self::post_url( 'untranslated_redirect_url' );
 
         update_option( 'lingolane_settings', $settings );
         Lingolane_Strings::flush_cache();
@@ -1069,6 +1096,12 @@ class Lingolane_Admin {
         $types    = Lingolane_Query::post_types();
         $taxes    = Lingolane_Query::taxonomies();
         $fallback = ! empty( $settings['fallback_to_untranslated'] );
+        $sw_style = isset( $settings['switcher_style'] ) ? $settings['switcher_style'] : 'list';
+        $sw_show  = isset( $settings['switcher_show'] ) ? $settings['switcher_show'] : 'flag_name';
+        $sw_shape = isset( $settings['switcher_flag_shape'] ) ? $settings['switcher_flag_shape'] : 'rect';
+        $untrans_action = isset( $settings['untranslated_action'] ) ? $settings['untranslated_action'] : 'notice';
+        $untrans_notice = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+        $untrans_url    = ! empty( $settings['untranslated_redirect_url'] ) ? $settings['untranslated_redirect_url'] : '';
         $skip_types = array( 'attachment', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'wp_font_family', 'wp_font_face' );
         $skip_taxes = array( 'nav_menu', 'link_category', 'post_format', 'wp_theme', 'wp_template_part_area', 'wp_pattern_category' );
         ?>
@@ -1090,10 +1123,70 @@ class Lingolane_Admin {
 
             <section class="lingolane-card lingolane-setting">
                 <div class="lingolane-setting__intro">
-                    <h2><?php esc_html_e( 'When a translation is missing', 'lingolane' ); ?></h2>
-                    <p><?php esc_html_e( 'Untranslated pages always open the original with a small notice for visitors and never return a 404 error.', 'lingolane' ); ?></p>
+                    <h2><?php esc_html_e( 'Language switcher display', 'lingolane' ); ?></h2>
+                    <p><?php esc_html_e( 'Configure how the language switcher button appears across the site by default.', 'lingolane' ); ?></p>
                 </div>
                 <div class="lingolane-setting__control">
+                    <p>
+                        <label for="lingolane-switcher-style"><strong><?php esc_html_e( 'Display style', 'lingolane' ); ?></strong></label><br>
+                        <select id="lingolane-switcher-style" name="switcher_style" class="regular-text">
+                            <option value="list" <?php selected( $sw_style, 'list' ); ?>><?php esc_html_e( 'Horizontal list (inline items)', 'lingolane' ); ?></option>
+                            <option value="dropdown" <?php selected( $sw_style, 'dropdown' ); ?>><?php esc_html_e( 'Dropdown menu (clean select panel)', 'lingolane' ); ?></option>
+                            <option value="pills" <?php selected( $sw_style, 'pills' ); ?>><?php esc_html_e( 'Pills / Rounded button group', 'lingolane' ); ?></option>
+                            <option value="select" <?php selected( $sw_style, 'select' ); ?>><?php esc_html_e( 'Native select box', 'lingolane' ); ?></option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="lingolane-switcher-show"><strong><?php esc_html_e( 'Items to display', 'lingolane' ); ?></strong></label><br>
+                        <select id="lingolane-switcher-show" name="switcher_show" class="regular-text">
+                            <option value="flag_name" <?php selected( $sw_show, 'flag_name' ); ?>><?php esc_html_e( 'Flag & Language name (e.g. 🇻🇳 Tiếng Việt)', 'lingolane' ); ?></option>
+                            <option value="flag_code" <?php selected( $sw_show, 'flag_code' ); ?>><?php esc_html_e( 'Flag & Language code (e.g. 🇻🇳 VI)', 'lingolane' ); ?></option>
+                            <option value="flag_only" <?php selected( $sw_show, 'flag_only' ); ?>><?php esc_html_e( 'Flag only (e.g. 🇻🇳)', 'lingolane' ); ?></option>
+                            <option value="name" <?php selected( $sw_show, 'name' ); ?>><?php esc_html_e( 'Language name only', 'lingolane' ); ?></option>
+                            <option value="code" <?php selected( $sw_show, 'code' ); ?>><?php esc_html_e( 'Language code only', 'lingolane' ); ?></option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="lingolane-switcher-shape"><strong><?php esc_html_e( 'Flag shape', 'lingolane' ); ?></strong></label><br>
+                        <select id="lingolane-switcher-shape" name="switcher_flag_shape" class="regular-text">
+                            <option value="rect" <?php selected( $sw_shape, 'rect' ); ?>><?php esc_html_e( 'Rectangle (standard ratio)', 'lingolane' ); ?></option>
+                            <option value="round" <?php selected( $sw_shape, 'round' ); ?>><?php esc_html_e( 'Circle / Round', 'lingolane' ); ?></option>
+                            <option value="square" <?php selected( $sw_shape, 'square' ); ?>><?php esc_html_e( 'Square', 'lingolane' ); ?></option>
+                        </select>
+                    </p>
+                    <p class="lingolane-hint">
+                        <?php echo wp_kses( __( 'Template tag to place anywhere in source code: <code>&lt;?php if ( function_exists( \'lingolane_switcher\' ) ) { lingolane_switcher(); } ?&gt;</code> or shortcode <code>[lingolane_switcher]</code>.', 'lingolane' ), array( 'code' => array() ) ); ?>
+                    </p>
+                </div>
+            </section>
+
+            <section class="lingolane-card lingolane-setting">
+                <div class="lingolane-setting__intro">
+                    <h2><?php esc_html_e( 'When a translation is missing', 'lingolane' ); ?></h2>
+                    <p><?php esc_html_e( 'Choose what happens when visitors click a language switcher option for a page that has not been translated yet.', 'lingolane' ); ?></p>
+                </div>
+                <div class="lingolane-setting__control">
+                    <p>
+                        <label>
+                            <input type="radio" name="untranslated_action" value="notice" <?php checked( 'notice', $untrans_action ); ?>>
+                            <strong><?php esc_html_e( 'Stay on current page & display notice dialog', 'lingolane' ); ?></strong>
+                        </label>
+                    </p>
+                    <p style="margin-inline-start: 24px;">
+                        <label for="lingolane-untranslated-notice"><strong><?php esc_html_e( 'Notice message:', 'lingolane' ); ?></strong></label><br>
+                        <input type="text" id="lingolane-untranslated-notice" name="untranslated_notice" value="<?php echo esc_attr( $untrans_notice ); ?>" class="large-text" placeholder="<?php esc_attr_e( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' ); ?>">
+                    </p>
+                    <p>
+                        <label>
+                            <input type="radio" name="untranslated_action" value="redirect" <?php checked( 'redirect', $untrans_action ); ?>>
+                            <strong><?php esc_html_e( 'Redirect to custom fallback link', 'lingolane' ); ?></strong>
+                        </label>
+                    </p>
+                    <p style="margin-inline-start: 24px;">
+                        <label for="lingolane-untranslated-url"><strong><?php esc_html_e( 'Fallback redirect URL:', 'lingolane' ); ?></strong></label><br>
+                        <input type="url" id="lingolane-untranslated-url" name="untranslated_redirect_url" value="<?php echo esc_attr( $untrans_url ); ?>" class="large-text" placeholder="https://example.com/untranslated">
+                    </p>
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--lingolane-line);">
                     <label class="lingolane-switch">
                         <input type="checkbox" name="fallback_to_untranslated" value="1" <?php checked( $fallback ); ?>>
                         <span><strong><?php esc_html_e( 'Show untranslated posts in lists', 'lingolane' ); ?></strong>
@@ -1225,13 +1318,14 @@ class Lingolane_Admin {
 
                 <section class="lingolane-card" id="switcher">
                     <h2 class="lingolane-card__title"><?php esc_html_e( '4. Language switcher', 'lingolane' ); ?></h2>
-                    <p><?php esc_html_e( 'To place a language switcher anywhere:', 'lingolane' ); ?></p>
+                    <p><?php esc_html_e( 'To place a language switcher anywhere on your site:', 'lingolane' ); ?></p>
                     <ul class="lingolane-steps">
-                        <li><?php echo wp_kses( __( 'Shortcode: <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style="dropdown"]</code>, codes only <code>[lingolane_switcher show="code"]</code>.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( '<strong>PHP Template Tag:</strong> <code>&lt;?php if ( function_exists( \'lingolane_switcher\' ) ) { lingolane_switcher(); } ?&gt;</code> (supports <code>style</code>, <code>show</code>, <code>shape</code>, <code>class</code> options).', 'lingolane' ), array( 'strong' => array(), 'code' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( '<strong>Shortcode:</strong> <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style="dropdown"]</code>, flags only <code>[lingolane_switcher show="flag_only"]</code>, pills style <code>[lingolane_switcher style="pills"]</code>.', 'lingolane' ), array( 'strong' => array(), 'code' => array() ) ); ?></li>
                         <li><?php esc_html_e( 'Widget: Appearance › Widgets › “Select language”.', 'lingolane' ); ?></li>
                         <li><?php echo wp_kses( __( 'In a menu: add a Custom Link with the URL <code>#lingolane-switcher</code> and the label <code>{{lingolane}}</code>; it expands into one item per language.', 'lingolane' ), array( 'code' => array() ) ); ?></li>
                     </ul>
-                    <p class="lingolane-hint"><?php esc_html_e( 'The switcher always links to the matching translation of the current page; untranslated pages link to the original with a notice.', 'lingolane' ); ?></p>
+                    <p class="lingolane-hint"><?php esc_html_e( 'The switcher always links to the matching translation of the current page; untranslated pages gracefully alert visitors or redirect to your configured fallback.', 'lingolane' ); ?></p>
                 </section>
 
                 <section class="lingolane-card" id="shared">

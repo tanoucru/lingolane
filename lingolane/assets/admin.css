@@ -463,12 +463,52 @@ body.lingolane-screen #wpbody-content { background: #f7f8fb; }
 
 .column-lingolane_language { width: 150px; }
 .lingolane-col { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lingolane-space-1); }
+.lingolane-col--tree { gap: var(--lingolane-space-2); }
 .lingolane-col .lingolane-code { transition: border-color var(--lingolane-dur) var(--lingolane-ease), color var(--lingolane-dur) var(--lingolane-ease); }
 .lingolane-col .lingolane-code--current { border-color: var(--lingolane-accent); background: var(--lingolane-accent); color: #fff; }
 .lingolane-col .lingolane-code--ok { border-color: transparent; background: var(--lingolane-ok-bg); color: var(--lingolane-ok); }
 .lingolane-col .lingolane-code--warn { border-color: transparent; background: var(--lingolane-warn-bg); color: var(--lingolane-warn); }
 .lingolane-col .lingolane-code--add { border-style: dashed; background: var(--lingolane-card); color: var(--lingolane-muted); }
 .lingolane-col a.lingolane-code:hover { border-color: var(--lingolane-accent); color: var(--lingolane-accent-ink); }
+
+.lingolane-tree-flag {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 2px 8px 2px 4px;
+	background: var(--lingolane-card);
+	border: 1px solid var(--lingolane-line);
+	border-radius: var(--lingolane-radius);
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--lingolane-ink);
+	line-height: 1.2;
+	transition: border-color var(--lingolane-dur) var(--lingolane-ease);
+}
+.lingolane-tree-flag:hover { border-color: var(--lingolane-accent); }
+.lingolane-tree-flag .lingolane-flag { flex-shrink: 0; border-radius: 2px; }
+.lingolane-flag--shadow { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.08); }
+
+.lingolane-title-flag {
+	display: inline-flex;
+	align-items: center;
+	vertical-align: middle;
+	margin-inline-end: 6px;
+	line-height: 1;
+}
+.lingolane-title-flag .lingolane-flag,
+.lingolane-tree-missing .lingolane-flag {
+	display: inline-block;
+	border-radius: 2px;
+	vertical-align: middle;
+	flex-shrink: 0;
+}
+.lingolane-tree-missing .lingolane-flag {
+	margin-inline-end: 6px;
+}
+.lingolane-title-flag--shared {
+	margin-inline-end: 6px;
+}
 
 /* ------------------------------------------------------------------ Tree list */
 
