@@ -50,7 +50,9 @@ class Test_Lingolane_String_Scan extends Lingolane_TestCase {
 		$session_data = Lingolane_String_Scan::start( $paths );
 		$this->assertIsArray( $session_data );
 		$this->assertArrayHasKey( 'session', $session_data );
+		$this->assertArrayHasKey( 'session_id', $session_data );
 		$this->assertArrayHasKey( 'expires', $session_data );
+		$this->assertSame( $session_data['session'], $session_data['session_id'] );
 		$session_token = $session_data['session'];
 
 		// User A can accept items into session.
@@ -211,5 +213,52 @@ class Test_Lingolane_String_Scan extends Lingolane_TestCase {
 		// Non-existent occurrence returns error.
 		$bad_url = Lingolane_String_Scan::preview_url( 99999999 );
 		$this->assertWPError( $bad_url );
+	}
+
+	public function test_enqueue_frontend_scripts_authorization_and_token_mapping() {
+		// Clean $_GET before test.
+		$_GET = array();
+
+		// 1. Guest request should not enqueue scripts.
+		wp_set_current_user( 0 );
+		$_GET['lingolane_scan'] = '1';
+		$_GET['token']          = 'dummy_token_123';
+		wp_dequeue_script( 'lingolane-string-scan' );
+		wp_dequeue_style( 'lingolane-string-scan' );
+		Lingolane_String_Scan::enqueue_frontend_scripts();
+		$this->assertFalse( wp_script_is( 'lingolane-string-scan', 'enqueued' ) );
+
+		// 2. Admin without scan or preview params should not enqueue scripts.
+		wp_set_current_user( $this->translator_id );
+		$_GET = array();
+		wp_dequeue_script( 'lingolane-string-scan' );
+		wp_dequeue_style( 'lingolane-string-scan' );
+		Lingolane_String_Scan::enqueue_frontend_scripts();
+		$this->assertFalse( wp_script_is( 'lingolane-string-scan', 'enqueued' ) );
+
+		// 3. Admin with lingolane_scan=1 and token=... enqueues scripts.
+		$_GET = array(
+			'lingolane_scan' => '1',
+			'token'          => 'test_session_token_xyz',
+		);
+		wp_dequeue_script( 'lingolane-string-scan' );
+		wp_dequeue_style( 'lingolane-string-scan' );
+		Lingolane_String_Scan::enqueue_frontend_scripts();
+		$this->assertTrue( wp_script_is( 'lingolane-string-scan', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'lingolane-string-scan', 'enqueued' ) );
+
+		// 4. Admin with preview token enqueues scripts.
+		$_GET = array(
+			'lingolane_preview' => 'test_preview_token_abc',
+		);
+		wp_dequeue_script( 'lingolane-string-scan' );
+		wp_dequeue_style( 'lingolane-string-scan' );
+		Lingolane_String_Scan::enqueue_frontend_scripts();
+		$this->assertTrue( wp_script_is( 'lingolane-string-scan', 'enqueued' ) );
+
+		// Reset $_GET and dequeue.
+		$_GET = array();
+		wp_dequeue_script( 'lingolane-string-scan' );
+		wp_dequeue_style( 'lingolane-string-scan' );
 	}
 }

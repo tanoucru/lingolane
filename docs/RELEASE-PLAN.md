@@ -154,3 +154,18 @@ Chưa xong M0: kiểm readme bằng trình kiểm của WordPress.org; cài th�
 - Kiểm chứng: PHPUnit 137 test / 923 assertion đạt trên cả PHP 8.2 và 7.4 (38 test riêng cho Tree); phpcs 0 lỗi, 26 cảnh báo (đúng baseline); `node --check` đạt; Plugin Check trên check.local 0 lỗi.
 - QA trình duyệt trên check.local: Quick Edit lưu qua AJAX giữ nguyên nhãn tiến độ (2/3); tìm kiếm mở nhóm và hiển thị đúng bản dịch; phân cấp cây hiển thị chuẩn xác; 0 lỗi console.
 
+**2026-10-24 · P3 Dịch chuỗi theo nhóm vị trí & Chế độ quét trang (kế hoạch docs/plans/2026-10-23-p3-string-groups.md, nhánh feat/p3-string-groups):**
+- 10 nhóm vị trí chuỗi trực quan: `site` (Site Info), `header`, `menu`, `footer`, `widgets`, `theme`, `plugin`, `terms` (Categories & Tags), `media`, `other`. Hỗ trợ nhóm con (subgroups) tự động theo textdomain, taxonomy và vị trí menu.
+- Bảng dịch đa ngôn ngữ inline: theo dõi dirty state (cảnh báo khi thoát trang có bản dịch chưa lưu), phím tắt `Ctrl+Enter` / `Cmd+Enter` lưu tức thì, cập nhật đồng bộ các ngôn ngữ đích mà không cần tải lại trang.
+- Chế độ quét trang Frontend (Page Scan Mode): modal quét tuần tự các trang qua iframe sandbox với query `?lingolane_scan=1&token=...`, cơ chế giới hạn tần suất 1s ở backend (`Lingolane_String_Scan::accept`), đồng bộ hóa session token giữa frontend JS (`res.data.session_id || res.data.session`) và backend PHP (`$_GET['token']` & `$_GET['lingolane_scan']`), tự giải phóng event listener chống nghẽn bộ nhớ.
+- Hỗ trợ lập trình viên (Developer Assistance): hiển thị huy hiệu và viền nổi bật phần tử trên trang (`highlight`), nút sao chép nhanh mã định danh phần tử (`domain:context:source`) cho lập trình viên bọc hàm gettext.
+- Đồng bộ Taxonomy Terms: dịch trực tiếp term taxonomy (chuyên mục, thẻ) trong tab Chuỗi và đồng bộ 2 chiều vào cơ sở dữ liệu WordPress term taxonomy.
+- Ngôn ngữ & Bản dịch: POT trích xuất 431 chuỗi; bổ sung 148 chuỗi tiếng Việt mới vào `lingolane-vi.po`, biên dịch nhị phân thành công `lingolane-vi.mo` (46.840 bytes).
+- Đóng gói: script `bin/build.sh` tạo `dist/lingolane-1.0.0-dev.zip`.
+- Kiểm chứng chất lượng:
+  - PHPUnit: **185 tests, 1151 assertions, 0 errors, 0 failures, 1 skipped** (multisite) đạt 100% trên cả PHP 8.2 (8.2.29) và PHP 7.4 (7.4.30).
+  - PHPCS: **0 errors, 25 warnings** (thấp hơn baseline cho phép 26 warnings).
+  - Plugin Check: **0 errors** trên site `check.local`.
+  - QA Trình duyệt: giao diện responsive 375px hoàn hảo (`scrollWidth === innerWidth`, không tràn trang), khách vãng lai sạch 100% script/scan markers, 0 lỗi JavaScript console.
+
+

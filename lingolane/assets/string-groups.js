@@ -257,7 +257,7 @@
                 if (!res || !res.success || !res.data) {
                     throw new Error((res && res.data && res.data.message) ? res.data.message : 'Failed to start scan.');
                 }
-                var sessionId = res.data.session_id;
+                var sessionId = res.data.session_id || res.data.session;
                 var pages = res.data.pages || selectedPaths;
                 scanPagesSequential(sessionId, pages);
             })

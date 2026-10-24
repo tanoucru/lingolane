@@ -182,9 +182,10 @@ class Lingolane_String_Scan {
         set_transient( 'lingolane_scan_' . $session_token, $session_data, self::SESSION_TTL );
 
         return array(
-            'session' => $session_token,
-            'pages'   => $session_data['paths'],
-            'expires' => $expires,
+            'session'    => $session_token,
+            'session_id' => $session_token,
+            'pages'      => $session_data['paths'],
+            'expires'    => $expires,
         );
     }
 
@@ -296,10 +297,19 @@ class Lingolane_String_Scan {
             return;
         }
 
-        $preview_token = isset( $_GET['lingolane_preview'] ) ? sanitize_key( wp_unslash( $_GET['lingolane_preview'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-        $scan_token    = isset( $_GET['lingolane_scan'] ) ? sanitize_key( wp_unslash( $_GET['lingolane_scan'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+        $preview_token = isset( $_GET['lingolane_preview'] ) ? sanitize_key( wp_unslash( $_GET['lingolane_preview'] ) ) : '';
+        $scan_token    = '';
+        if ( ! empty( $_GET['token'] ) ) {
+            $scan_token = sanitize_key( wp_unslash( $_GET['token'] ) );
+        } elseif ( ! empty( $_GET['lingolane_scan'] ) && '1' !== $_GET['lingolane_scan'] ) {
+            $scan_token = sanitize_key( wp_unslash( $_GET['lingolane_scan'] ) );
+        }
 
-        if ( '' === $preview_token && '' === $scan_token ) {
+        $is_scan_active = ( '' !== $scan_token || ( isset( $_GET['lingolane_scan'] ) && '1' === $_GET['lingolane_scan'] ) );
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+        if ( '' === $preview_token && ! $is_scan_active ) {
             return;
         }
 
