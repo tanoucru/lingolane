@@ -109,7 +109,7 @@ class Lingolane_Columns {
         $trid    = Lingolane_Elements::get_trid( $type, $id );
         $shared  = Lingolane_Shared::post( $post ) && ! $trid;
 
-        // In tree mode: display flag for the post's own language only (no clutter of other languages).
+        // In tree mode: display flag for the post's own language, with accessible fallback links for translations.
         if ( self::tree_screen() ) {
             echo '<div class="lingolane-col lingolane-col--tree">';
             if ( $shared ) {
@@ -122,6 +122,26 @@ class Lingolane_Columns {
                 echo '<span class="lingolane-tree-flag" title="' . esc_attr( $title ) . '">';
                 echo $flag_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG vector flag.
                 echo '<span class="lingolane-tree-flag__name">' . esc_html( $lang_name ) . '</span>';
+                echo '</span>';
+
+                // Accessible / No-JS fallback links: ensure every translation is reachable.
+                echo '<span class="screen-reader-text lingolane-tree-fallback-links">';
+                foreach ( Lingolane_Languages::all() as $language ) {
+                    $code = $language['code'];
+                    if ( $code === $current ) { continue; }
+                    $trans_id = $trid ? Lingolane_Elements::get_translation( $type, $id, $code ) : 0;
+                    if ( $trans_id ) {
+                        if ( ! current_user_can( 'edit_post', $trans_id ) ) { continue; }
+                        $status = get_post_status( $trans_id );
+                        /* translators: 1: language, 2: status */
+                        $label = sprintf( __( 'Edit %1$s version (%2$s)', 'lingolane' ), $language['name'], Lingolane_Admin::status_label( $status ) );
+                        echo '<a class="lingolane-code lingolane-code--' . ( 'publish' === $status ? 'ok' : 'warn' ) . '" href="' . esc_url( get_edit_post_link( $trans_id, 'raw' ) ) . '" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '">' . esc_html( strtoupper( $code ) ) . '</a>';
+                    } elseif ( current_user_can( 'edit_post', $id ) && 'trash' !== $post->post_status ) {
+                        /* translators: %s: language */
+                        $label = sprintf( __( 'Create %s translation', 'lingolane' ), $language['name'] );
+                        echo '<a class="lingolane-code lingolane-code--add" href="' . esc_url( Lingolane_Admin::translate_url( $id, $code ) ) . '" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '"><span aria-hidden="true">+</span>' . esc_html( strtoupper( $code ) ) . '</a>';
+                    }
+                }
                 echo '</span>';
             }
             echo '</div>';

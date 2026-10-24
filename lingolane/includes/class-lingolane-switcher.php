@@ -121,7 +121,13 @@ class Lingolane_Switcher {
 
         $items = array();
         foreach ( $all_languages as $lang ) {
-            $code      = $lang['code'];
+            $code = $lang['code'];
+
+            // If a translation exists but is draft or private (published_url === false), do not expose in public switcher.
+            if ( false === Lingolane_Urls::published_url( $code ) ) {
+                continue;
+            }
+
             $is_cur    = ( $code === $current_code );
             $has_trans = Lingolane_Urls::has_translation( $code );
             $trans_url = lingolane_get_translation_url( $code );
