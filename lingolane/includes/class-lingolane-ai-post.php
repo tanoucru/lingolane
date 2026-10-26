@@ -82,65 +82,10 @@ class Lingolane_AI_Post {
 	 * @return int|WP_Error New post ID on success, WP_Error on failure.
 	 */
 	public static function translate_post( $post_id, $target_lang ) {
-		$post_id     = absint( $post_id );
-		$target_lang = sanitize_key( $target_lang );
-		$post        = get_post( $post_id );
-
-		if ( ! $post ) {
-			return new WP_Error( 'not_found', __( 'Không tìm thấy bài viết gốc.', 'lingolane' ) );
-		}
-
-		$source_lang = Lingolane_Elements::get_language( 'post_' . $post->post_type, $post_id );
-		if ( ! $source_lang ) {
-			$source_lang = Lingolane_Languages::source_code();
-		}
-
-		// 1. Duplicate post as draft in target language
-		$new_id = Lingolane_Elements::duplicate_post( $post_id, $target_lang, 'draft' );
-		if ( is_wp_error( $new_id ) ) {
-			return $new_id;
-		}
-
-		// 2. Translate post_title
-		$translated_title   = $post->post_title;
-		$translated_excerpt = $post->post_excerpt;
-		$translated_content = $post->post_content;
-
-		if ( '' !== trim( $post->post_title ) ) {
-			$res_title = Lingolane_AI::translate_text( $post->post_title, $source_lang, $target_lang );
-			if ( ! is_wp_error( $res_title ) && '' !== $res_title ) {
-				$translated_title = $res_title;
-			}
-		}
-
-		// 3. Translate post_excerpt
-		if ( '' !== trim( $post->post_excerpt ) ) {
-			$res_excerpt = Lingolane_AI::translate_text( $post->post_excerpt, $source_lang, $target_lang );
-			if ( ! is_wp_error( $res_excerpt ) && '' !== $res_excerpt ) {
-				$translated_excerpt = $res_excerpt;
-			}
-		}
-
-		// 4. Translate post_content preserving blocks and HTML
-		if ( '' !== trim( $post->post_content ) ) {
-			$translated_content = self::translate_html( $post->post_content, $source_lang, $target_lang );
-		}
-
-		// 5. Update duplicated post with translated content
-		wp_update_post(
-			array(
-				'ID'           => $new_id,
-				'post_title'   => $translated_title,
-				'post_excerpt' => $translated_excerpt,
-				'post_content' => $translated_content,
-				'post_name'    => sanitize_title( $translated_title ),
-			)
+		return new WP_Error(
+			'ai_post_translation_disabled',
+			__( 'Tính năng nhân bản và dịch toàn bài bằng AI tạm thời bị vô hiệu hóa để bảo đảm an toàn dữ liệu, chống ghi đè bản dịch và chống rủi ro chi phí/race condition theo tiêu chuẩn phát hành.', 'lingolane' )
 		);
-
-		// 6. Set machine translated flag
-		update_post_meta( $new_id, self::META_FLAG, 1 );
-
-		return $new_id;
 	}
 
 	/**

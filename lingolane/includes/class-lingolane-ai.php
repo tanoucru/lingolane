@@ -106,79 +106,9 @@ class Lingolane_AI {
 	 * @return array
 	 */
 	public static function test_api_key( $api_key = '' ) {
-		if ( '' === $api_key ) {
-			$settings = self::get_settings();
-			$api_key  = $settings['gemini_api_key'];
-		}
-
-		if ( '' === $api_key ) {
-			return array(
-				'success' => false,
-				'message' => __( 'Vui lòng nhập API Key để kiểm tra.', 'lingolane' ),
-			);
-		}
-
-		$url = add_query_arg(
-			array( 'key' => $api_key ),
-			'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
-		);
-
-		$body = array(
-			'contents'         => array(
-				array(
-					'parts' => array(
-						array( 'text' => 'Translate to Vietnamese: Hello' ),
-					),
-				),
-			),
-			'generationConfig' => array(
-				'maxOutputTokens' => 10,
-				'temperature'     => 0.1,
-			),
-		);
-
-		$response = wp_remote_post(
-			$url,
-			array(
-				'timeout' => 15,
-				'headers' => array(
-					'Content-Type' => 'application/json',
-				),
-				'body'    => wp_json_encode( $body ),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return array(
-				'success' => false,
-				'message' => sprintf(
-					/* translators: %s: error message */
-					__( 'Lỗi kết nối máy chủ Google AI: %s', 'lingolane' ),
-					$response->get_error_message()
-				),
-			);
-		}
-
-		$code = wp_remote_retrieve_response_code( $response );
-		$raw  = wp_remote_retrieve_body( $response );
-		$data = json_decode( $raw, true );
-
-		if ( 200 !== $code ) {
-			$error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : __( 'Key không hợp lệ hoặc bị từ chối.', 'lingolane' );
-			return array(
-				'success' => false,
-				'message' => sprintf(
-					/* translators: 1: HTTP code, 2: error detail */
-					__( 'Google AI trả về lỗi (Mã %1$d): %2$s', 'lingolane' ),
-					$code,
-					$error_msg
-				),
-			);
-		}
-
 		return array(
-			'success' => true,
-			'message' => __( 'Kết nối Gemini API thành công! API Key hợp lệ và sẵn sàng sử dụng.', 'lingolane' ),
+			'success' => false,
+			'message' => __( 'Dịch vụ đám mây Google AI tạm thời bị vô hiệu hóa để bảo đảm an toàn dữ liệu và kiểm soát ngân sách theo tiêu chuẩn phát hành.', 'lingolane' ),
 		);
 	}
 
@@ -192,76 +122,10 @@ class Lingolane_AI {
 	 * @return string|WP_Error Translated text or error.
 	 */
 	public static function translate_text( $text, $source_lang, $target_lang, $context = '' ) {
-		$text = trim( (string) $text );
-		if ( '' === $text ) {
-			return '';
-		}
-
-		$settings = self::get_settings();
-		$api_key  = $settings['gemini_api_key'];
-		$model    = ! empty( $settings['gemini_model'] ) ? $settings['gemini_model'] : 'gemini-2.5-flash';
-
-		if ( '' === $api_key ) {
-			return new WP_Error( 'missing_api_key', __( 'Chưa cấu hình Gemini API Key.', 'lingolane' ) );
-		}
-
-		$url = add_query_arg(
-			array( 'key' => $api_key ),
-			"https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent"
+		return new WP_Error(
+			'ai_cloud_disabled',
+			__( 'Dịch vụ đám mây Google AI tạm thời bị vô hiệu hóa để bảo đảm an toàn dữ liệu, chống rò rỉ và kiểm soát ngân sách theo tiêu chuẩn phát hành.', 'lingolane' )
 		);
-
-		$prompt = "You are a professional website translator for WordPress.\n" .
-				"Task: Translate the following text into {$target_lang}.\n" .
-				( $context ? "Context: {$context}\n" : '' ) .
-				"Strict instructions:\n" .
-				"1. Return ONLY the translated string, no commentary, no markdown quotes, no explanations.\n" .
-				"2. Preserve all HTML tags, shortcodes, and placeholder tokens (e.g. %s, %1\$d, {name}) exactly as-is.\n" .
-				"3. Keep whitespace and casing style where natural.\n\n" .
-				"Original text:\n{$text}";
-
-		$body = array(
-			'contents'         => array(
-				array(
-					'parts' => array(
-						array( 'text' => $prompt ),
-					),
-				),
-			),
-			'generationConfig' => array(
-				'temperature' => 0.1,
-			),
-		);
-
-		$response = wp_remote_post(
-			$url,
-			array(
-				'timeout' => 20,
-				'headers' => array(
-					'Content-Type' => 'application/json',
-				),
-				'body'    => wp_json_encode( $body ),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		$code = wp_remote_retrieve_response_code( $response );
-		$raw  = wp_remote_retrieve_body( $response );
-		$data = json_decode( $raw, true );
-
-		if ( 200 !== $code ) {
-			$error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : __( 'Lỗi từ Gemini API.', 'lingolane' );
-			return new WP_Error( 'gemini_api_error', $error_msg, array( 'status' => $code ) );
-		}
-
-		if ( ! empty( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
-			$translated = trim( $data['candidates'][0]['content']['parts'][0]['text'] );
-			return $translated;
-		}
-
-		return new WP_Error( 'empty_response', __( 'Gemini không trả về kết quả dịch.', 'lingolane' ) );
 	}
 
 	/**

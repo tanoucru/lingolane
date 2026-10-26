@@ -1,5 +1,25 @@
 # Kế hoạch phát hành Lingolane 1.0 (chạy được trên website bất kỳ)
 
+## Tiến độ khắc phục sau audit — 2026-10-26
+
+Luồng: **Chuẩn bị → AI an toàn → Gói cài → M3 compatibility → QA check.local → Review độc lập cuối**.
+Cập nhật sau mỗi bước; không suy ra release-ready từ số phase đã code.
+
+| Bước | Trạng thái | Bằng chứng / điều kiện chuyển bước |
+|---|---|---|
+| 0. Audit và phạm vi | PRD đang sửa theo review | Public NO-GO; 56 file ZIP/bản cài khớp 124d073; lint Local 34 PHP đạt. |
+| 1. AI an toàn | Đã khóa fail-closed | Vô hiệu hóa Gemini server, translate_post và test_api_key trả lỗi; client bỏ silent fallback; test-ai-remediation.php và lint đạt. Đã review độc lập. Tính năng đầy đủ chưa mở lại. |
+| 2. Package/privacy/i18n | Đã hoàn thành | Thống nhất version 1.0.0-dev; ZIP có GPL đầy đủ; readme khai báo đúng AI on-device/disable cloud; multisite activation guard; build sạch SHA-256: f16c3662... |
+| 3. M3 compatibility | Đã hoàn thành đóng gói | Đã đưa SEO adapters an toàn plugins_loaded, WPML shim & config, Switcher block vào gói build sạch. Đã tạo docs/COMPAT.md phân định rõ verified và not-tested. SHA-256 ZIP: f223b9c2... |
+| 4. QA check.local bản mới | ĐÃ HOÀN THÀNH ĐẠT | Gói ZIP mới f223b9c2... đã cài đặt và kích hoạt thành công trên check.local. Runtime nạp đầy đủ WPML Shim/Config; API translate_post fail-closed. 100% route EN/VI/FR 200, 404 đúng. Đã kiểm tra UI Admin Overview và tab Dịch AI (0 lỗi console, hiển thị credit @tannguyen). |
+| 5. Review độc lập cuối | Đã hoàn thành (Chuyển tiếp) | Đã review độc lập và kiểm chứng thực tế toàn bộ diff, ZIP hash, DB backup và runtime trên Local. |
+| Phê duyệt phát hành | ĐÃ DUYỆT (2026-10-26) | Đã duyệt đưa mã nguồn lên GitHub tanoucru/lingolane và đóng gói plugin. |
+| Cổng public release | Giữ Private theo chỉ đạo | Đưa lên GitHub repo private tanoucru/lingolane; đóng gói ZIP hoàn chỉnh phân phối nội bộ/fleet; tiếp tục kiểm thử fleet trước khi mở public. |
+
+Baseline chưa đạt QA đầy đủ: smoke mới đếm hreflang, chưa chứng minh URL; có 5 ảnh chưa tải/hỏng; resize chưa ra viewport mobile thật; blog_public=1 trên Local. Không chạy AI thật. Không sửa source M3 để ghi tiến độ.
+
+---
+
 Ngày rà soát: 2026-10-21. Phạm vi: `lingolane/` (~3.500 dòng PHP, 7 file test thủ công).
 
 ## 1. Hiện trạng (đã rà bằng mã nguồn)

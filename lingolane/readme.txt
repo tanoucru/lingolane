@@ -39,7 +39,8 @@ Not yet. Version 1.0 supports single sites.
 Content created with the block editor and the classic editor is supported. Other integrations are being tested; see the compatibility notes in the project repository.
 
 = Does the plugin connect to external services? =
-Only to WordPress.org, the same way WordPress itself does: the Languages screen reads the list of available translations from api.wordpress.org, and adding a language downloads its translation packs from downloads.wordpress.org. No personal data is sent. Without a connection, a built-in list of common languages is shown.
+By default, Lingolane only connects to WordPress.org: the Languages screen queries api.wordpress.org for available translation packs, and downloads them from downloads.wordpress.org. No personal content is sent.
+AI Translation features prioritize Chrome on-device translation APIs (running locally inside your browser with no external server requests). Third-party cloud AI integrations (such as Google Gemini) are disabled by default and fail-closed until an explicit opt-in policy and atomic quota safeguards are enabled. No translation text is sent to third-party cloud services without explicit administrator consent.
 
 = Where can I get help? =
 Open Multilingual > Support in the admin. The screen helps you write a ticket and copies a system report (versions, theme, Lingolane settings and active plugins; site address, emails and links are left out or masked) that you review and paste into the [support forum](https://wordpress.org/support/plugin/lingolane/). Nothing is sent from your site. Please report security issues privately using the link on that screen, not in the public forum.

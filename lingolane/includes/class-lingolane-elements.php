@@ -5,6 +5,91 @@ class Lingolane_Elements {
     public static function init() {
         add_action( 'before_delete_post', array( __CLASS__, 'delete_post' ) );
         add_action( 'delete_term', array( __CLASS__, 'delete_term' ), 10, 3 );
+        add_filter( 'the_posts', array( __CLASS__, 'on_the_posts' ) );
+        add_filter( 'get_terms', array( __CLASS__, 'on_get_terms' ), 10, 2 );
+    }
+
+    /**
+     * Prime elements object cache in bulk to prevent N+1 queries.
+     *
+     * @param string $type Element type (post_{type} or tax_{taxonomy}).
+     * @param array  $ids List of element IDs.
+     */
+    public static function prime_cache( $type, array $ids ) {
+        global $wpdb;
+        $type = sanitize_key( $type );
+        $uncached = array();
+        foreach ( $ids as $id ) {
+            $id = absint( $id );
+            if ( ! $id ) { continue; }
+            $key = $wpdb->prefix . ':element:' . $type . ':' . $id;
+            wp_cache_get( $key, 'lingolane', false, $found );
+            if ( ! $found ) {
+                $uncached[ $id ] = $id;
+            }
+        }
+        if ( empty( $uncached ) ) {
+            return;
+        }
+
+        $placeholders = implode( ',', array_fill( 0, count( $uncached ), '%d' ) );
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}lingolane_translations WHERE element_type = %s AND element_id IN ($placeholders)", array_merge( array( $type ), array_values( $uncached ) ) );
+        $rows = $wpdb->get_results( $sql, ARRAY_A );
+
+        $found_ids = array();
+        if ( is_array( $rows ) ) {
+            foreach ( $rows as $row ) {
+                $id = (int) $row['element_id'];
+                $found_ids[ $id ] = true;
+                $key = $wpdb->prefix . ':element:' . $type . ':' . $id;
+                wp_cache_set( $key, $row, 'lingolane', 60 );
+            }
+        }
+
+        // Cache miss results as null/false so subsequent checks don't hit the DB again
+        foreach ( $uncached as $id ) {
+            if ( ! isset( $found_ids[ $id ] ) ) {
+                $key = $wpdb->prefix . ':element:' . $type . ':' . $id;
+                wp_cache_set( $key, false, 'lingolane', 60 );
+            }
+        }
+    }
+
+    public static function on_the_posts( $posts ) {
+        if ( empty( $posts ) || ! is_array( $posts ) ) {
+            return $posts;
+        }
+        $by_type = array();
+        foreach ( $posts as $p ) {
+            if ( $p instanceof WP_Post ) {
+                $by_type[ 'post_' . $p->post_type ][] = $p->ID;
+            }
+        }
+        foreach ( $by_type as $type => $ids ) {
+            self::prime_cache( $type, $ids );
+        }
+        return $posts;
+    }
+
+    public static function on_get_terms( $terms, $taxonomies ) {
+        if ( empty( $terms ) || ! is_array( $terms ) || empty( $taxonomies ) ) {
+            return $terms;
+        }
+        $taxonomy = is_array( $taxonomies ) ? reset( $taxonomies ) : (string) $taxonomies;
+        $type = 'tax_' . sanitize_key( $taxonomy );
+        $ids = array();
+        foreach ( $terms as $term ) {
+            if ( $term instanceof WP_Term ) {
+                $ids[] = $term->term_id;
+            } elseif ( is_numeric( $term ) ) {
+                $ids[] = (int) $term;
+            }
+        }
+        if ( ! empty( $ids ) ) {
+            self::prime_cache( $type, $ids );
+        }
+        return $terms;
     }
     private static function row( $type, $id ) {
         global $wpdb;
@@ -141,10 +226,23 @@ class Lingolane_Elements {
         if ( is_wp_error( $new ) ) { return $new; }
 
         try {
-            foreach ( get_post_meta( $id ) as $key => $values ) {
-                if ( in_array( $key, array( '_edit_lock', '_edit_last', '_wp_old_slug' ), true ) ) { continue; }
-                foreach ( $values as $value ) {
-                    add_post_meta( $new, $key, wp_slash( maybe_unserialize( $value ) ) );
+            $all_meta  = get_post_meta( $id );
+            $meta_keys = array_keys( $all_meta );
+            $meta_keys = array_diff( $meta_keys, array( '_edit_lock', '_edit_last', '_wp_old_slug' ) );
+            $meta_keys = apply_filters( 'lingolane_copy_post_metas', $meta_keys, $id, $new, $target_lang );
+
+            foreach ( $meta_keys as $key ) {
+                if ( ! isset( $all_meta[ $key ] ) ) { continue; }
+                foreach ( $all_meta[ $key ] as $value ) {
+                    $val = maybe_unserialize( $value );
+                    if ( '_thumbnail_id' === $key && is_numeric( $val ) ) {
+                        $trans_thumb = self::get_translation( 'post_attachment', (int) $val, $target_lang );
+                        if ( $trans_thumb ) {
+                            $val = $trans_thumb;
+                        }
+                    }
+                    $val = apply_filters( 'lingolane_copy_post_meta_value', $val, $key, $id, $new, $target_lang );
+                    add_post_meta( $new, $key, wp_slash( $val ) );
                 }
             }
             foreach ( get_object_taxonomies( $post->post_type ) as $taxonomy ) {

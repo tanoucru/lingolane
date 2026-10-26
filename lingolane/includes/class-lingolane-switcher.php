@@ -20,6 +20,49 @@ class Lingolane_Switcher {
         add_filter( 'nav_menu_link_attributes', array( __CLASS__, 'menu_attributes' ), 10, 2 );
         add_filter( 'theme_mod_nav_menu_locations', array( __CLASS__, 'menu_locations' ) );
         add_action( 'wp_footer', array( __CLASS__, 'print_dialog' ) );
+        add_action( 'init', array( __CLASS__, 'register_block' ) );
+    }
+
+    /**
+     * Register Gutenberg block for FSE and block themes (M3 C7).
+     */
+    public static function register_block() {
+        if ( ! function_exists( 'register_block_type' ) ) {
+            return;
+        }
+        wp_register_script( 'lingolane-switcher-block', LINGOLANE_URL . 'assets/switcher-block.js', array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-server-side-render' ), LINGOLANE_VERSION, true );
+        wp_set_script_translations( 'lingolane-switcher-block', 'lingolane', LINGOLANE_DIR . 'languages' );
+        register_block_type( 'lingolane/language-switcher', array(
+            'api_version'     => 2,
+            'editor_script'   => 'lingolane-switcher-block',
+            'supports'        => array( 'html' => false ),
+            'render_callback' => array( __CLASS__, 'render_block' ),
+            'attributes'      => array(
+                'format'      => array( 'type' => 'string', 'default' => 'both' ),
+                'flagShape'   => array( 'type' => 'string', 'default' => 'rect' ),
+                'showCurrent' => array( 'type' => 'boolean', 'default' => true ),
+            ),
+        ) );
+    }
+
+    /**
+     * Render Gutenberg block callback.
+     *
+     * @param array $attributes Block attributes.
+     * @return string Rendered HTML.
+     */
+    public static function render_block( $attributes = array() ) {
+        $attributes = is_array( $attributes ) ? $attributes : array();
+        $format     = isset( $attributes['format'] ) ? sanitize_key( $attributes['format'] ) : 'both';
+        $shape      = isset( $attributes['flagShape'] ) ? sanitize_key( $attributes['flagShape'] ) : 'rect';
+        $current    = ! isset( $attributes['showCurrent'] ) || (bool) $attributes['showCurrent'];
+
+        $formats = array( 'both' => 'flag_name', 'flags' => 'flag_only', 'names' => 'name' );
+        return '<div ' . get_block_wrapper_attributes() . '>' . self::render( array(
+            'show'         => isset( $formats[ $format ] ) ? $formats[ $format ] : 'flag_name',
+            'shape'        => $shape,
+            'show_current' => $current,
+        ) ) . '</div>';
     }
 
     public static function register_assets() {
@@ -146,6 +189,10 @@ class Lingolane_Switcher {
                 if ( 'redirect' === $untrans_action && $untrans_url ) {
                     $data_attrs .= ' data-redirect="' . esc_url( $untrans_url ) . '"';
                 }
+            }
+
+            if ( $is_cur && isset( $args['show_current'] ) && ! $args['show_current'] ) {
+                continue;
             }
 
             // Build item inner HTML based on $show.

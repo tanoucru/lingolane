@@ -4,11 +4,87 @@ class Lingolane_SEO {
     public static function init() {
         add_action( 'wp_head', array( __CLASS__, 'alternates' ) );
         add_filter( 'language_attributes', array( __CLASS__, 'language_attributes' ) );
-        add_filter( 'wpseo_canonical', array( __CLASS__, 'canonical' ) );
         add_filter( 'get_canonical_url', array( __CLASS__, 'canonical' ) );
-        add_filter( 'wpseo_opengraph_url', array( __CLASS__, 'opengraph_url' ) );
-        add_filter( 'wpseo_schema_graph', array( __CLASS__, 'schema' ) );
-        add_filter( 'wpseo_sitemap_entry', array( __CLASS__, 'sitemap_entry' ), 20, 3 );
+
+        // Bind third-party SEO adapters on plugins_loaded to handle arbitrary load orders safely.
+        add_action( 'plugins_loaded', array( __CLASS__, 'register_seo_adapters' ), 20 );
+
+        // WordPress Core XML Sitemaps (WP 5.5+)
+        add_filter( 'wp_sitemaps_posts_entry', array( __CLASS__, 'filter_core_sitemap_post_entry' ), 10, 3 );
+        add_filter( 'wp_sitemaps_taxonomies_entry', array( __CLASS__, 'filter_core_sitemap_term_entry' ), 10, 3 );
+    }
+
+    public static function register_seo_adapters() {
+        // Yoast SEO
+        if ( defined( 'WPSEO_VERSION' ) ) {
+            add_filter( 'wpseo_canonical', array( __CLASS__, 'canonical' ) );
+            add_filter( 'wpseo_opengraph_url', array( __CLASS__, 'opengraph_url' ) );
+            add_filter( 'wpseo_schema_graph', array( __CLASS__, 'schema' ) );
+            add_filter( 'wpseo_sitemap_entry', array( __CLASS__, 'sitemap_entry' ), 20, 3 );
+        }
+
+        // Rank Math SEO
+        if ( defined( 'RANK_MATH_VERSION' ) ) {
+            add_filter( 'rank_math/canonical', array( __CLASS__, 'canonical' ) );
+            add_filter( 'rank_math/opengraph/url', array( __CLASS__, 'canonical' ) );
+            add_filter( 'rank_math/sitemap/entry', array( __CLASS__, 'rank_math_sitemap_entry' ), 10, 3 );
+        }
+
+        // All in One SEO (AIOSEO)
+        if ( defined( 'AIOSEO_VERSION' ) ) {
+            add_filter( 'aioseo_canonical_url', array( __CLASS__, 'canonical' ) );
+        }
+
+        // SEOPress
+        if ( defined( 'SEOPRESS_VERSION' ) ) {
+            add_filter( 'seopress_titles_canonical', array( __CLASS__, 'canonical' ) );
+            add_filter( 'seopress_sitemaps_single_entry', array( __CLASS__, 'rank_math_sitemap_entry' ), 10, 3 );
+        }
+    }
+
+    /**
+     * Format post URL for WordPress Core XML Sitemap by post language.
+     *
+     * @param array   $entry Sitemap entry array with 'loc'.
+     * @param WP_Post $post Post object.
+     * @param string  $post_type Post type name.
+     * @return array Modified entry.
+     */
+    public static function filter_core_sitemap_post_entry( $entry, $post, $post_type ) {
+        if ( ! is_array( $entry ) || empty( $entry['loc'] ) || ! ( $post instanceof WP_Post ) ) {
+            return $entry;
+        }
+        $lang = Lingolane_Elements::get_language( 'post_' . $post->post_type, $post->ID );
+        if ( $lang ) {
+            $entry['loc'] = Lingolane_Urls::for_language( $entry['loc'], $lang );
+        }
+        return $entry;
+    }
+
+    /**
+     * Format term URL for WordPress Core XML Sitemap by term language.
+     *
+     * @param array   $entry Sitemap entry array with 'loc'.
+     * @param WP_Term $term Term object.
+     * @param string  $taxonomy Taxonomy name.
+     * @return array Modified entry.
+     */
+    public static function filter_core_sitemap_term_entry( $entry, $term, $taxonomy ) {
+        if ( ! is_array( $entry ) || empty( $entry['loc'] ) || ! ( $term instanceof WP_Term ) ) {
+            return $entry;
+        }
+        $lang = Lingolane_Elements::get_language( 'tax_' . $term->taxonomy, $term->term_id );
+        if ( $lang ) {
+            $entry['loc'] = Lingolane_Urls::for_language( $entry['loc'], $lang );
+        }
+        return $entry;
+    }
+
+    /**
+     * Rank Math / SEOPress sitemap entry adapter.
+     */
+    public static function rank_math_sitemap_entry( $url, $type, $object ) {
+        return self::sitemap_entry( $url, $type, $object );
     }
 
     /** Yoast queries all languages; preserve registered translated pages and omit untranslated gated copies. */

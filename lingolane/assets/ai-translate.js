@@ -195,8 +195,8 @@
 			}
 		}
 
-		// 2. Fall back to Server Gemini Flash
-		return await translateWithGemini( text, sourceLang, targetLang, context );
+		// 2. Do not silently fall back to cloud AI without explicit user opt-in.
+		throw new Error( ( LingolaneAI.strings && LingolaneAI.strings.chromeUnavailable ) || 'Chrome on-device AI không khả dụng hoặc chưa hỗ trợ cặp ngôn ngữ này. Dịch đám mây hiện đang bị vô hiệu hóa an toàn.' );
 	};
 
 	/**

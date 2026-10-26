@@ -36,7 +36,15 @@ class Lingolane_Install {
         return true;
     }
 
-    public static function activate() {
+    public static function activate( $network_wide = false ) {
+        if ( is_multisite() && $network_wide ) {
+            deactivate_plugins( plugin_basename( LINGOLANE_FILE ), true, true );
+            wp_die(
+                esc_html__( 'Lingolane 1.0 hiện chưa hỗ trợ kích hoạt toàn mạng (Network Activation). Vui lòng kích hoạt riêng trên từng site.', 'lingolane' ),
+                esc_html__( 'Kích hoạt không được hỗ trợ', 'lingolane' ),
+                array( 'back_link' => true )
+            );
+        }
         global $wpdb;
         self::migrate_legacy();
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';

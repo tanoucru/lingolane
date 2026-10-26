@@ -15,6 +15,35 @@ class Lingolane_Router {
         add_filter( 'option_page_for_posts', array( __CLASS__, 'filter_page_for_posts' ) );
         add_action( 'template_redirect', array( __CLASS__, 'redirect_prefix' ), 0 );
         add_action( 'template_redirect', array( __CLASS__, 'redirect_untranslated' ), 1 );
+        add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+    }
+
+    public static function is_conflicted() {
+        return defined( 'POLYLANG_VERSION' ) || class_exists( 'Polylang' ) || defined( 'ICL_SITEPRESS_VERSION' ) || class_exists( 'SitePress' );
+    }
+
+    public static function is_plain_permalink() {
+        return '' === (string) get_option( 'permalink_structure' );
+    }
+
+    public static function admin_notices() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        if ( self::is_conflicted() ) {
+            echo '<div class="notice notice-warning is-dismissible"><p><strong>' .
+                 esc_html__( 'Lingolane: Phát hiện plugin đa ngôn ngữ khác (Polylang hoặc WPML) đang hoạt động.', 'lingolane' ) .
+                 '</strong> ' .
+                 esc_html__( 'Bộ định tuyến của Lingolane tạm thời ngừng hoạt động để tránh xung đột URL. Vui lòng tắt plugin kia trước khi dùng Lingolane.', 'lingolane' ) .
+                 '</p></div>';
+        }
+        if ( self::is_plain_permalink() ) {
+            echo '<div class="notice notice-warning is-dismissible"><p><strong>' .
+                 esc_html__( 'Lingolane: Đang sử dụng Cấu trúc đường dẫn mặc định (Plain Permalinks).', 'lingolane' ) .
+                 '</strong> ' .
+                 esc_html__( 'Để hỗ trợ URL đa ngôn ngữ đẹp dạng /en/, /vi/, vui lòng chuyển sang cấu trúc Tiêu đề bài viết trong Cài đặt > Đường dẫn tĩnh.', 'lingolane' ) .
+                 '</p></div>';
+        }
     }
 
     private static function backend() {
@@ -34,7 +63,7 @@ class Lingolane_Router {
         self::$language_root = false;
         self::$redirect = '';
         Lingolane_Languages::set_current( Lingolane_Languages::default_code() );
-        if ( self::backend() || ! isset( $_SERVER['REQUEST_URI'] ) || ! is_string( $_SERVER['REQUEST_URI'] ) ) { return; }
+        if ( self::is_conflicted() || self::backend() || ! isset( $_SERVER['REQUEST_URI'] ) || ! is_string( $_SERVER['REQUEST_URI'] ) ) { return; }
         $uri = sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) );
         $parts = explode( '?', $uri, 2 );
         $base = self::base_path();

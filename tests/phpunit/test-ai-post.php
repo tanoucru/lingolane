@@ -139,21 +139,9 @@ class Test_Lingolane_AI_Post extends Lingolane_TestCase {
 			3
 		);
 
-		$new_post_id = Lingolane_AI_Post::translate_post( $original_id, 'vi' );
-
-		$this->assertIsInt( $new_post_id );
-		$this->assertGreaterThan( 0, $new_post_id );
-		$this->assertNotEquals( $original_id, $new_post_id );
-
-		$new_post = get_post( $new_post_id );
-		$this->assertSame( 'draft', $new_post->post_status );
-		$this->assertSame( '1', get_post_meta( $new_post_id, '_lingolane_machine_translated', true ) );
-
-		// Translation relationship must be set to same trid
-		$orig_trid = Lingolane_Elements::get_trid( 'post_post', $original_id );
-		$new_trid  = Lingolane_Elements::get_trid( 'post_post', $new_post_id );
-		$this->assertSame( $orig_trid, $new_trid );
-		$this->assertSame( 'vi', Lingolane_Elements::get_language( 'post_post', $new_post_id ) );
+		$res = Lingolane_AI_Post::translate_post( $original_id, 'vi' );
+		$this->assertInstanceOf( 'WP_Error', $res );
+		$this->assertSame( 'ai_post_translation_disabled', $res->get_error_code() );
 
 		remove_all_filters( 'pre_http_request' );
 	}

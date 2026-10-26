@@ -99,9 +99,8 @@ class Test_Lingolane_AI extends Lingolane_TestCase {
 
 		$test_res = Lingolane_AI::test_api_key( 'AIzaSyValidMockKey' );
 		$this->assertIsArray( $test_res );
-		$this->assertTrue( $test_res['success'] );
-
-		remove_all_filters( 'pre_http_request' );
+		$this->assertFalse( $test_res['success'] );
+		$this->assertStringContainsString( 'tạm thời bị vô hiệu hóa', $test_res['message'] );
 	}
 
 	public function test_translate_text_with_mocked_gemini() {
@@ -142,8 +141,8 @@ class Test_Lingolane_AI extends Lingolane_TestCase {
 		);
 
 		$result = Lingolane_AI::translate_text( 'Welcome to Lingolane', 'en', 'vi' );
-		$this->assertNotWPError( $result );
-		$this->assertSame( 'Chào mừng đến với Lingolane', $result );
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertSame( 'ai_cloud_disabled', $result->get_error_code() );
 
 		remove_all_filters( 'pre_http_request' );
 	}
@@ -153,8 +152,8 @@ class Test_Lingolane_AI extends Lingolane_TestCase {
 
 		Lingolane_AI::save_settings( array( 'gemini_api_key' => '' ) );
 		$result = Lingolane_AI::translate_text( 'Test text', 'en', 'vi' );
-		$this->assertWPError( $result );
-		$this->assertSame( 'missing_api_key', $result->get_error_code() );
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertSame( 'ai_cloud_disabled', $result->get_error_code() );
 	}
 
 	public function test_admin_tabs_includes_ai_tab_for_admin() {
