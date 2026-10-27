@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 880" width="1080" height="880" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Lingolane 1.0.0-dev runtime overview</title>
+  <desc id="d">Modules of the Lingolane plugin grouped into public requests and wp-admin, the database tables they use, and the external services involved.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5568"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a0aec0"/>
+    </marker>
+    <style>
+      .title { font-size: 20px; font-weight: 700; fill: #1a202c; }
+      .band { font-size: 12px; font-weight: 600; fill: #4a5568; letter-spacing: .04em; text-transform: uppercase; }
+      .h { font-size: 14px; font-weight: 700; fill: #1a202c; }
+      .s { font-size: 11px; fill: #4a5568; }
+      .m { font-size: 10.5px; fill: #4a5568; font-family: Menlo, Consolas, 'Liberation Mono', monospace; }
+      .muted { fill: #8a94a6; }
+      .lbl { font-size: 10.5px; fill: #4a5568; }
+      .front { fill: #ebf4ff; stroke: #2b6cb0; }
+      .admin { fill: #ecf8f0; stroke: #2f855a; }
+      .db { fill: #fdf4e3; stroke: #b7791f; }
+      .ext { fill: #f4f5f7; stroke: #4a5568; }
+      .off { fill: #fafafa; stroke: #a0aec0; stroke-dasharray: 5 4; }
+      .actor { fill: #ffffff; stroke: #4a5568; }
+      .box { stroke-width: 1.4; }
+      .link { stroke: #4a5568; stroke-width: 1.4; fill: none; }
+      .link-off { stroke: #a0aec0; stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+    </style>
+  </defs>
+
+  <rect width="1080" height="880" fill="#ffffff"/>
+  <text class="title" x="25" y="42">Lingolane 1.0.0-dev · runtime overview</text>
+
+  <!-- WordPress site frame -->
+  <rect x="205" y="70" width="850" height="610" rx="14" fill="none" stroke="#cbd5e0" stroke-width="1.5"/>
+  <text class="band" x="222" y="92">WordPress site (PHP 7.4+, WP 6.2+)</text>
+
+  <!-- Bands -->
+  <rect x="215" y="102" width="610" height="226" rx="10" fill="#f7fafc" stroke="none"/>
+  <text class="band" x="230" y="122">Public requests</text>
+  <rect x="215" y="412" width="610" height="250" rx="10" fill="#f7fafc" stroke="none"/>
+  <text class="band" x="230" y="432">wp-admin · lingolane_translate or manage_options</text>
+  <text class="band" x="845" y="122">Database</text>
+
+  <!-- Actors -->
+  <rect class="actor box" x="25" y="130" width="160" height="68" rx="34"/>
+  <text class="h" x="105" y="160" text-anchor="middle">Visitor</text>
+  <text class="s" x="105" y="178" text-anchor="middle">any front-end URL</text>
+
+  <rect class="actor box" x="25" y="507" width="160" height="68" rx="34"/>
+  <text class="h" x="105" y="537" text-anchor="middle">Editor / Admin</text>
+  <text class="s" x="105" y="555" text-anchor="middle">logged in</text>
+
+  <!-- Row 1: request path -->
+  <rect class="front box" x="230" y="135" width="170" height="68" rx="8"/>
+  <text class="h" x="242" y="157">URL router</text>
+  <text class="m" x="242" y="175">plugins_loaded, locale</text>
+  <text class="m" x="242" y="190">home_url, redirects</text>
+
+  <rect class="front box" x="435" y="135" width="170" height="68" rx="8"/>
+  <text class="h" x="447" y="157">Query filter</text>
+  <text class="m" x="447" y="175">pre_get_posts</text>
+  <text class="m" x="447" y="190">posts_/terms_clauses</text>
+
+  <rect class="front box" x="640" y="135" width="170" height="68" rx="8"/>
+  <text class="h" x="652" y="157">Links &amp; SEO</text>
+  <text class="m" x="652" y="175">render_block, *_link</text>
+  <text class="m" x="652" y="190">wp_head: hreflang</text>
+
+  <!-- Row 2 -->
+  <rect class="front box" x="230" y="245" width="170" height="68" rx="8"/>
+  <text class="h" x="242" y="267">WPML compatibility</text>
+  <text class="m" x="242" y="285">wpml_current_language</text>
+  <text class="m" x="242" y="300">wpml_object_id, …</text>
+
+  <rect class="front box" x="435" y="245" width="170" height="68" rx="8"/>
+  <text class="h" x="447" y="267">Language switcher</text>
+  <text class="m" x="447" y="285">[lingolane_switcher]</text>
+  <text class="s" x="447" y="300">widget, nav menu item</text>
+
+  <rect class="front box" x="640" y="245" width="170" height="68" rx="8"/>
+  <text class="h" x="652" y="267">Interface strings</text>
+  <text class="m" x="652" y="285">gettext, ngettext</text>
+  <text class="m" x="652" y="300">gettext_with_context</text>
+
+  <!-- Row 3 -->
+  <rect class="admin box" x="230" y="445" width="170" height="68" rx="8"/>
+  <text class="h" x="242" y="467">Translation groups</text>
+  <text class="s" x="242" y="485">tree list, columns, metabox</text>
+  <text class="s" x="242" y="500">admin-post + nonce</text>
+
+  <rect class="admin box" x="435" y="445" width="170" height="68" rx="8"/>
+  <text class="h" x="447" y="467">Support screen</text>
+  <text class="s" x="447" y="485">ticket + system report</text>
+  <text class="s" x="447" y="500">copied by the admin, not sent</text>
+
+  <rect class="admin box" x="640" y="445" width="170" height="68" rx="8"/>
+  <text class="h" x="652" y="467">String scanner</text>
+  <text class="s" x="652" y="485">AJAX scan of site pages</text>
+  <text class="s" x="652" y="500">CSV import / export</text>
+
+  <!-- Row 4 -->
+  <rect class="admin box" x="230" y="575" width="170" height="68" rx="8"/>
+  <text class="h" x="242" y="597">Languages &amp; packs</text>
+  <text class="m" x="242" y="615">Language_Pack_Upgrader</text>
+  <text class="s" x="242" y="630">needs install_languages</text>
+
+  <rect class="admin box" x="435" y="575" width="170" height="68" rx="8"/>
+  <text class="h" x="447" y="597">Translation assist</text>
+  <text class="s" x="447" y="615">Chrome on-device API</text>
+  <text class="s" x="447" y="630">runs in the admin's browser</text>
+
+  <rect class="admin box" x="640" y="575" width="170" height="68" rx="8"/>
+  <text class="h" x="652" y="597">In-context editor</text>
+  <text class="s" x="652" y="615">front end, translators only</text>
+  <text class="s" x="652" y="630">sends no-cache headers</text>
+
+  <!-- Database -->
+  <rect class="db box" x="845" y="135" width="195" height="68" rx="8"/>
+  <text class="h" x="857" y="157">Translation groups</text>
+  <text class="m" x="857" y="175">wp_lingolane_translations</text>
+  <text class="s" x="857" y="190">element → trid, language</text>
+
+  <rect class="db box" x="845" y="245" width="195" height="68" rx="8"/>
+  <text class="h" x="857" y="267">String translations</text>
+  <text class="m" x="857" y="285">wp_lingolane_strings</text>
+  <text class="s" x="857" y="300">source hash, language, text</text>
+
+  <rect class="db box" x="845" y="445" width="195" height="68" rx="8"/>
+  <text class="h" x="857" y="467">String locations</text>
+  <text class="m" x="857" y="485" style="font-size:9.5px">wp_lingolane_string_locations</text>
+  <text class="s" x="857" y="500">where each string appears</text>
+
+  <rect class="db box" x="845" y="575" width="195" height="68" rx="8"/>
+  <text class="h" x="857" y="595">wp_options</text>
+  <text class="m" x="857" y="611">lingolane_settings</text>
+  <text class="m" x="857" y="624">lingolane_ai_settings</text>
+  <text class="m" x="857" y="637">lingolane_db_version</text>
+
+  <!-- External services -->
+  <text class="band" x="230" y="718">Outside the site</text>
+  <rect class="ext box" x="230" y="730" width="170" height="68" rx="8"/>
+  <text class="h" x="242" y="752">WordPress.org</text>
+  <text class="m" x="242" y="770">api.wordpress.org</text>
+  <text class="m" x="242" y="785">downloads.wordpress.org</text>
+
+  <rect class="ext box" x="435" y="730" width="170" height="68" rx="8"/>
+  <text class="h" x="447" y="752">Chrome Translator</text>
+  <text class="s" x="447" y="770">built into the browser</text>
+  <text class="s" x="447" y="785">no request from the server</text>
+
+  <rect class="off box" x="640" y="730" width="170" height="68" rx="8"/>
+  <text class="h muted" x="652" y="752">Google Gemini</text>
+  <text class="s muted" x="652" y="770">disabled in 1.0.0-dev</text>
+  <text class="s muted" x="652" y="785">handlers return WP_Error</text>
+
+  <!-- Connections -->
+  <line class="link" x1="185" y1="164" x2="228" y2="164" marker-end="url(#arrow)"/>
+  <line class="link" x1="400" y1="169" x2="433" y2="169" marker-end="url(#arrow)"/>
+  <line class="link" x1="605" y1="169" x2="638" y2="169" marker-end="url(#arrow)"/>
+  <line class="link" x1="810" y1="169" x2="843" y2="169" marker-end="url(#arrow)"/>
+  <line class="link" x1="810" y1="279" x2="843" y2="279" marker-end="url(#arrow)"/>
+  <line class="link" x1="810" y1="479" x2="843" y2="479" marker-end="url(#arrow)"/>
+
+  <line class="link" x1="185" y1="530" x2="228" y2="486" marker-end="url(#arrow)"/>
+  <line class="link" x1="185" y1="552" x2="228" y2="600" marker-end="url(#arrow)"/>
+
+  <line class="link" x1="315" y1="643" x2="315" y2="728" marker-end="url(#arrow)"/>
+  <text class="lbl" x="322" y="690">language packs</text>
+  <line class="link" x1="520" y1="643" x2="520" y2="728" marker-end="url(#arrow)"/>
+  <text class="lbl" x="527" y="690">local translation</text>
+  <line class="link-off" x1="570" y1="643" x2="690" y2="728" marker-end="url(#arrow-muted)"/>
+
+  <text class="s" x="25" y="840">Table names use the default wp_ prefix. Arrows show the main call direction; every module reads its settings from wp_options.</text>
+  <text class="s" x="25" y="858">Uninstalling keeps tables and settings so translation relationships are never lost.</text>
+</svg>
