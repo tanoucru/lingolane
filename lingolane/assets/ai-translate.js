@@ -1,11 +1,11 @@
 /**
- * Lingolane Dual-Engine Client-Side AI Translation Controller (P5)
+ * Lingolane client-side translation suggestions.
  *
  * Provides a unified window.LingolaneAI translation interface:
- * 1. Checks Chrome On-Device Translator API (Chrome 138+ desktop or flags enabled).
- *    If available, translates instantly on device without server requests, 100% free & private.
- * 2. If Chrome AI is not available or encounters errors, falls back transparently to
- *    the server-side Google Gemini Flash API via WordPress AJAX.
+ * 1. Checks the Chrome on-device Translator API (Chrome 138+ desktop or flags enabled).
+ *    If available, translates on the device without any server request.
+ * 2. Otherwise it asks the server through WordPress AJAX. The Google Gemini provider is
+ *    disabled in this release, so the server answers with an error and no text is sent out.
  *
  * @package Lingolane
  */
@@ -111,6 +111,11 @@
 	 * @param {string} context Optional context hint.
 	 * @return {Promise<object>}
 	 */
+	function clientString( key, fallback ) {
+		var strings = ( window.lingolaneAIConfig && window.lingolaneAIConfig.i18n ) || {};
+		return strings[ key ] || fallback;
+	}
+
 	function translateWithGemini( text, sourceLang, targetLang, context ) {
 		return new Promise( function( resolve, reject ) {
 			var ajaxUrl = ( window.lingolaneAIConfig && window.lingolaneAIConfig.ajax ) ||
@@ -140,12 +145,12 @@
 							engine: 'gemini'
 						} );
 					} else {
-						var msg = ( res && res.data && res.data.message ) ? res.data.message : 'Máy chủ không trả về bản dịch.';
+						var msg = ( res && res.data && res.data.message ) ? res.data.message : clientString( 'noTranslation', 'The server returned no translation.' );
 						reject( new Error( msg ) );
 					}
 				},
 				error: function( xhr ) {
-					var msg = 'Lỗi kết nối máy chủ dịch AI.';
+					var msg = clientString( 'serverError', 'Could not reach the AI translation server.' );
 					if ( xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message ) {
 						msg = xhr.responseJSON.data.message;
 					}
@@ -196,7 +201,7 @@
 		}
 
 		// 2. Do not silently fall back to cloud AI without explicit user opt-in.
-		throw new Error( ( LingolaneAI.strings && LingolaneAI.strings.chromeUnavailable ) || 'Chrome on-device AI không khả dụng hoặc chưa hỗ trợ cặp ngôn ngữ này. Dịch đám mây hiện đang bị vô hiệu hóa an toàn.' );
+		throw new Error( clientString( 'chromeUnavailable', 'Chrome on-device AI is not available or does not support this language pair. Cloud translation is disabled.' ) );
 	};
 
 	/**

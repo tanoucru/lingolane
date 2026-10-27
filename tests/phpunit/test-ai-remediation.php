@@ -24,7 +24,7 @@ class Test_Lingolane_AI_Remediation extends Lingolane_TestCase {
 		$res = Lingolane_AI::test_api_key( 'AIzaSyFakeKeyForTest' );
 		$this->assertIsArray( $res );
 		$this->assertFalse( $res['success'] );
-		$this->assertStringContainsString( 'tạm thời bị vô hiệu hóa', $res['message'] );
+		$this->assertStringContainsString( 'temporarily disabled', $res['message'] );
 	}
 
 	public function test_translate_post_fails_closed_preventing_overwrite() {

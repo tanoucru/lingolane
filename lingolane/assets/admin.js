@@ -12,7 +12,7 @@
 		}
 	} );
 
-	// Close an open "Sửa" popover with Escape or an outside click.
+	// Close an open "Edit" popover with Escape or an outside click.
 	document.addEventListener( 'keydown', function ( event ) {
 		if ( 'Escape' !== event.key ) { return; }
 		document.querySelectorAll( '.lingolane-popover[open]' ).forEach( function ( item ) {

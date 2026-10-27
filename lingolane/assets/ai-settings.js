@@ -12,6 +12,10 @@
 		var $testBtn = $( '#lingolane-test-gemini-btn' );
 		var $keyInput = $( '#gemini_api_key' );
 		var $resultSpan = $( '#lingolane-gemini-test-result' );
+		var i18n = ( window.lingolaneAISettings && window.lingolaneAISettings.i18n ) || {};
+		var t = function( key, fallback ) {
+			return i18n[ key ] || fallback;
+		};
 
 		// 1. Check Chrome On-Device AI support.
 		function checkChromeAI() {
@@ -21,13 +25,13 @@
 			if ( hasTranslation ) {
 				$badge.removeClass( 'lingolane-chip--neutral' )
 					  .addClass( 'lingolane-chip--positive' )
-					  .text( 'Khả dụng (On-Device)' );
-				$status.html( '<span style="color:#059669; font-weight:600;">✓ Trình duyệt của bạn hỗ trợ mô hình dịch Chrome On-Device.</span> Bản dịch chuỗi giao diện sẽ được xử lý ngay lập tức trên máy tính của bạn.' );
+					  .text( t( 'available', 'Available (on-device)' ) );
+				$status.empty().append( $( '<span style="color:#059669; font-weight:600;"></span>' ).text( '✓ ' + t( 'chromeReady', 'This browser supports the Chrome on-device Translator API.' ) ) );
 			} else {
 				$badge.removeClass( 'lingolane-chip--positive' )
 					  .addClass( 'lingolane-chip--neutral' )
-					  .text( 'Chưa khả dụng' );
-				$status.html( '<span>Trình duyệt hiện tại chưa kích hoạt Chrome Built-in AI Translation API. Hệ thống sẽ tự động dùng Google Gemini Flash API cho các thao tác dịch.</span> (Có thể bật tại <code>chrome://flags/#translation-api</code> trên Chrome 138+).' );
+					  .text( t( 'unavailable', 'Not available' ) );
+				$status.text( t( 'chromeMissing', 'This browser does not have the Chrome built-in Translator API enabled.' ) );
 			}
 		}
 
@@ -41,11 +45,11 @@
 			$resultSpan.text( '' ).removeAttr( 'style' );
 
 			if ( ! key ) {
-				$resultSpan.css( 'color', '#dc2626' ).text( ( window.lingolaneAISettings && window.lingolaneAISettings.i18n && window.lingolaneAISettings.i18n.emptyKey ) || 'Vui lòng nhập API Key.' );
+				$resultSpan.css( 'color', '#dc2626' ).text( t( 'emptyKey', 'Enter an API key before testing.' ) );
 				return;
 			}
 
-			$testBtn.prop( 'disabled', true ).text( ( window.lingolaneAISettings && window.lingolaneAISettings.i18n && window.lingolaneAISettings.i18n.testing ) || 'Đang kiểm tra...' );
+			$testBtn.prop( 'disabled', true ).text( t( 'testing', 'Testing connection…' ) );
 
 			$.ajax( {
 				url: ( window.lingolaneAISettings && window.lingolaneAISettings.ajax ) || ajaxurl,
@@ -56,17 +60,17 @@
 					api_key: key
 				},
 				success: function( response ) {
-					$testBtn.prop( 'disabled', false ).text( 'Kiểm tra kết nối' );
+					$testBtn.prop( 'disabled', false ).text( t( 'testButton', 'Test connection' ) );
 					if ( response && response.success ) {
-						$resultSpan.css( 'color', '#059669' ).text( '✓ ' + ( response.data && response.data.message ? response.data.message : 'Kết nối thành công!' ) );
+						$resultSpan.css( 'color', '#059669' ).text( '✓ ' + ( response.data && response.data.message ? response.data.message : t( 'testSuccess', 'Connection successful.' ) ) );
 					} else {
-						var msg = ( response && response.data && response.data.message ) ? response.data.message : 'Lỗi không xác định.';
+						var msg = ( response && response.data && response.data.message ) ? response.data.message : t( 'unknownError', 'Unknown error.' );
 						$resultSpan.css( 'color', '#dc2626' ).text( '✗ ' + msg );
 					}
 				},
 				error: function( xhr ) {
-					$testBtn.prop( 'disabled', false ).text( 'Kiểm tra kết nối' );
-					var msg = 'Lỗi kết nối máy chủ.';
+					$testBtn.prop( 'disabled', false ).text( t( 'testButton', 'Test connection' ) );
+					var msg = t( 'serverError', 'Could not reach the server.' );
 					if ( xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message ) {
 						msg = xhr.responseJSON.data.message;
 					}

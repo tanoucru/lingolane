@@ -122,7 +122,7 @@
 	 */
 	function createHighlightOverlays() {
 		$highlightBox = $( '<div class="lingolane-ic-highlight-box" style="display:none;"></div>' ).appendTo( 'body' );
-		$penBtn = $( '<button type="button" class="lingolane-ic-pen-btn" style="display:none;" title="Dịch chuỗi này">' + icons.pen + '</button>' ).appendTo( 'body' );
+		$penBtn = $( '<button type="button" class="lingolane-ic-pen-btn" style="display:none;" title="' + escapeHtml( data.i18n.penTitle ) + '">' + icons.pen + '</button>' ).appendTo( 'body' );
 
 		$penBtn.on( 'click', function ( e ) {
 			e.preventDefault();
@@ -320,7 +320,7 @@
 				'        ' + icons.external,
 				'        <div class="lingolane-ic-post-callout__text">',
 				'          <strong>' + escapeHtml( data.i18n.editPostMsg ) + '</strong><br>',
-				'          <span>Đây là bài viết đầy đủ chứa định dạng blocks / HTML. Để tránh làm vỡ bố cục trang, vui lòng chỉnh sửa nội dung bài viết trong WordPress Editor.</span>',
+				'          <span>' + escapeHtml( data.i18n.postNotice ) + '</span>',
 				'        </div>',
 				'      </div>',
 				'    </div>',
@@ -373,11 +373,11 @@
 			'          <span>' + escapeHtml( data.i18n.translation ) + ' (' + escapeHtml( state.targetLang.toUpperCase() ) + ')</span>',
 			'          <button type="button" class="lingolane-ic-field__ai-btn" id="lingolane-ic-ai-suggest">' + icons.sparkles + ' <span>' + escapeHtml( data.i18n.aiSuggest ) + '</span></button>',
 			'        </div>',
-			'        <textarea class="lingolane-ic-field__textarea" id="lingolane-ic-translation-input" placeholder="Nhập bản dịch tại đây...">' + escapeHtml( currentTranslation ) + '</textarea>',
+			'        <textarea class="lingolane-ic-field__textarea" id="lingolane-ic-translation-input" placeholder="' + escapeHtml( data.i18n.placeholder ) + '">' + escapeHtml( currentTranslation ) + '</textarea>',
 			'      </div>',
 			'    </div>',
 			'    <div class="lingolane-ic-popover__footer">',
-			'      <span class="lingolane-ic-popover__hint">Ctrl + Enter để lưu • Esc để huỷ</span>',
+			'      <span class="lingolane-ic-popover__hint">' + escapeHtml( data.i18n.hint ) + '</span>',
 			'      <div class="lingolane-ic-popover__actions">',
 			'        <button type="button" class="lingolane-ic-btn lingolane-ic-btn--secondary" id="lingolane-ic-close-btn">' + escapeHtml( data.i18n.cancel ) + '</button>',
 			'        <button type="button" class="lingolane-ic-btn lingolane-ic-btn--primary" id="lingolane-ic-save-btn">' + escapeHtml( data.i18n.save ) + '</button>',
@@ -529,7 +529,7 @@
 				}
 
 				var origHtml = $btn.html();
-				$btn.prop( 'disabled', true ).html( '<span>Đang dịch AI...</span>' );
+				$btn.prop( 'disabled', true ).html( '<span>' + escapeHtml( data.i18n.aiWorking ) + '</span>' );
 
 				try {
 					if ( window.LingolaneAI && typeof window.LingolaneAI.translate === 'function' ) {
@@ -537,15 +537,15 @@
 						if ( res && res.translation ) {
 							$input.val( res.translation ).trigger( 'input' ).focus();
 							var engineLabel = res.engine === 'chrome-ondevice' ? 'Chrome On-Device AI' : 'Gemini AI';
-							showToast( 'Đã gợi ý bản dịch từ ' + engineLabel, false );
+							showToast( data.i18n.aiSuggested.replace( '%s', engineLabel ), false );
 						} else {
-							showToast( 'Không nhận được bản dịch từ AI.', true );
+							showToast( data.i18n.aiEmpty, true );
 						}
 					} else {
-						showToast( 'Chưa nạp module LingolaneAI.', true );
+						showToast( data.i18n.aiMissing, true );
 					}
 				} catch ( err ) {
-					showToast( 'Lỗi dịch AI: ' + ( err.message || err ), true );
+					showToast( data.i18n.aiError + ( err.message || err ), true );
 				} finally {
 					$btn.prop( 'disabled', false ).html( origHtml );
 				}

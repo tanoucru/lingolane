@@ -133,7 +133,7 @@ class Lingolane_Switcher {
         $default_show   = isset( $settings['switcher_show'] ) ? $settings['switcher_show'] : 'flag_name';
         $default_shape  = isset( $settings['switcher_flag_shape'] ) ? $settings['switcher_flag_shape'] : 'rect';
         $untrans_action = isset( $settings['untranslated_action'] ) ? $settings['untranslated_action'] : 'notice';
-        $untrans_notice = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+        $untrans_notice = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'This content is not available in the selected language yet', 'lingolane' );
         $untrans_url    = ! empty( $settings['untranslated_redirect_url'] ) ? $settings['untranslated_redirect_url'] : '';
 
         $style = isset( $args['style'] ) ? sanitize_key( $args['style'] ) : $default_style;
@@ -315,7 +315,7 @@ class Lingolane_Switcher {
         self::$dialog_printed = true;
 
         $settings = get_option( 'lingolane_settings', array() );
-        $notice   = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+        $notice   = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'This content is not available in the selected language yet', 'lingolane' );
         ?>
         <div id="lingolane-notice-dialog" class="lingolane-dialog" role="dialog" aria-modal="true" aria-labelledby="lingolane-dialog-title" hidden>
             <div class="lingolane-dialog__panel">
@@ -323,9 +323,9 @@ class Lingolane_Switcher {
                 <div class="lingolane-dialog__icon" aria-hidden="true">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 </div>
-                <h3 id="lingolane-dialog-title" class="lingolane-dialog__title"><?php esc_html_e( 'Thông báo', 'lingolane' ); ?></h3>
+                <h3 id="lingolane-dialog-title" class="lingolane-dialog__title"><?php esc_html_e( 'Notice', 'lingolane' ); ?></h3>
                 <p id="lingolane-dialog-desc" class="lingolane-dialog__desc"><?php echo esc_html( $notice ); ?></p>
-                <button type="button" class="lingolane-dialog__btn"><?php esc_html_e( 'Đã hiểu', 'lingolane' ); ?></button>
+                <button type="button" class="lingolane-dialog__btn"><?php esc_html_e( 'Got it', 'lingolane' ); ?></button>
             </div>
         </div>
         <?php

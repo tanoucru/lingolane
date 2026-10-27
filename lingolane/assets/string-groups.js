@@ -6,6 +6,11 @@
     var t = function(key) {
         return (cfg.i18n && cfg.i18n[key]) ? cfg.i18n[key] : key;
     };
+    var escapeHtml = function(str) {
+        var div = document.createElement('div');
+        div.textContent = String(str);
+        return div.innerHTML;
+    };
 
     /* ------------------------------------------------------------------ Inline Editing & Dirty State */
 
@@ -151,7 +156,7 @@
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(slug).then(function() {
                 var originalText = btn.textContent;
-                btn.textContent = 'Đã chép!';
+                btn.textContent = t('copiedShort');
                 btn.classList.add('is-copied');
                 setTimeout(function() {
                     btn.textContent = originalText;
@@ -362,7 +367,7 @@
                         textarea.value = res.translation;
                         markDirty(form, true);
                         if (statusEl) {
-                            statusEl.textContent = 'Gợi ý: ' + (res.engine === 'chrome-ondevice' ? 'Chrome AI' : 'Gemini AI');
+                            statusEl.textContent = t('aiSuggested') + (res.engine === 'chrome-ondevice' ? 'Chrome AI' : 'Gemini AI');
                             statusEl.className = 'lingolane-save-status is-saved';
                         }
                     }
@@ -370,12 +375,12 @@
                 .catch(function(err) {
                     btn.disabled = false;
                     btn.innerHTML = origHtml;
-                    alert('Lỗi dịch AI: ' + (err.message || err));
+                    alert(t('aiError') + (err.message || err));
                 });
         } else {
             btn.disabled = false;
             btn.innerHTML = origHtml;
-            alert('Chưa nạp module LingolaneAI.');
+            alert(t('aiMissing'));
         }
     });
 
@@ -411,7 +416,7 @@
                         nameInput.value = res.translation;
                         markDirty(form, true);
                         if (statusEl) {
-                            statusEl.textContent = 'Gợi ý: ' + (res.engine === 'chrome-ondevice' ? 'Chrome AI' : 'Gemini AI');
+                            statusEl.textContent = t('aiSuggested') + (res.engine === 'chrome-ondevice' ? 'Chrome AI' : 'Gemini AI');
                             statusEl.className = 'lingolane-save-status is-saved';
                         }
                     }
@@ -419,12 +424,12 @@
                 .catch(function(err) {
                     btn.disabled = false;
                     btn.innerHTML = origHtml;
-                    alert('Lỗi dịch AI: ' + (err.message || err));
+                    alert(t('aiError') + (err.message || err));
                 });
         } else {
             btn.disabled = false;
             btn.innerHTML = origHtml;
-            alert('Chưa nạp module LingolaneAI.');
+            alert(t('aiMissing'));
         }
     });
 
@@ -455,29 +460,29 @@
         });
 
         if (missingItems.length === 0) {
-            alert('Tất cả các chuỗi hiển thị trên trang này đều đã có bản dịch!');
+            alert(t('allTranslated'));
             return;
         }
 
-        if (!confirm('Bạn có muốn tự động dịch nháp ' + missingItems.length + ' chuỗi còn thiếu bằng AI không?')) {
+        if (!confirm(t('batchConfirm').replace('%d', missingItems.length))) {
             return;
         }
 
         batchBtn.disabled = true;
         var origHtml = batchBtn.innerHTML;
-        batchBtn.innerHTML = '<span>Đang dịch (0/' + missingItems.length + ')...</span>';
+        batchBtn.innerHTML = '<span>' + escapeHtml(t('batchProgress').replace('%1$d', 0).replace('%2$d', missingItems.length)) + '</span>';
 
         var currentIndex = 0;
         function processNext() {
             if (currentIndex >= missingItems.length) {
                 batchBtn.disabled = false;
                 batchBtn.innerHTML = origHtml;
-                alert('Đã hoàn thành dịch nháp ' + missingItems.length + ' chuỗi bằng AI! Hãy kiểm tra và nhấn Save hoặc Ctrl+Enter để lưu.');
+                alert(t('batchDone').replace('%d', missingItems.length));
                 return;
             }
 
             var item = missingItems[currentIndex];
-            batchBtn.innerHTML = '<span>Đang dịch (' + (currentIndex + 1) + '/' + missingItems.length + ')...</span>';
+            batchBtn.innerHTML = '<span>' + escapeHtml(t('batchProgress').replace('%1$d', currentIndex + 1).replace('%2$d', missingItems.length)) + '</span>';
 
             if (window.LingolaneAI && typeof window.LingolaneAI.translate === 'function') {
                 window.LingolaneAI.translate(item.sourceText, 'auto', item.targetLang, item.context)
@@ -488,7 +493,7 @@
                                 markDirty(item.form, true);
                                 var statusEl = item.form.querySelector('.lingolane-save-status');
                                 if (statusEl) {
-                                    statusEl.textContent = 'Gợi ý: ' + (res.engine === 'chrome-ondevice' ? 'Chrome' : 'Gemini');
+                                    statusEl.textContent = t('aiSuggested') + (res.engine === 'chrome-ondevice' ? 'Chrome' : 'Gemini');
                                     statusEl.className = 'lingolane-save-status is-saved';
                                 }
                             }
@@ -504,7 +509,7 @@
             } else {
                 batchBtn.disabled = false;
                 batchBtn.innerHTML = origHtml;
-                alert('Chưa nạp module LingolaneAI.');
+                alert(t('aiMissing'));
             }
         }
 

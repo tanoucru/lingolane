@@ -47,7 +47,7 @@ class Lingolane_Admin {
             'content'   => array( __( 'Posts & pages', 'lingolane' ), 'files' ),
             'strings'   => array( __( 'Interface strings', 'lingolane' ), 'type' ),
             'languages' => array( __( 'Languages', 'lingolane' ), 'languages' ),
-            'ai'        => array( __( 'Dịch AI', 'lingolane' ), 'sparkles' ),
+            'ai'        => array( __( 'AI Translation', 'lingolane' ), 'sparkles' ),
             'settings'  => array( __( 'Settings', 'lingolane' ), 'settings' ),
             'guide'     => array( __( 'Guide', 'lingolane' ), 'book-open' ),
             'support'   => array( __( 'Support', 'lingolane' ), 'life-buoy' ),
@@ -207,6 +207,7 @@ class Lingolane_Admin {
         wp_localize_script( 'lingolane-ai-translate', 'lingolaneAIConfig', array(
             'ajax'  => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( Lingolane_AI::NONCE_ACTION ),
+            'i18n'  => Lingolane_AI::client_strings(),
         ) );
         if ( 'strings' === self::current_tab() ) {
             wp_enqueue_script( 'lingolane-string-groups', LINGOLANE_URL . 'assets/string-groups.js', array( 'lingolane-admin', 'lingolane-ai-translate' ), LINGOLANE_VERSION, true );
@@ -228,6 +229,17 @@ class Lingolane_Admin {
                     'selectPages'  => __( 'Please select at least one page to scan.', 'lingolane' ),
                     /* translators: 1: current page index, 2: total pages, 3: page path */
                     'pageProgress' => __( 'Scanning page %1$d of %2$d: %3$s', 'lingolane' ),
+                    'copiedShort'   => __( 'Copied!', 'lingolane' ),
+                    'aiSuggested'   => __( 'Suggestion: ', 'lingolane' ),
+                    'aiError'       => __( 'AI translation error: ', 'lingolane' ),
+                    'aiMissing'     => __( 'The AI translation module is not loaded.', 'lingolane' ),
+                    'allTranslated' => __( 'Every string shown on this page already has a translation.', 'lingolane' ),
+                    /* translators: %d: number of untranslated strings */
+                    'batchConfirm'  => __( 'Draft AI translations for %d untranslated strings?', 'lingolane' ),
+                    /* translators: 1: current string index, 2: total strings */
+                    'batchProgress' => __( 'Translating (%1$d/%2$d)…', 'lingolane' ),
+                    /* translators: %d: number of drafted strings */
+                    'batchDone'     => __( 'Drafted %d translations with AI. Review them, then click Save or press Ctrl+Enter to save.', 'lingolane' ),
                 ),
             ) );
         }
@@ -256,10 +268,17 @@ class Lingolane_Admin {
                 'ajax'    => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( Lingolane_AI::NONCE_ACTION ),
                 'i18n'    => array(
-                    'testing'     => __( 'Đang kiểm tra kết nối...', 'lingolane' ),
-                    'testSuccess' => __( 'Kết nối thành công!', 'lingolane' ),
-                    'testFailed'  => __( 'Lỗi kết nối:', 'lingolane' ),
-                    'emptyKey'    => __( 'Vui lòng nhập API Key trước khi kiểm tra.', 'lingolane' ),
+                    'testing'       => __( 'Testing connection…', 'lingolane' ),
+                    'testSuccess'   => __( 'Connection successful.', 'lingolane' ),
+                    'testFailed'    => __( 'Connection error:', 'lingolane' ),
+                    'emptyKey'      => __( 'Enter an API key before testing.', 'lingolane' ),
+                    'testButton'    => __( 'Test connection', 'lingolane' ),
+                    'unknownError'  => __( 'Unknown error.', 'lingolane' ),
+                    'serverError'   => __( 'Could not reach the server.', 'lingolane' ),
+                    'available'     => __( 'Available (on-device)', 'lingolane' ),
+                    'unavailable'   => __( 'Not available', 'lingolane' ),
+                    'chromeReady'   => __( 'This browser supports the Chrome on-device Translator API. Interface strings are translated on this computer.', 'lingolane' ),
+                    'chromeMissing' => __( 'This browser does not have the Chrome built-in Translator API enabled, so AI suggestions are not available. It ships with Chrome 138 and later and can be enabled at chrome://flags/#translation-api.', 'lingolane' ),
                 ),
             ) );
         }
@@ -461,7 +480,7 @@ class Lingolane_Admin {
         $settings['untranslated_action'] = ( 'redirect' === $untrans_action ) ? 'redirect' : 'notice';
 
         $untrans_notice = self::post_text( 'untranslated_notice' );
-        $settings['untranslated_notice'] = '' !== $untrans_notice ? $untrans_notice : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+        $settings['untranslated_notice'] = '' !== $untrans_notice ? $untrans_notice : __( 'This content is not available in the selected language yet', 'lingolane' );
 
         $settings['untranslated_redirect_url'] = self::post_url( 'untranslated_redirect_url' );
 
@@ -514,7 +533,7 @@ class Lingolane_Admin {
             'auto_approve'   => $auto_approve,
         ) );
 
-        self::flash( 'success', __( 'Đã lưu thiết lập Dịch AI thành công.', 'lingolane' ) );
+        self::flash( 'success', __( 'AI translation settings saved.', 'lingolane' ) );
         self::redirect( 'ai' );
     }
 
@@ -1138,7 +1157,7 @@ class Lingolane_Admin {
         $sw_show  = isset( $settings['switcher_show'] ) ? $settings['switcher_show'] : 'flag_name';
         $sw_shape = isset( $settings['switcher_flag_shape'] ) ? $settings['switcher_flag_shape'] : 'rect';
         $untrans_action = isset( $settings['untranslated_action'] ) ? $settings['untranslated_action'] : 'notice';
-        $untrans_notice = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' );
+        $untrans_notice = ! empty( $settings['untranslated_notice'] ) ? $settings['untranslated_notice'] : __( 'This content is not available in the selected language yet', 'lingolane' );
         $untrans_url    = ! empty( $settings['untranslated_redirect_url'] ) ? $settings['untranslated_redirect_url'] : '';
         $skip_types = array( 'attachment', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'wp_font_family', 'wp_font_face' );
         $skip_taxes = array( 'nav_menu', 'link_category', 'post_format', 'wp_theme', 'wp_template_part_area', 'wp_pattern_category' );
@@ -1212,7 +1231,7 @@ class Lingolane_Admin {
                     </p>
                     <p style="margin-inline-start: 24px;">
                         <label for="lingolane-untranslated-notice"><strong><?php esc_html_e( 'Notice message:', 'lingolane' ); ?></strong></label><br>
-                        <input type="text" id="lingolane-untranslated-notice" name="untranslated_notice" value="<?php echo esc_attr( $untrans_notice ); ?>" class="large-text" placeholder="<?php esc_attr_e( 'Ngôn ngữ bạn chọn hiện chưa có bản dịch', 'lingolane' ); ?>">
+                        <input type="text" id="lingolane-untranslated-notice" name="untranslated_notice" value="<?php echo esc_attr( $untrans_notice ); ?>" class="large-text" placeholder="<?php esc_attr_e( 'This content is not available in the selected language yet', 'lingolane' ); ?>">
                     </p>
                     <p>
                         <label>
@@ -1392,8 +1411,8 @@ class Lingolane_Admin {
         ?>
         <div class="lingolane-guide lingolane-ai-settings-page">
             <div class="lingolane-guide__intro">
-                <h2><?php esc_html_e( 'Cấu hình Dịch thuật AI (Song cơ chế: Chrome On-Device & Gemini)', 'lingolane' ); ?></h2>
-                <p><?php esc_html_e( 'Lingolane kết hợp trí tuệ nhân tạo on-device trực tiếp trên trình duyệt Chrome (miễn phí, tốc độ cao, bảo mật 100% không gửi dữ liệu ra ngoài) và đám mây Google Gemini Flash (chất lượng dịch cao, miễn phí từ Google AI Studio) để tự động dịch chuỗi giao diện và bài viết.', 'lingolane' ); ?></p>
+                <h2><?php esc_html_e( 'AI translation settings', 'lingolane' ); ?></h2>
+                <p><?php esc_html_e( 'Lingolane suggests translations with the Translator API built into Chrome. It runs on the computer of the person translating and sends no text to the server. The Google Gemini cloud provider is disabled in this release.', 'lingolane' ); ?></p>
             </div>
 
             <div class="lingolane-guide__cards">
@@ -1402,13 +1421,13 @@ class Lingolane_Admin {
                     <div class="lingolane-card__head" style="display:flex; justify-content:space-between; align-items:center;">
                         <h2 class="lingolane-card__title" style="margin:0; display:flex; align-items:center; gap:8px;">
                             <?php echo Lingolane_UI::icon( 'sparkles', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-                            <?php esc_html_e( '1. AI trên trình duyệt (Chrome On-Device Translator API)', 'lingolane' ); ?>
+                            <?php esc_html_e( '1. In-browser translation (Chrome Translator API)', 'lingolane' ); ?>
                         </h2>
-                        <span id="lingolane-chrome-ai-badge" class="lingolane-chip lingolane-chip--neutral"><?php esc_html_e( 'Đang kiểm tra...', 'lingolane' ); ?></span>
+                        <span id="lingolane-chrome-ai-badge" class="lingolane-chip lingolane-chip--neutral"><?php esc_html_e( 'Checking…', 'lingolane' ); ?></span>
                     </div>
-                    <p><?php esc_html_e( 'Mô hình dịch ngôn ngữ tích hợp sẵn trong Google Chrome 138+ (hoặc kích hoạt cờ thử nghiệm trên Chrome 128+). Xử lý tức thì trên máy tính biên dịch viên, không tiêu tốn tài nguyên máy chủ và không mất bất kỳ chi phí nào.', 'lingolane' ); ?></p>
+                    <p><?php esc_html_e( 'Built into Google Chrome 138 and later on desktop (Chrome 128 and later can enable it with an experimental flag). Translation runs on the computer of the person translating, with no server load and no cost.', 'lingolane' ); ?></p>
                     <div id="lingolane-chrome-ai-status" class="lingolane-field-hint" style="margin-top:10px;">
-                        <?php esc_html_e( 'Trình duyệt đang khởi tạo kiểm tra tính khả dụng của Translation API...', 'lingolane' ); ?>
+                        <?php esc_html_e( 'Checking whether this browser supports the Translator API…', 'lingolane' ); ?>
                     </div>
                 </section>
 
@@ -1417,10 +1436,10 @@ class Lingolane_Admin {
                     <div class="lingolane-card__head">
                         <h2 class="lingolane-card__title" style="display:flex; align-items:center; gap:8px;">
                             <?php echo Lingolane_UI::icon( 'sparkles', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-                            <?php esc_html_e( '2. AI đám mây (Google Gemini Flash API)', 'lingolane' ); ?>
+                            <?php esc_html_e( '2. Cloud translation (Google Gemini API)', 'lingolane' ); ?>
                         </h2>
                     </div>
-                    <p><?php esc_html_e( 'Được sử dụng làm nguồn dịch chất lượng cao hoặc dự phòng khi người dùng không sử dụng Chrome có AI trên thiết bị. Mọi yêu cầu được gửi an toàn từ máy chủ WordPress.', 'lingolane' ); ?></p>
+                    <p><?php esc_html_e( 'Disabled in this release. The settings below are kept, but the plugin sends no requests to Google.', 'lingolane' ); ?></p>
 
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="lingolane-settings-form" style="margin-top: 16px;">
                         <input type="hidden" name="action" value="lingolane_save_ai_settings">
@@ -1433,39 +1452,39 @@ class Lingolane_Admin {
                             <div style="display:flex; gap:10px; align-items:center;">
                                 <input type="text" id="gemini_api_key" name="gemini_api_key" value="<?php echo esc_attr( $api_key ); ?>" placeholder="AIzaSy..." class="regular-text" style="font-family:monospace; min-width:320px;" autocomplete="off">
                                 <button type="button" id="lingolane-test-gemini-btn" class="button button-secondary">
-                                    <?php esc_html_e( 'Kiểm tra kết nối', 'lingolane' ); ?>
+                                    <?php esc_html_e( 'Test connection', 'lingolane' ); ?>
                                 </button>
                             </div>
                             <p class="description" style="margin-top:6px;">
-                                <?php esc_html_e( 'Khoá API được mã hoá lưu trữ an toàn trong cơ sở dữ liệu và chỉ gửi từ máy chủ.', 'lingolane' ); ?>
+                                <?php esc_html_e( 'The API key is stored in the site database without encryption and is never shown in full.', 'lingolane' ); ?>
                                 <span id="lingolane-gemini-test-result" style="margin-left:8px; font-weight:600;"></span>
                             </p>
                         </div>
 
                         <div class="lingolane-form-group" style="margin-bottom: 20px;">
                             <label for="gemini_model" style="display:block; font-weight:600; margin-bottom:6px;">
-                                <?php esc_html_e( 'Phiên bản mô hình (Gemini Model)', 'lingolane' ); ?>
+                                <?php esc_html_e( 'Model (Gemini)', 'lingolane' ); ?>
                             </label>
                             <select id="gemini_model" name="gemini_model" style="min-width:240px;">
-                                <option value="gemini-2.5-flash" <?php selected( $model, 'gemini-2.5-flash' ); ?>>gemini-2.5-flash (Khuyên dùng - Nhanh, chuẩn xác & tiết kiệm)</option>
-                                <option value="gemini-1.5-flash" <?php selected( $model, 'gemini-1.5-flash' ); ?>>gemini-1.5-flash (Ổn định)</option>
-                                <option value="gemini-1.5-pro" <?php selected( $model, 'gemini-1.5-pro' ); ?>>gemini-1.5-pro (Mô hình suy luận sâu)</option>
+                                <option value="gemini-2.5-flash" <?php selected( $model, 'gemini-2.5-flash' ); ?>>gemini-2.5-flash (<?php esc_html_e( 'recommended', 'lingolane' ); ?>)</option>
+                                <option value="gemini-1.5-flash" <?php selected( $model, 'gemini-1.5-flash' ); ?>>gemini-1.5-flash (<?php esc_html_e( 'stable', 'lingolane' ); ?>)</option>
+                                <option value="gemini-1.5-pro" <?php selected( $model, 'gemini-1.5-pro' ); ?>>gemini-1.5-pro (<?php esc_html_e( 'higher quality, slower', 'lingolane' ); ?>)</option>
                             </select>
                         </div>
 
                         <div class="lingolane-form-group" style="margin-bottom: 20px;">
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="checkbox" name="auto_approve" value="1" <?php checked( $auto_app ); ?>>
-                                <span><?php esc_html_e( 'Tự động duyệt bản dịch máy', 'lingolane' ); ?></span>
+                                <span><?php esc_html_e( 'Approve machine translations automatically', 'lingolane' ); ?></span>
                             </label>
                             <p class="description" style="margin-left: 24px;">
-                                <?php esc_html_e( 'Nếu bỏ chọn, các chuỗi và bài viết dịch bằng AI sẽ mang cờ "Máy dịch – chờ duyệt" để biên dịch viên rà soát lại trước khi xuất bản.', 'lingolane' ); ?>
+                                <?php esc_html_e( 'When unchecked, strings and posts translated with AI are flagged "Machine translation – needs review" so a translator can check them before publishing.', 'lingolane' ); ?>
                             </p>
                         </div>
 
                         <p class="submit" style="margin:0; padding:0;">
                             <button type="submit" class="button button-primary">
-                                <?php esc_html_e( 'Lưu thiết lập AI', 'lingolane' ); ?>
+                                <?php esc_html_e( 'Save AI settings', 'lingolane' ); ?>
                             </button>
                         </p>
                     </form>
@@ -1475,25 +1494,25 @@ class Lingolane_Admin {
                 <section class="lingolane-card" id="ai-guide">
                     <div class="lingolane-card__head">
                         <h2 class="lingolane-card__title">
-                            <?php esc_html_e( '3. Hướng dẫn lấy API Key Gemini miễn phí', 'lingolane' ); ?>
+                            <?php esc_html_e( '3. Getting a free Gemini API key', 'lingolane' ); ?>
                         </h2>
                     </div>
                     <ol class="lingolane-steps">
                         <li>
-                            <?php echo wp_kses( __( 'Truy cập <strong>Google AI Studio</strong> tại <a href="https://aistudio.google.com/" target="_blank" rel="noopener">aistudio.google.com</a> và đăng nhập bằng tài khoản Google.', 'lingolane' ), array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?>
+                            <?php echo wp_kses( __( 'Go to <strong>Google AI Studio</strong> at <a href="https://aistudio.google.com/" target="_blank" rel="noopener">aistudio.google.com</a> and sign in with a Google account.', 'lingolane' ), array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?>
                         </li>
                         <li>
-                            <?php esc_html_e( 'Bấm vào nút "Get API key" ở thanh điều hướng bên trái, sau đó chọn "Create API key".', 'lingolane' ); ?>
+                            <?php esc_html_e( 'Click "Get API key" in the left sidebar, then choose "Create API key".', 'lingolane' ); ?>
                         </li>
                         <li>
-                            <?php esc_html_e( 'Sao chép đoạn mã khoá (bắt đầu bằng AIzaSy...) và dán vào ô Google Gemini API Key bên trên.', 'lingolane' ); ?>
+                            <?php esc_html_e( 'Copy the key (it starts with AIzaSy...) and paste it into the Google Gemini API Key field above.', 'lingolane' ); ?>
                         </li>
                         <li>
-                            <?php esc_html_e( 'Bấm nút "Kiểm tra kết nối" để xác nhận cấu hình hoạt động tốt, sau đó nhấn "Lưu thiết lập AI".', 'lingolane' ); ?>
+                            <?php esc_html_e( 'Click "Test connection" to check the setup, then click "Save AI settings".', 'lingolane' ); ?>
                         </li>
                     </ol>
                     <p class="lingolane-hint">
-                        <?php esc_html_e( 'Ghi chú về hạn mức: Google AI Studio cấp quota miễn phí 15 yêu cầu/phút và 1.500 yêu cầu/ngày cho mô hình Flash, hoàn toàn đáp ứng trọn vẹn nhu cầu dịch website.', 'lingolane' ); ?>
+                        <?php esc_html_e( 'Google AI Studio sets its own free-tier limits, and they change over time. Check the current quota in your Google account.', 'lingolane' ); ?>
                     </p>
                 </section>
             </div>

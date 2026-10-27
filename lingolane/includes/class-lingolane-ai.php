@@ -2,8 +2,8 @@
 /**
  * Lingolane AI Backend Engine (P5)
  *
- * Manages AI translation settings, API key encryption/masking, Google Gemini API
- * client integration via WordPress HTTP API, and AJAX endpoints for testing keys and translating text.
+ * Manages AI translation settings, API key masking and the AJAX endpoints for
+ * testing keys and translating text. The Google Gemini provider is disabled in this release.
  *
  * @package Lingolane
  */
@@ -82,6 +82,19 @@ class Lingolane_AI {
 	}
 
 	/**
+	 * Strings used by assets/ai-translate.js.
+	 *
+	 * @return array
+	 */
+	public static function client_strings() {
+		return array(
+			'noTranslation'     => __( 'The server returned no translation.', 'lingolane' ),
+			'serverError'       => __( 'Could not reach the AI translation server.', 'lingolane' ),
+			'chromeUnavailable' => __( 'Chrome on-device AI is not available or does not support this language pair. Cloud translation is disabled.', 'lingolane' ),
+		);
+	}
+
+	/**
 	 * Mask an API key for safe UI display (e.g. AIzaSy...0XYZ).
 	 *
 	 * @param string $key Raw API key.
@@ -108,7 +121,7 @@ class Lingolane_AI {
 	public static function test_api_key( $api_key = '' ) {
 		return array(
 			'success' => false,
-			'message' => __( 'Dịch vụ đám mây Google AI tạm thời bị vô hiệu hóa để bảo đảm an toàn dữ liệu và kiểm soát ngân sách theo tiêu chuẩn phát hành.', 'lingolane' ),
+			'message' => __( 'Google AI cloud translation is temporarily disabled in this release to protect site data and avoid unexpected API costs.', 'lingolane' ),
 		);
 	}
 
@@ -124,7 +137,7 @@ class Lingolane_AI {
 	public static function translate_text( $text, $source_lang, $target_lang, $context = '' ) {
 		return new WP_Error(
 			'ai_cloud_disabled',
-			__( 'Dịch vụ đám mây Google AI tạm thời bị vô hiệu hóa để bảo đảm an toàn dữ liệu, chống rò rỉ và kiểm soát ngân sách theo tiêu chuẩn phát hành.', 'lingolane' )
+			__( 'Google AI cloud translation is temporarily disabled in this release to protect site data and avoid unexpected API costs.', 'lingolane' )
 		);
 	}
 

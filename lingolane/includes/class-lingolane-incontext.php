@@ -4,7 +4,7 @@
  *
  * Provides visual live translation directly on the frontend for administrators
  * and users with translation capabilities:
- * - Admin Bar toggle "Dịch trang này" / "Thoát chế độ dịch"
+ * - Admin Bar toggle "Translate this page" / "Exit translation mode"
  * - In-Context toolbar with target language selector, progress counter & exit button
  * - Visual hover/focus highlights with edit pen icon
  * - Inline popover modal with original text, editable translation, AI suggestion hook, and instant DOM update
@@ -92,10 +92,10 @@ class Lingolane_Incontext {
 
 		if ( $is_active ) {
 			$href  = remove_query_arg( array( 'lingolane_incontext', 'lingolane_editor' ), $current_url );
-			$title = '<span class="ab-icon dashicons-no-alt" aria-hidden="true" style="font-family:dashicons;margin-top:2px;"></span> ' . __( 'Thoát chế độ dịch', 'lingolane' );
+			$title = '<span class="ab-icon dashicons-no-alt" aria-hidden="true" style="font-family:dashicons;margin-top:2px;"></span> ' . __( 'Exit translation mode', 'lingolane' );
 		} else {
 			$href  = add_query_arg( 'lingolane_incontext', '1', $current_url );
-			$title = '<span class="ab-icon dashicons-translation" aria-hidden="true" style="font-family:dashicons;margin-top:2px;"></span> ' . __( 'Dịch trang này', 'lingolane' );
+			$title = '<span class="ab-icon dashicons-translation" aria-hidden="true" style="font-family:dashicons;margin-top:2px;"></span> ' . __( 'Translate this page', 'lingolane' );
 		}
 
 		$admin_bar->add_node( array(
@@ -103,7 +103,7 @@ class Lingolane_Incontext {
 			'title' => $title,
 			'href'  => esc_url( $href ),
 			'meta'  => array(
-				'title' => $is_active ? __( 'Thoát giao diện dịch trực quan Lingolane', 'lingolane' ) : __( 'Mở giao diện dịch trực quan Lingolane trên trang này', 'lingolane' ),
+				'title' => $is_active ? __( 'Leave the Lingolane in-context editor', 'lingolane' ) : __( 'Open the Lingolane in-context editor on this page', 'lingolane' ),
 			),
 		) );
 	}
@@ -121,6 +121,7 @@ class Lingolane_Incontext {
 		wp_localize_script( 'lingolane-ai-translate', 'lingolaneAIConfig', array(
 			'ajax'  => admin_url( 'admin-ajax.php' ),
 			'nonce' => class_exists( 'Lingolane_AI' ) ? wp_create_nonce( Lingolane_AI::NONCE_ACTION ) : '',
+			'i18n'  => class_exists( 'Lingolane_AI' ) ? Lingolane_AI::client_strings() : array(),
 		) );
 		wp_enqueue_script( 'lingolane-incontext', LINGOLANE_URL . 'assets/incontext.js', array( 'jquery', 'lingolane-ai-translate' ), LINGOLANE_VERSION, true );
 
@@ -168,24 +169,34 @@ class Lingolane_Incontext {
 			'postData'     => $post_data,
 			'exitUrl'      => esc_url( remove_query_arg( array( 'lingolane_incontext', 'lingolane_editor' ) ) ),
 			'i18n'         => array(
-				'toolbarTitle'   => __( 'Dịch trực quan', 'lingolane' ),
-				'translatingTo'  => __( 'Đang dịch sang:', 'lingolane' ),
-				'exit'           => __( 'Thoát', 'lingolane' ),
-				'editPostMsg'    => __( 'Nội dung bài viết: Bấm để mở trong Trình biên tập', 'lingolane' ),
-				'editPostBtn'    => __( 'Sửa bài viết', 'lingolane' ),
-				'save'           => __( 'Lưu bản dịch', 'lingolane' ),
-				'saving'         => __( 'Đang lưu...', 'lingolane' ),
-				'cancel'         => __( 'Huỷ', 'lingolane' ),
-				'originalText'   => __( 'Bản gốc', 'lingolane' ),
-				'translation'    => __( 'Bản dịch', 'lingolane' ),
-				'groupLabel'     => __( 'Vị trí:', 'lingolane' ),
-				'savedSuccess'   => __( 'Đã lưu bản dịch thành công!', 'lingolane' ),
-				'saveFailed'     => __( 'Lỗi khi lưu bản dịch.', 'lingolane' ),
-				'aiSuggest'      => __( 'Gợi ý AI', 'lingolane' ),
-				'filterAll'      => __( 'Tất cả', 'lingolane' ),
-				'filterMissing'  => __( 'Chưa dịch', 'lingolane' ),
+				'toolbarTitle'   => __( 'In-context translation', 'lingolane' ),
+				'translatingTo'  => __( 'Translating to:', 'lingolane' ),
+				'exit'           => __( 'Exit', 'lingolane' ),
+				'editPostMsg'    => __( 'Post content: open it in the editor', 'lingolane' ),
+				'editPostBtn'    => __( 'Edit post', 'lingolane' ),
+				'save'           => __( 'Save translation', 'lingolane' ),
+				'saving'         => __( 'Saving…', 'lingolane' ),
+				'cancel'         => __( 'Cancel', 'lingolane' ),
+				'originalText'   => __( 'Original', 'lingolane' ),
+				'translation'    => __( 'Translation', 'lingolane' ),
+				'groupLabel'     => __( 'Location:', 'lingolane' ),
+				'savedSuccess'   => __( 'Translation saved.', 'lingolane' ),
+				'saveFailed'     => __( 'Could not save the translation.', 'lingolane' ),
+				'aiSuggest'      => __( 'AI suggestion', 'lingolane' ),
+				'filterAll'      => __( 'All', 'lingolane' ),
+				'filterMissing'  => __( 'Untranslated', 'lingolane' ),
 				/* translators: 1: translated string count, 2: total string count. */
-				'progressFormat' => __( '%1$d/%2$d chuỗi đã dịch', 'lingolane' ),
+				'progressFormat' => __( '%1$d/%2$d strings translated', 'lingolane' ),
+				'penTitle'       => __( 'Translate this string', 'lingolane' ),
+				'postNotice'     => __( 'This is full post content with blocks or HTML. To avoid breaking the layout, edit it in the WordPress editor.', 'lingolane' ),
+				'placeholder'    => __( 'Enter the translation here…', 'lingolane' ),
+				'hint'           => __( 'Ctrl + Enter to save • Esc to cancel', 'lingolane' ),
+				'aiWorking'      => __( 'Translating with AI…', 'lingolane' ),
+				/* translators: %s: translation engine name */
+				'aiSuggested'    => __( 'Suggested translation from %s', 'lingolane' ),
+				'aiEmpty'        => __( 'The AI returned no translation.', 'lingolane' ),
+				'aiMissing'      => __( 'The AI translation module is not loaded.', 'lingolane' ),
+				'aiError'        => __( 'AI translation error: ', 'lingolane' ),
 			),
 		) );
 	}

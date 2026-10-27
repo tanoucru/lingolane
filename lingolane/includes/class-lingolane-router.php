@@ -32,16 +32,16 @@ class Lingolane_Router {
         }
         if ( self::is_conflicted() ) {
             echo '<div class="notice notice-warning is-dismissible"><p><strong>' .
-                 esc_html__( 'Lingolane: Phát hiện plugin đa ngôn ngữ khác (Polylang hoặc WPML) đang hoạt động.', 'lingolane' ) .
+                 esc_html__( 'Lingolane: another multilingual plugin (Polylang or WPML) is active.', 'lingolane' ) .
                  '</strong> ' .
-                 esc_html__( 'Bộ định tuyến của Lingolane tạm thời ngừng hoạt động để tránh xung đột URL. Vui lòng tắt plugin kia trước khi dùng Lingolane.', 'lingolane' ) .
+                 esc_html__( 'The Lingolane router is paused to avoid URL conflicts. Deactivate the other plugin before using Lingolane.', 'lingolane' ) .
                  '</p></div>';
         }
         if ( self::is_plain_permalink() ) {
             echo '<div class="notice notice-warning is-dismissible"><p><strong>' .
-                 esc_html__( 'Lingolane: Đang sử dụng Cấu trúc đường dẫn mặc định (Plain Permalinks).', 'lingolane' ) .
+                 esc_html__( 'Lingolane: the site uses plain permalinks.', 'lingolane' ) .
                  '</strong> ' .
-                 esc_html__( 'Để hỗ trợ URL đa ngôn ngữ đẹp dạng /en/, /vi/, vui lòng chuyển sang cấu trúc Tiêu đề bài viết trong Cài đặt > Đường dẫn tĩnh.', 'lingolane' ) .
+                 esc_html__( 'For language URLs such as /en/ and /vi/, switch to the Post name structure in Settings > Permalinks.', 'lingolane' ) .
                  '</p></div>';
         }
     }

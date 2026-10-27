@@ -84,7 +84,7 @@ class Lingolane_Metabox {
                             $is_ai  = (bool) get_post_meta( $id, '_lingolane_machine_translated', true ); ?>
                             <span class="lingolane-box__action">
                                 <?php if ( $is_ai ) : ?>
-                                    <?php echo Lingolane_Admin::chip( __( 'Máy dịch', 'lingolane' ), 'neutral', __( 'Bản dịch máy – chờ duyệt', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php echo Lingolane_Admin::chip( __( 'Machine translated', 'lingolane' ), 'neutral', __( 'Machine translation – needs review', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
                                 <?php endif; ?>
                                 <?php echo Lingolane_Admin::chip( Lingolane_Admin::status_label( $status ), 'publish' === $status ? 'ok' : 'warn' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
                                 <a href="<?php echo esc_url( get_edit_post_link( $id, 'raw' ) ); ?>"><?php esc_html_e( 'Edit', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
@@ -92,9 +92,9 @@ class Lingolane_Metabox {
                         <?php elseif ( ! $id && 'auto-draft' !== $post->post_status ) : ?>
                             <div style="display:inline-flex; gap:6px; align-items:center;">
                                 <a class="button button-small" href="<?php echo esc_url( Lingolane_Admin::translate_url( $post->ID, $code ) ); ?>"><?php esc_html_e( 'Create translation', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
-                                <a class="button button-small button-secondary" href="<?php echo esc_url( Lingolane_AI_Post::action_url( $post->ID, $code ) ); ?>" style="display:inline-flex; align-items:center; gap:4px;" title="<?php esc_attr_e( 'Dịch toàn bộ bài viết bằng AI', 'lingolane' ); ?>">
+                                <a class="button button-small button-secondary" href="<?php echo esc_url( Lingolane_AI_Post::action_url( $post->ID, $code ) ); ?>" style="display:inline-flex; align-items:center; gap:4px;" title="<?php esc_attr_e( 'Translate the whole post with AI', 'lingolane' ); ?>">
                                     <?php echo Lingolane_UI::icon( 'sparkles', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-                                    <?php esc_html_e( 'Dịch AI', 'lingolane' ); ?>
+                                    <?php esc_html_e( 'Translate with AI', 'lingolane' ); ?>
                                 </a>
                             </div>
                         <?php elseif ( ! $id ) : ?>

@@ -137,7 +137,7 @@ class Lingolane_Columns {
                         /* translators: 1: language, 2: status */
                         $label = sprintf( __( 'Edit %1$s version (%2$s)', 'lingolane' ), $language['name'], Lingolane_Admin::status_label( $status ) );
                         if ( $is_ai ) {
-                            $label .= ' — ' . __( 'Máy dịch (chờ duyệt)', 'lingolane' );
+                            $label .= ' — ' . __( 'Machine translation (needs review)', 'lingolane' );
                         }
                         echo '<a class="lingolane-code lingolane-code--' . ( 'publish' === $status ? 'ok' : 'warn' ) . '" href="' . esc_url( get_edit_post_link( $trans_id, 'raw' ) ) . '" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '">' . esc_html( strtoupper( $code ) ) . '</a>';
                     } elseif ( current_user_can( 'edit_post', $id ) && 'trash' !== $post->post_status ) {

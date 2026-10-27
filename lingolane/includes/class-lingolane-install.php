@@ -40,8 +40,8 @@ class Lingolane_Install {
         if ( is_multisite() && $network_wide ) {
             deactivate_plugins( plugin_basename( LINGOLANE_FILE ), true, true );
             wp_die(
-                esc_html__( 'Lingolane 1.0 hiện chưa hỗ trợ kích hoạt toàn mạng (Network Activation). Vui lòng kích hoạt riêng trên từng site.', 'lingolane' ),
-                esc_html__( 'Kích hoạt không được hỗ trợ', 'lingolane' ),
+                esc_html__( 'Lingolane 1.0 does not support network activation yet. Activate it on each site separately.', 'lingolane' ),
+                esc_html__( 'Activation not supported', 'lingolane' ),
                 array( 'back_link' => true )
             );
         }

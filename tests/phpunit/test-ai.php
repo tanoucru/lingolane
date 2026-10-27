@@ -100,7 +100,7 @@ class Test_Lingolane_AI extends Lingolane_TestCase {
 		$test_res = Lingolane_AI::test_api_key( 'AIzaSyValidMockKey' );
 		$this->assertIsArray( $test_res );
 		$this->assertFalse( $test_res['success'] );
-		$this->assertStringContainsString( 'tạm thời bị vô hiệu hóa', $test_res['message'] );
+		$this->assertStringContainsString( 'temporarily disabled', $test_res['message'] );
 	}
 
 	public function test_translate_text_with_mocked_gemini() {

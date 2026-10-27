@@ -937,12 +937,6 @@ msgstr "Chuyên mục & Thẻ"
 msgid "Categories and tags are synchronized directly with WordPress taxonomy elements."
 msgstr "Chuyên mục và thẻ được đồng bộ trực tiếp với các phần tử taxonomy của WordPress."
 
-msgid "Chép slug"
-msgstr "Chép slug"
-
-msgid "Chưa quan sát trên trang"
-msgstr "Chưa quan sát trên trang"
-
 msgid "Clear"
 msgstr "Xoá bộ lọc"
 
@@ -990,12 +984,6 @@ msgstr "Chép nội dung yêu cầu"
 
 msgid "Could not acquire lock for saving term translation."
 msgstr "Không thể lấy khoá để lưu bản dịch term."
-
-msgid "Cần developer hỗ trợ dịch"
-msgstr "Cần developer hỗ trợ dịch"
-
-msgid "Cần hỗ trợ"
-msgstr "Cần hỗ trợ"
 
 msgid "Description (optional)"
 msgstr "Mô tả (tuỳ chọn)"
@@ -1107,9 +1095,6 @@ msgstr "Thiếu bản dịch."
 
 msgid "Most questions are answered in the %s."
 msgstr "Phần lớn câu hỏi đã được giải đáp trong %s."
-
-msgid "Một số chuỗi được phát hiện trong mã nguồn nhưng cần developer hỗ trợ bọc hàm dịch hoặc đăng ký gettext."
-msgstr "Một số chuỗi được phát hiện trong mã nguồn nhưng cần developer hỗ trợ bọc hàm dịch hoặc đăng ký gettext."
 
 msgid "No strings found in this group"
 msgstr "Không tìm thấy chuỗi nào trong nhóm này"
@@ -1318,9 +1303,6 @@ msgstr "Widget"
 msgid "Write your ticket"
 msgstr "Soạn yêu cầu hỗ trợ"
 
-msgid "Xem vị trí"
-msgstr "Xem vị trí"
-
 msgid "You are running Lingolane %s. The problem may already be fixed."
 msgstr "Bạn đang chạy Lingolane %s. Vấn đề có thể đã được khắc phục ở bản mới."
 
@@ -1344,3 +1326,438 @@ msgstr "https://github.com/tanoucru"
 
 msgid "https://github.com/tanoucru/lingolane"
 msgstr "https://github.com/tanoucru/lingolane"
+
+msgid "AI Translation"
+msgstr "Dịch AI"
+
+msgid "Copied!"
+msgstr "Đã chép!"
+
+msgid "Suggestion: "
+msgstr "Gợi ý: "
+
+msgid "AI translation error: "
+msgstr "Lỗi dịch AI: "
+
+msgid "The AI translation module is not loaded."
+msgstr "Chưa nạp module dịch AI."
+
+msgid "Every string shown on this page already has a translation."
+msgstr "Tất cả các chuỗi hiển thị trên trang này đều đã có bản dịch."
+
+#. translators: %d: number of untranslated strings
+msgid "Draft AI translations for %d untranslated strings?"
+msgstr "Dịch nháp bằng AI %d chuỗi còn thiếu?"
+
+#. translators: 1: current string index, 2: total strings
+msgid "Translating (%1$d/%2$d)…"
+msgstr "Đang dịch (%1$d/%2$d)…"
+
+#. translators: %d: number of drafted strings
+msgid "Drafted %d translations with AI. Review them, then click Save or press Ctrl+Enter to save."
+msgstr "Đã dịch nháp %d chuỗi bằng AI. Hãy kiểm tra rồi bấm Save hoặc Ctrl+Enter để lưu."
+
+msgid "Testing connection…"
+msgstr "Đang kiểm tra kết nối…"
+
+msgid "Connection successful."
+msgstr "Kết nối thành công."
+
+msgid "Connection error:"
+msgstr "Lỗi kết nối:"
+
+msgid "Enter an API key before testing."
+msgstr "Vui lòng nhập API key trước khi kiểm tra."
+
+msgid "Test connection"
+msgstr "Kiểm tra kết nối"
+
+msgid "Unknown error."
+msgstr "Lỗi không xác định."
+
+msgid "Could not reach the server."
+msgstr "Không kết nối được máy chủ."
+
+msgid "Available (on-device)"
+msgstr "Khả dụng (trên thiết bị)"
+
+msgid "Not available"
+msgstr "Chưa khả dụng"
+
+msgid "This browser supports the Chrome on-device Translator API. Interface strings are translated on this computer."
+msgstr "Trình duyệt này hỗ trợ Chrome Translator API trên thiết bị. Chuỗi giao diện được dịch ngay trên máy tính này."
+
+msgid "This browser does not have the Chrome built-in Translator API enabled, so AI suggestions are not available. It ships with Chrome 138 and later and can be enabled at chrome://flags/#translation-api."
+msgstr "Trình duyệt này chưa bật Chrome Translator API tích hợp sẵn nên chưa có gợi ý dịch AI. API có sẵn từ Chrome 138 và có thể bật tại chrome://flags/#translation-api."
+
+msgid "This content is not available in the selected language yet"
+msgstr "Ngôn ngữ bạn chọn hiện chưa có bản dịch"
+
+msgid "AI translation settings saved."
+msgstr "Đã lưu thiết lập Dịch AI."
+
+msgid "Language switcher display"
+msgstr "Hiển thị nút chuyển ngôn ngữ"
+
+msgid "Configure how the language switcher button appears across the site by default."
+msgstr "Thiết lập cách nút chuyển ngôn ngữ hiển thị mặc định trên toàn site."
+
+msgid "Display style"
+msgstr "Kiểu hiển thị"
+
+msgid "Horizontal list (inline items)"
+msgstr "Danh sách ngang (các mục trên một hàng)"
+
+msgid "Dropdown menu (clean select panel)"
+msgstr "Menu thả xuống (bảng chọn gọn)"
+
+msgid "Pills / Rounded button group"
+msgstr "Nhóm nút bo tròn"
+
+msgid "Native select box"
+msgstr "Hộp chọn mặc định của trình duyệt"
+
+msgid "Items to display"
+msgstr "Nội dung hiển thị"
+
+msgid "Flag & Language name (e.g. 🇻🇳 Tiếng Việt)"
+msgstr "Cờ và tên ngôn ngữ (vd 🇻🇳 Tiếng Việt)"
+
+msgid "Flag & Language code (e.g. 🇻🇳 VI)"
+msgstr "Cờ và mã ngôn ngữ (vd 🇻🇳 VI)"
+
+msgid "Flag only (e.g. 🇻🇳)"
+msgstr "Chỉ cờ (vd 🇻🇳)"
+
+msgid "Language name only"
+msgstr "Chỉ tên ngôn ngữ"
+
+msgid "Language code only"
+msgstr "Chỉ mã ngôn ngữ"
+
+msgid "Flag shape"
+msgstr "Hình dạng cờ"
+
+msgid "Rectangle (standard ratio)"
+msgstr "Chữ nhật (tỉ lệ chuẩn)"
+
+msgid "Circle / Round"
+msgstr "Hình tròn"
+
+msgid "Square"
+msgstr "Hình vuông"
+
+msgid "Template tag to place anywhere in source code: <code>&lt;?php if ( function_exists( 'lingolane_switcher' ) ) { lingolane_switcher(); } ?&gt;</code> or shortcode <code>[lingolane_switcher]</code>."
+msgstr "Template tag đặt ở bất kỳ đâu trong mã nguồn: <code>&lt;?php if ( function_exists( 'lingolane_switcher' ) ) { lingolane_switcher(); } ?&gt;</code> hoặc shortcode <code>[lingolane_switcher]</code>."
+
+msgid "Choose what happens when visitors click a language switcher option for a page that has not been translated yet."
+msgstr "Chọn cách xử lý khi khách bấm chuyển sang ngôn ngữ mà trang hiện tại chưa có bản dịch."
+
+msgid "Stay on current page & display notice dialog"
+msgstr "Ở lại trang hiện tại và hiện hộp thông báo"
+
+msgid "Notice message:"
+msgstr "Nội dung thông báo:"
+
+msgid "Redirect to custom fallback link"
+msgstr "Chuyển hướng tới liên kết dự phòng"
+
+msgid "Fallback redirect URL:"
+msgstr "URL chuyển hướng dự phòng:"
+
+msgid "To place a language switcher anywhere on your site:"
+msgstr "Để đặt nút chuyển ngôn ngữ ở bất kỳ đâu trên site:"
+
+msgid "<strong>PHP Template Tag:</strong> <code>&lt;?php if ( function_exists( 'lingolane_switcher' ) ) { lingolane_switcher(); } ?&gt;</code> (supports <code>style</code>, <code>show</code>, <code>shape</code>, <code>class</code> options)."
+msgstr "<strong>Template tag PHP:</strong> <code>&lt;?php if ( function_exists( 'lingolane_switcher' ) ) { lingolane_switcher(); } ?&gt;</code> (hỗ trợ tuỳ chọn <code>style</code>, <code>show</code>, <code>shape</code>, <code>class</code>)."
+
+msgid "<strong>Shortcode:</strong> <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style=\"dropdown\"]</code>, flags only <code>[lingolane_switcher show=\"flag_only\"]</code>, pills style <code>[lingolane_switcher style=\"pills\"]</code>."
+msgstr "<strong>Shortcode:</strong> <code>[lingolane_switcher]</code>, kiểu thả xuống <code>[lingolane_switcher style=\"dropdown\"]</code>, chỉ cờ <code>[lingolane_switcher show=\"flag_only\"]</code>, kiểu nút bo tròn <code>[lingolane_switcher style=\"pills\"]</code>."
+
+msgid "The switcher always links to the matching translation of the current page; untranslated pages gracefully alert visitors or redirect to your configured fallback."
+msgstr "Nút chuyển luôn trỏ tới bản dịch tương ứng của trang hiện tại; với trang chưa dịch, khách sẽ thấy thông báo hoặc được chuyển tới liên kết dự phòng đã thiết lập."
+
+msgid "AI translation settings"
+msgstr "Cấu hình dịch AI"
+
+msgid "Lingolane suggests translations with the Translator API built into Chrome. It runs on the computer of the person translating and sends no text to the server. The Google Gemini cloud provider is disabled in this release."
+msgstr "Lingolane gợi ý bản dịch bằng Translator API có sẵn trong Chrome. API chạy ngay trên máy của người dịch và không gửi văn bản lên máy chủ. Dịch vụ đám mây Google Gemini bị tắt trong bản phát hành này."
+
+msgid "1. In-browser translation (Chrome Translator API)"
+msgstr "1. Dịch trên trình duyệt (Chrome Translator API)"
+
+msgid "Checking…"
+msgstr "Đang kiểm tra…"
+
+msgid "Built into Google Chrome 138 and later on desktop (Chrome 128 and later can enable it with an experimental flag). Translation runs on the computer of the person translating, with no server load and no cost."
+msgstr "Có sẵn trong Google Chrome 138 trở lên trên máy tính (Chrome 128 trở lên có thể bật bằng cờ thử nghiệm). Việc dịch chạy ngay trên máy của người dịch, không tốn tài nguyên máy chủ và không mất phí."
+
+msgid "Checking whether this browser supports the Translator API…"
+msgstr "Đang kiểm tra trình duyệt có hỗ trợ Translator API không…"
+
+msgid "2. Cloud translation (Google Gemini API)"
+msgstr "2. Dịch qua đám mây (Google Gemini API)"
+
+msgid "Disabled in this release. The settings below are kept, but the plugin sends no requests to Google."
+msgstr "Tạm tắt trong bản phát hành này. Thiết lập bên dưới vẫn được lưu nhưng plugin không gửi yêu cầu nào tới Google."
+
+msgid "Google Gemini API Key"
+msgstr "Khoá API Google Gemini"
+
+msgid "The API key is stored in the site database without encryption and is never shown in full."
+msgstr "Khoá API được lưu trong cơ sở dữ liệu của site, không mã hoá, và không bao giờ hiển thị đầy đủ."
+
+msgid "Model (Gemini)"
+msgstr "Phiên bản mô hình (Gemini)"
+
+msgid "recommended"
+msgstr "khuyên dùng"
+
+msgid "stable"
+msgstr "ổn định"
+
+msgid "higher quality, slower"
+msgstr "chất lượng cao hơn, chậm hơn"
+
+msgid "Approve machine translations automatically"
+msgstr "Tự động duyệt bản dịch máy"
+
+msgid "When unchecked, strings and posts translated with AI are flagged \"Machine translation – needs review\" so a translator can check them before publishing."
+msgstr "Nếu bỏ chọn, các chuỗi và bài viết dịch bằng AI sẽ mang cờ \"Máy dịch – chờ duyệt\" để biên dịch viên rà soát trước khi xuất bản."
+
+msgid "Save AI settings"
+msgstr "Lưu thiết lập AI"
+
+msgid "3. Getting a free Gemini API key"
+msgstr "3. Hướng dẫn lấy API key Gemini miễn phí"
+
+msgid "Go to <strong>Google AI Studio</strong> at <a href=\"https://aistudio.google.com/\" target=\"_blank\" rel=\"noopener\">aistudio.google.com</a> and sign in with a Google account."
+msgstr "Truy cập <strong>Google AI Studio</strong> tại <a href=\"https://aistudio.google.com/\" target=\"_blank\" rel=\"noopener\">aistudio.google.com</a> và đăng nhập bằng tài khoản Google."
+
+msgid "Click \"Get API key\" in the left sidebar, then choose \"Create API key\"."
+msgstr "Bấm \"Get API key\" ở thanh điều hướng bên trái, sau đó chọn \"Create API key\"."
+
+msgid "Copy the key (it starts with AIzaSy...) and paste it into the Google Gemini API Key field above."
+msgstr "Sao chép khoá (bắt đầu bằng AIzaSy...) và dán vào ô Google Gemini API Key bên trên."
+
+msgid "Click \"Test connection\" to check the setup, then click \"Save AI settings\"."
+msgstr "Bấm \"Kiểm tra kết nối\" để xác nhận cấu hình, sau đó bấm \"Lưu thiết lập AI\"."
+
+msgid "Google AI Studio sets its own free-tier limits, and they change over time. Check the current quota in your Google account."
+msgstr "Google AI Studio tự đặt hạn mức miễn phí và hạn mức này có thể thay đổi. Xem hạn mức hiện tại trong tài khoản Google của bạn."
+
+#. translators: 1: language name, 2: uppercase code
+msgid "Written in %1$s (%2$s)"
+msgstr "Viết bằng %1$s (%2$s)"
+
+msgid "Machine translation (needs review)"
+msgstr "Máy dịch (chờ duyệt)"
+
+msgid "Machine translated"
+msgstr "Máy dịch"
+
+msgid "Machine translation – needs review"
+msgstr "Bản dịch máy – chờ duyệt"
+
+msgid "Translate the whole post with AI"
+msgstr "Dịch toàn bộ bài viết bằng AI"
+
+msgid "Translate with AI"
+msgstr "Dịch AI"
+
+msgid "Draft AI translations for every untranslated string on this page"
+msgstr "Dịch nháp bằng AI tất cả chuỗi còn thiếu trên trang này"
+
+msgid "AI-translate missing"
+msgstr "Dịch AI còn thiếu"
+
+msgid "Some strings were found in the source code but need a developer to wrap them in a translation function or register them with gettext."
+msgstr "Một số chuỗi được phát hiện trong mã nguồn nhưng cần developer bọc hàm dịch hoặc đăng ký gettext."
+
+msgid "View location"
+msgstr "Xem vị trí"
+
+msgid "Not seen on a page yet"
+msgstr "Chưa quan sát trên trang"
+
+msgid "Needs a developer"
+msgstr "Cần hỗ trợ"
+
+msgid "Copy slug"
+msgstr "Chép slug"
+
+msgid "Suggest a translation with AI"
+msgstr "Gợi ý dịch AI"
+
+msgid "AI"
+msgstr "AI"
+
+msgid "A developer needs to make this string translatable"
+msgstr "Cần developer hỗ trợ dịch"
+
+msgid "Duplicating and translating whole posts with AI is temporarily disabled in this release to protect site data, avoid overwriting existing translations and avoid unexpected API costs."
+msgstr "Tính năng nhân bản và dịch toàn bài bằng AI tạm thời bị vô hiệu hóa trong bản phát hành này để bảo vệ dữ liệu, tránh ghi đè bản dịch có sẵn và tránh chi phí API ngoài dự kiến."
+
+msgid "You are not allowed to do this."
+msgstr "Bạn không có quyền thực hiện thao tác này."
+
+msgid "An AI machine translation was created as a draft."
+msgstr "Bản dịch máy bằng AI đã được tạo ở dạng bản nháp."
+
+msgid "The post structure, HTML and blocks were kept as they were. Review the draft and click Publish when it is ready."
+msgstr "Cấu trúc bài viết, thẻ HTML và các khối đã được giữ nguyên. Vui lòng rà soát bản nháp và bấm Đăng khi hoàn tất."
+
+msgid "The server returned no translation."
+msgstr "Máy chủ không trả về bản dịch."
+
+msgid "Could not reach the AI translation server."
+msgstr "Không kết nối được máy chủ dịch AI."
+
+msgid "Chrome on-device AI is not available or does not support this language pair. Cloud translation is disabled."
+msgstr "Chrome AI trên thiết bị không khả dụng hoặc chưa hỗ trợ cặp ngôn ngữ này. Dịch qua đám mây đang tắt."
+
+msgid "Google AI cloud translation is temporarily disabled in this release to protect site data and avoid unexpected API costs."
+msgstr "Dịch vụ đám mây Google AI tạm thời bị vô hiệu hóa trong bản phát hành này để bảo vệ dữ liệu và tránh chi phí API ngoài dự kiến."
+
+msgid "Invalid security token."
+msgstr "Mã bảo mật không hợp lệ."
+
+msgid "Exit translation mode"
+msgstr "Thoát chế độ dịch"
+
+msgid "Translate this page"
+msgstr "Dịch trang này"
+
+msgid "Leave the Lingolane in-context editor"
+msgstr "Thoát giao diện dịch trực quan Lingolane"
+
+msgid "Open the Lingolane in-context editor on this page"
+msgstr "Mở giao diện dịch trực quan Lingolane trên trang này"
+
+msgid "In-context translation"
+msgstr "Dịch trực quan"
+
+msgid "Translating to:"
+msgstr "Đang dịch sang:"
+
+msgid "Exit"
+msgstr "Thoát"
+
+msgid "Post content: open it in the editor"
+msgstr "Nội dung bài viết: bấm để mở trong trình biên tập"
+
+msgid "Edit post"
+msgstr "Sửa bài viết"
+
+msgid "Save translation"
+msgstr "Lưu bản dịch"
+
+msgid "Original"
+msgstr "Bản gốc"
+
+msgid "Translation"
+msgstr "Bản dịch"
+
+msgid "Location:"
+msgstr "Vị trí:"
+
+msgid "Could not save the translation."
+msgstr "Lỗi khi lưu bản dịch."
+
+msgid "AI suggestion"
+msgstr "Gợi ý AI"
+
+#. translators: 1: translated string count, 2: total string count.
+msgid "%1$d/%2$d strings translated"
+msgstr "%1$d/%2$d chuỗi đã dịch"
+
+msgid "Translate this string"
+msgstr "Dịch chuỗi này"
+
+msgid "This is full post content with blocks or HTML. To avoid breaking the layout, edit it in the WordPress editor."
+msgstr "Đây là nội dung bài viết đầy đủ có khối hoặc HTML. Để tránh làm vỡ bố cục, hãy sửa trong trình soạn thảo WordPress."
+
+msgid "Enter the translation here…"
+msgstr "Nhập bản dịch tại đây…"
+
+msgid "Ctrl + Enter to save • Esc to cancel"
+msgstr "Ctrl + Enter để lưu • Esc để huỷ"
+
+msgid "Translating with AI…"
+msgstr "Đang dịch bằng AI…"
+
+#. translators: %s: translation engine name
+msgid "Suggested translation from %s"
+msgstr "Đã gợi ý bản dịch từ %s"
+
+msgid "The AI returned no translation."
+msgstr "Không nhận được bản dịch từ AI."
+
+msgid "You do not have permission to save translations."
+msgstr "Bạn không có quyền lưu bản dịch."
+
+msgid "Source text and language code are required."
+msgstr "Cần có văn bản gốc và mã ngôn ngữ."
+
+msgid "Lingolane 1.0 does not support network activation yet. Activate it on each site separately."
+msgstr "Lingolane 1.0 chưa hỗ trợ kích hoạt toàn mạng. Vui lòng kích hoạt riêng trên từng site."
+
+msgid "Activation not supported"
+msgstr "Kích hoạt không được hỗ trợ"
+
+msgid "Lingolane: another multilingual plugin (Polylang or WPML) is active."
+msgstr "Lingolane: phát hiện plugin đa ngôn ngữ khác (Polylang hoặc WPML) đang hoạt động."
+
+msgid "The Lingolane router is paused to avoid URL conflicts. Deactivate the other plugin before using Lingolane."
+msgstr "Bộ định tuyến của Lingolane tạm ngừng để tránh xung đột URL. Vui lòng tắt plugin kia trước khi dùng Lingolane."
+
+msgid "Lingolane: the site uses plain permalinks."
+msgstr "Lingolane: site đang dùng cấu trúc đường dẫn mặc định (Plain)."
+
+msgid "For language URLs such as /en/ and /vi/, switch to the Post name structure in Settings > Permalinks."
+msgstr "Để có URL theo ngôn ngữ như /en/, /vi/, hãy chuyển sang cấu trúc Tên bài viết trong Cài đặt > Đường dẫn tĩnh."
+
+msgid "Notice"
+msgstr "Thông báo"
+
+msgid "Got it"
+msgstr "Đã hiểu"
+
+msgid "Display language switcher with flags and customizable styles."
+msgstr "Hiển thị nút chuyển ngôn ngữ kèm cờ, tuỳ chỉnh được kiểu dáng."
+
+msgid "Title:"
+msgstr "Tiêu đề:"
+
+msgid "Style:"
+msgstr "Kiểu:"
+
+msgid "List"
+msgstr "Danh sách"
+
+msgid "Dropdown"
+msgstr "Thả xuống"
+
+msgid "Pills"
+msgstr "Nút bo tròn"
+
+msgid "Select"
+msgstr "Hộp chọn"
+
+msgid "Show:"
+msgstr "Hiển thị:"
+
+msgid "Flag & Name"
+msgstr "Cờ và tên"
+
+msgid "Flag & Code"
+msgstr "Cờ và mã"
+
+msgid "Flag only"
+msgstr "Chỉ cờ"
+
+msgid "Name only"
+msgstr "Chỉ tên"
+
+msgid "Code only"
+msgstr "Chỉ mã"

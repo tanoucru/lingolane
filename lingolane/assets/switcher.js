@@ -110,7 +110,7 @@
     function openNoticeDialog( customMessage ) {
         var dialog = document.getElementById( 'lingolane-notice-dialog' );
         if ( ! dialog ) {
-            alert( customMessage || 'Ngôn ngữ bạn chọn hiện chưa có bản dịch.' );
+            alert( customMessage || 'This content is not available in the selected language yet.' );
             return;
         }
 

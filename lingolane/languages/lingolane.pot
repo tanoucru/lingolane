@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-24T02:49:51+00:00\n"
+"POT-Creation-Date: 2026-10-27T02:06:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lingolane\n"
@@ -34,1050 +34,1349 @@ msgstr ""
 msgid "https://github.com/tanoucru"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:41
-#: admin/class-lingolane-admin.php:47
-#: admin/class-lingolane-admin.php:602
-#: admin/class-lingolane-admin.php:1107
+#: admin/class-lingolane-admin.php:42
+#: admin/class-lingolane-admin.php:48
+#: admin/class-lingolane-admin.php:686
+#: admin/class-lingolane-admin.php:1257
 msgid "Interface strings"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:45
+#: admin/class-lingolane-admin.php:46
 msgid "Overview"
 msgstr ""
 
 #. translators: %s: link
-#: admin/class-lingolane-admin.php:46
-#: admin/class-lingolane-admin.php:584
-#: admin/class-lingolane-admin.php:1200
+#: admin/class-lingolane-admin.php:47
+#: admin/class-lingolane-admin.php:668
+#: admin/class-lingolane-admin.php:1350
 msgid "Posts & pages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:48
-#: admin/class-lingolane-admin.php:804
-#: admin/class-lingolane-admin.php:935
-#: admin/class-lingolane-columns.php:74
-#: admin/class-lingolane-columns.php:78
-#: includes/class-lingolane-switcher.php:31
+#: admin/class-lingolane-admin.php:49
+#: admin/class-lingolane-admin.php:888
+#: admin/class-lingolane-admin.php:1019
+#: admin/class-lingolane-columns.php:89
+#: includes/class-lingolane-switcher.php:288
 msgid "Languages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:49
-#: admin/class-lingolane-admin.php:161
+#: admin/class-lingolane-admin.php:50
+msgid "AI Translation"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:51
+#: admin/class-lingolane-admin.php:167
 msgid "Settings"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:50
+#: admin/class-lingolane-admin.php:52
 #: admin/class-lingolane-support.php:273
 msgid "Guide"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:51
+#: admin/class-lingolane-admin.php:53
 #: admin/class-lingolane-support.php:44
 msgid "Support"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:86
-#: admin/class-lingolane-admin.php:93
+#: admin/class-lingolane-admin.php:88
+#: admin/class-lingolane-admin.php:95
 #: admin/class-lingolane-strings-admin.php:37
 #: admin/class-lingolane-strings-admin.php:178
 #: admin/class-lingolane-strings-admin.php:186
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:109
+#: admin/class-lingolane-admin.php:115
 msgid "Published"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:110
+#: admin/class-lingolane-admin.php:116
 msgid "Draft"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:111
+#: admin/class-lingolane-admin.php:117
 msgid "Pending review"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:112
+#: admin/class-lingolane-admin.php:118
 msgid "Scheduled"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:113
+#: admin/class-lingolane-admin.php:119
 msgid "Private"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:138
+#: admin/class-lingolane-admin.php:144
 msgid "Lingolane — Languages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:138
-#: admin/class-lingolane-admin.php:468
+#: admin/class-lingolane-admin.php:144
+#: admin/class-lingolane-admin.php:551
 msgid "Multilingual"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:184
-#: admin/class-lingolane-admin.php:210
+#: admin/class-lingolane-admin.php:190
+#: admin/class-lingolane-admin.php:222
+#: includes/class-lingolane-incontext.php:178
 msgid "Saving…"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:185
-#: admin/class-lingolane-admin.php:211
+#: admin/class-lingolane-admin.php:191
+#: admin/class-lingolane-admin.php:223
 msgid "Saved"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:186
-#: admin/class-lingolane-admin.php:212
+#: admin/class-lingolane-admin.php:192
+#: admin/class-lingolane-admin.php:224
 msgid "Could not save. Please try again."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:187
+#: admin/class-lingolane-admin.php:193
 msgid "Not saved"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:188
+#: admin/class-lingolane-admin.php:194
 #: admin/class-lingolane-strings-admin.php:680
 msgid "Translated"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:189
+#: admin/class-lingolane-admin.php:195
 msgid "Provided by theme"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:190
+#: admin/class-lingolane-admin.php:196
 #: admin/class-lingolane-strings-admin.php:679
+#: includes/class-lingolane-incontext.php:187
 msgid "Untranslated"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:191
+#: admin/class-lingolane-admin.php:197
 msgid "Remove this string from the list? Its saved translations are deleted as well."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:192
+#: admin/class-lingolane-admin.php:198
 #: admin/class-lingolane-strings-admin.php:221
 msgid "String deleted."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:193
+#: admin/class-lingolane-admin.php:199
 msgid "You have unsaved translations. Leave this page?"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:194
-#: admin/class-lingolane-admin.php:520
+#: admin/class-lingolane-admin.php:200
+#: admin/class-lingolane-admin.php:604
 msgid "Notifications"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:195
-#: admin/class-lingolane-admin.php:524
+#: admin/class-lingolane-admin.php:201
+#: admin/class-lingolane-admin.php:608
 msgid "Dismiss notification"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:213
+#: admin/class-lingolane-admin.php:225
 msgid "You have unsaved translations. Leave anyway?"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:214
+#: admin/class-lingolane-admin.php:226
 msgid "Copied identifier: "
 msgstr ""
 
-#: admin/class-lingolane-admin.php:215
+#: admin/class-lingolane-admin.php:227
 msgid "Scanning…"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:216
+#: admin/class-lingolane-admin.php:228
 msgid "Scan complete! Strings updated."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:217
+#: admin/class-lingolane-admin.php:229
 msgid "Please select at least one page to scan."
 msgstr ""
 
 #. translators: 1: current page index, 2: total pages, 3: page path
-#: admin/class-lingolane-admin.php:219
+#: admin/class-lingolane-admin.php:231
 msgid "Scanning page %1$d of %2$d: %3$s"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:228
+#: admin/class-lingolane-admin.php:232
+msgid "Copied!"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:233
+msgid "Suggestion: "
+msgstr ""
+
+#: admin/class-lingolane-admin.php:234
+#: includes/class-lingolane-incontext.php:199
+msgid "AI translation error: "
+msgstr ""
+
+#: admin/class-lingolane-admin.php:235
+#: includes/class-lingolane-incontext.php:198
+msgid "The AI translation module is not loaded."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:236
+msgid "Every string shown on this page already has a translation."
+msgstr ""
+
+#. translators: %d: number of untranslated strings
+#: admin/class-lingolane-admin.php:238
+msgid "Draft AI translations for %d untranslated strings?"
+msgstr ""
+
+#. translators: 1: current string index, 2: total strings
+#: admin/class-lingolane-admin.php:240
+msgid "Translating (%1$d/%2$d)…"
+msgstr ""
+
+#. translators: %d: number of drafted strings
+#: admin/class-lingolane-admin.php:242
+msgid "Drafted %d translations with AI. Review them, then click Save or press Ctrl+Enter to save."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:251
 msgid "Copied to the clipboard."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:229
+#: admin/class-lingolane-admin.php:252
 msgid "Copy failed. Select the text and copy it manually."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:230
+#: admin/class-lingolane-admin.php:253
 msgid "Copy failed, so the forum was not opened. The ticket text is selected: copy it, then use the support forum link."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:231
+#: admin/class-lingolane-admin.php:254
 msgid "Add a title and describe what happened first."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:232
+#: admin/class-lingolane-admin.php:255
 #: admin/class-lingolane-support.php:207
 msgid "Topic"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:233
+#: admin/class-lingolane-admin.php:256
 msgid "Summary"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:234
+#: admin/class-lingolane-admin.php:257
 msgid "What happened"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:235
+#: admin/class-lingolane-admin.php:258
 #: admin/class-lingolane-support.php:224
 msgid "Steps to reproduce"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:236
+#: admin/class-lingolane-admin.php:259
 msgid "Expected"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:237
+#: admin/class-lingolane-admin.php:260
 msgid "Page"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:238
+#: admin/class-lingolane-admin.php:261
 #: admin/class-lingolane-support.php:254
 #: admin/class-lingolane-support.php:255
 msgid "System report"
 msgstr ""
 
+#: admin/class-lingolane-admin.php:271
+msgid "Testing connection…"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:272
+msgid "Connection successful."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:273
+msgid "Connection error:"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:274
+msgid "Enter an API key before testing."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:275
+#: admin/class-lingolane-admin.php:1455
+msgid "Test connection"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:276
+msgid "Unknown error."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:277
+msgid "Could not reach the server."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:278
+msgid "Available (on-device)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:279
+msgid "Not available"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:280
+msgid "This browser supports the Chrome on-device Translator API. Interface strings are translated on this computer."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:281
+msgid "This browser does not have the Chrome built-in Translator API enabled, so AI suggestions are not available. It ships with Chrome 138 and later and can be enabled at chrome://flags/#translation-api."
+msgstr ""
+
 #. translators: 1: language name, 2: error message
-#: admin/class-lingolane-admin.php:257
+#: admin/class-lingolane-admin.php:300
 msgid "Translations for %1$s were not downloaded: %2$s"
 msgstr ""
 
 #. translators: %s: language name
-#: admin/class-lingolane-admin.php:260
+#: admin/class-lingolane-admin.php:303
 msgid "Downloaded the WordPress, theme and plugin translations available for %s."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:269
-#: admin/class-lingolane-admin.php:332
+#: admin/class-lingolane-admin.php:312
+#: admin/class-lingolane-admin.php:375
 msgid "The selected language is not in the list."
 msgstr ""
 
 #. translators: %s: language name
-#: admin/class-lingolane-admin.php:280
+#: admin/class-lingolane-admin.php:323
 msgid "%s is now the default language. Its pages no longer have a prefix in their URLs."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:296
+#: admin/class-lingolane-admin.php:339
 msgid "The language code is 2–3 lowercase letters, optionally with a region (for example ja, fr, zh-tw)."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:299
-#: admin/class-lingolane-admin.php:346
+#: admin/class-lingolane-admin.php:342
+#: admin/class-lingolane-admin.php:389
 msgid "A display name and a valid WordPress locale are required (for example fr_FR, ja)."
 msgstr ""
 
 #. translators: %s: language code
-#: admin/class-lingolane-admin.php:303
+#: admin/class-lingolane-admin.php:346
 msgid "The code “%s” is already in the list."
 msgstr ""
 
 #. translators: 1: language name, 2: URL prefix
-#: admin/class-lingolane-admin.php:311
+#: admin/class-lingolane-admin.php:354
 msgid "Added %1$s. Its pages have URLs starting with %2$s; create translations in the Posts & pages tab."
 msgstr ""
 
 #. translators: %s: language name
-#: admin/class-lingolane-admin.php:358
+#: admin/class-lingolane-admin.php:401
 msgid "Updated %s."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:373
+#: admin/class-lingolane-admin.php:416
 msgid "You cannot remove the default language or the content’s source language."
 msgstr ""
 
 #. translators: 1: linked content count, 2: string translation count
-#: admin/class-lingolane-admin.php:380
+#: admin/class-lingolane-admin.php:423
 msgid "This language still has %1$d linked items and %2$d translated strings. Delete or move those translations first so no data is lost."
 msgstr ""
 
 #. translators: %s: language name
-#: admin/class-lingolane-admin.php:391
+#: admin/class-lingolane-admin.php:434
 msgid "Removed %s from the site."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:413
+#: admin/class-lingolane-admin.php:456
 msgid "Select at least one content type to translate. No changes were saved."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:424
+#: admin/class-lingolane-admin.php:483
+#: admin/class-lingolane-admin.php:1160
+#: admin/class-lingolane-admin.php:1234
+#: includes/class-lingolane-switcher.php:136
+#: includes/class-lingolane-switcher.php:318
+msgid "This content is not available in the selected language yet"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:490
 msgid "Settings saved."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:434
+#: admin/class-lingolane-admin.php:500
 msgid "Cache cleared. The latest translations will show on the next page load."
 msgstr ""
 
 #. translators: %d: count
-#: admin/class-lingolane-admin.php:444
+#: admin/class-lingolane-admin.php:510
 msgid "added %d new strings"
 msgstr ""
 
 #. translators: %d: count
-#: admin/class-lingolane-admin.php:446
+#: admin/class-lingolane-admin.php:512
 msgid "removed %d unused untranslated strings"
 msgstr ""
 
 #. translators: 1: changes, 2: strings found
-#: admin/class-lingolane-admin.php:449
+#: admin/class-lingolane-admin.php:515
 msgid "Interface scan complete: %1$s. There are now %2$d visitor-visible strings."
 msgstr ""
 
 #. translators: %d: strings found
-#: admin/class-lingolane-admin.php:452
+#: admin/class-lingolane-admin.php:518
 msgid "The list is complete: all %d visitor-visible strings are already listed."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:469
+#: admin/class-lingolane-admin.php:536
+msgid "AI translation settings saved."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:552
 msgid "Translate posts, pages and interface text."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:472
+#: admin/class-lingolane-admin.php:555
 msgid "Enabled languages"
 msgstr ""
 
 #. translators: %s: language
-#: admin/class-lingolane-admin.php:474
+#: admin/class-lingolane-admin.php:557
 msgid "Open the %s home page"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:484
+#: admin/class-lingolane-admin.php:567
 msgid "Management items"
 msgstr ""
 
 #. translators: %s: author credit
-#: admin/class-lingolane-admin.php:506
+#: admin/class-lingolane-admin.php:590
 msgid "Developed by %s"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:555
+#: admin/class-lingolane-admin.php:639
 msgid "Everything is translated"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:556
+#: admin/class-lingolane-admin.php:640
 msgid "Every page and interface string is published in all your languages. New content will show up here when it needs translating."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:557
+#: admin/class-lingolane-admin.php:641
 msgid "Add another language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:563
+#: admin/class-lingolane-admin.php:647
 msgid "Your site has only one language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:564
+#: admin/class-lingolane-admin.php:648
 msgid "Add a second language to start translating posts and your interface."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:565
-#: admin/class-lingolane-admin.php:1014
-#: admin/class-lingolane-admin.php:1055
+#: admin/class-lingolane-admin.php:649
+#: admin/class-lingolane-admin.php:1098
+#: admin/class-lingolane-admin.php:1139
 #: admin/class-lingolane-strings-admin.php:497
 msgid "Add a language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:587
+#: admin/class-lingolane-admin.php:671
 msgid "Post and page translation progress"
 msgstr ""
 
 #. translators: 1: published translations, 2: total source items
-#: admin/class-lingolane-admin.php:591
+#: admin/class-lingolane-admin.php:675
 msgid "%1$s/%2$s published"
 msgstr ""
 
 #. translators: %s: number of drafts
-#: admin/class-lingolane-admin.php:594
+#: admin/class-lingolane-admin.php:678
 msgid "%s drafts"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:605
+#: admin/class-lingolane-admin.php:689
 msgid "Interface string translation progress"
 msgstr ""
 
 #. translators: 1: translated, 2: total
-#: admin/class-lingolane-admin.php:609
+#: admin/class-lingolane-admin.php:693
 msgid "%1$s/%2$s translated"
 msgstr ""
 
 #. translators: %s: count
-#: admin/class-lingolane-admin.php:612
+#: admin/class-lingolane-admin.php:696
 msgid "%s provided by the theme"
 msgstr ""
 
 #. translators: %s: count
-#: admin/class-lingolane-admin.php:622
+#: admin/class-lingolane-admin.php:706
 msgid "Translate the %s missing pages"
 msgstr ""
 
 #. translators: %s: count
-#: admin/class-lingolane-admin.php:626
+#: admin/class-lingolane-admin.php:710
 msgid "Publish %s drafts"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:629
+#: admin/class-lingolane-admin.php:713
 msgid "All posts & pages are translated"
 msgstr ""
 
 #. translators: %s: count
-#: admin/class-lingolane-admin.php:633
+#: admin/class-lingolane-admin.php:717
 msgid "%s untranslated strings"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:641
+#: admin/class-lingolane-admin.php:725
 msgid "System status"
 msgstr ""
 
 #. translators: %s: count
-#: admin/class-lingolane-admin.php:652
+#: admin/class-lingolane-admin.php:736
 msgid "%s shared records are shown in every language and need no translation."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:667
+#: admin/class-lingolane-admin.php:751
 msgid "Language directory in URLs"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:667
+#: admin/class-lingolane-admin.php:751
 msgid "Example: /en/about-us/. The default language has no prefix."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:669
+#: admin/class-lingolane-admin.php:753
 msgid "Pretty permalinks required"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:669
+#: admin/class-lingolane-admin.php:753
 msgid "Open Settings › Permalinks"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:673
+#: admin/class-lingolane-admin.php:757
 msgid "Translation tables ready"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:673
+#: admin/class-lingolane-admin.php:757
 msgid "Translation links and strings are stored separately and do not affect your original content."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:674
+#: admin/class-lingolane-admin.php:758
 msgid "Missing tables"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:674
+#: admin/class-lingolane-admin.php:758
 msgid "Deactivate and reactivate the plugin to create the tables."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:675
+#: admin/class-lingolane-admin.php:759
 msgid "Multilingual SEO"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:675
+#: admin/class-lingolane-admin.php:759
 msgid "hreflang, canonical and lang attributes are added automatically to pages that have translations."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:685
-#: admin/class-lingolane-admin.php:1190
+#: admin/class-lingolane-admin.php:769
+#: admin/class-lingolane-admin.php:1340
 msgid "Language-specific menus"
 msgstr ""
 
 #. translators: %s: language codes
-#: admin/class-lingolane-admin.php:685
+#: admin/class-lingolane-admin.php:769
 msgid "In use for: %s."
 msgstr ""
 
 #. translators: %s: language codes
-#: admin/class-lingolane-admin.php:686
+#: admin/class-lingolane-admin.php:770
 msgid "Shared menu"
 msgstr ""
 
 #. translators: %s: language codes
-#: admin/class-lingolane-admin.php:686
+#: admin/class-lingolane-admin.php:770
 msgid "How to create a menu for each language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:706
+#: admin/class-lingolane-admin.php:790
 msgid "Recently updated translations"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:707
+#: admin/class-lingolane-admin.php:791
 msgid "View all"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:713
-#: admin/class-lingolane-admin.php:867
+#: admin/class-lingolane-admin.php:797
+#: admin/class-lingolane-admin.php:951
 msgid "(No title)"
 msgstr ""
 
 #. translators: %s: human time
-#: admin/class-lingolane-admin.php:715
+#: admin/class-lingolane-admin.php:799
 msgid "%s ago"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:785
+#: admin/class-lingolane-admin.php:869
 msgid "Post and page translations"
 msgstr ""
 
 #. translators: %s: count
-#: admin/class-lingolane-admin.php:786
+#: admin/class-lingolane-admin.php:870
 msgid "%s item"
 msgid_plural "%s items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/class-lingolane-admin.php:793
-#: admin/class-lingolane-admin.php:1085
+#: admin/class-lingolane-admin.php:877
+#: admin/class-lingolane-admin.php:1175
 msgid "Content type"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:795
+#: admin/class-lingolane-admin.php:879
 msgid "Posts & pages to translate"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:798
-#: admin/class-lingolane-admin.php:1158
+#: admin/class-lingolane-admin.php:882
+#: admin/class-lingolane-admin.php:1308
 msgid "shared"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:806
-#: admin/class-lingolane-admin.php:1030
-#: admin/class-lingolane-columns.php:126
+#: admin/class-lingolane-admin.php:890
+#: admin/class-lingolane-admin.php:1114
+#: admin/class-lingolane-columns.php:188
 msgid "All languages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:814
+#: admin/class-lingolane-admin.php:898
 msgid "Status"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:816
+#: admin/class-lingolane-admin.php:900
 #: admin/class-lingolane-strings-admin.php:678
+#: includes/class-lingolane-incontext.php:186
 msgid "All"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:817
+#: admin/class-lingolane-admin.php:901
 msgid "No published translation"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:818
+#: admin/class-lingolane-admin.php:902
 msgid "Draft translation"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:819
+#: admin/class-lingolane-admin.php:903
 msgid "Fully translated"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:823
+#: admin/class-lingolane-admin.php:907
 #: admin/class-lingolane-strings-admin.php:715
 msgid "Search"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:824
+#: admin/class-lingolane-admin.php:908
 msgid "Title or ID"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:827
+#: admin/class-lingolane-admin.php:911
 msgid "Filter"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:829
+#: admin/class-lingolane-admin.php:913
 msgid "Clear filters"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:835
+#: admin/class-lingolane-admin.php:919
 msgid "Items of this type are shared across all languages: visitors in other languages still see the original. Only create a separate version when the content must be completely different."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:842
+#: admin/class-lingolane-admin.php:926
 msgid "Original content"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:853
+#: admin/class-lingolane-admin.php:937
 msgid "Great, nothing is missing a translation."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:855
+#: admin/class-lingolane-admin.php:939
 msgid "No items match the filter."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:877
+#: admin/class-lingolane-admin.php:961
 msgid "View page"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:882
-#: admin/class-lingolane-admin.php:975
-#: admin/class-lingolane-metabox.php:86
+#: admin/class-lingolane-admin.php:966
+#: admin/class-lingolane-admin.php:1059
+#: admin/class-lingolane-metabox.php:90
 msgid "Edit"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:884
+#: admin/class-lingolane-admin.php:968
 msgid "View translation"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:887
-#: admin/class-lingolane-columns.php:97
+#: admin/class-lingolane-admin.php:971
+#: admin/class-lingolane-columns.php:42
+#: admin/class-lingolane-columns.php:116
+#: admin/class-lingolane-columns.php:159
 msgid "Shared"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:887
+#: admin/class-lingolane-admin.php:971
 msgid "Show the original in every language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:889
-#: admin/class-lingolane-metabox.php:89
+#: admin/class-lingolane-admin.php:973
+#: admin/class-lingolane-metabox.php:94
 msgid "Create translation"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:901
+#: admin/class-lingolane-admin.php:985
 msgid "“Create translation” copies the content, featured image and terms into a new draft linked to the original. When the translation is ready, click Publish in the editor."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:912
+#: admin/class-lingolane-admin.php:996
 msgid "Previous"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:913
+#: admin/class-lingolane-admin.php:997
 msgid "Next"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:917
+#: admin/class-lingolane-admin.php:1001
 msgid "Pagination"
 msgstr ""
 
 #. translators: 1: first, 2: last, 3: total
-#: admin/class-lingolane-admin.php:917
+#: admin/class-lingolane-admin.php:1001
 msgid "%1$s–%2$s of %3$s"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:929
+#: admin/class-lingolane-admin.php:1013
 msgid "Site languages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:936
+#: admin/class-lingolane-admin.php:1020
 msgid "URL"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:937
+#: admin/class-lingolane-admin.php:1021
 msgid "Locale"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:938
+#: admin/class-lingolane-admin.php:1022
 msgid "Linked content"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:939
+#: admin/class-lingolane-admin.php:1023
 #: admin/class-lingolane-metabox.php:35
 msgid "Translations"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:940
+#: admin/class-lingolane-admin.php:1024
 msgid "Actions"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:953
+#: admin/class-lingolane-admin.php:1037
 msgid "Default"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:953
+#: admin/class-lingolane-admin.php:1037
 msgid "URLs have no language prefix"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:954
+#: admin/class-lingolane-admin.php:1038
 msgid "Source language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:954
+#: admin/class-lingolane-admin.php:1038
 msgid "The language your content and interface text are written in"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:961
+#: admin/class-lingolane-admin.php:1045
 msgid "Built in"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:961
+#: admin/class-lingolane-admin.php:1045
 msgid "WordPress is written in English; nothing to download"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:964
+#: admin/class-lingolane-admin.php:1048
 msgid "Installed"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:964
+#: admin/class-lingolane-admin.php:1048
 msgid "Not installed"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:964
+#: admin/class-lingolane-admin.php:1048
 msgid "WordPress, theme and plugin text shows in English for this language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:969
+#: admin/class-lingolane-admin.php:1053
 msgid "Update"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:969
+#: admin/class-lingolane-admin.php:1053
 msgid "Download"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:981
-#: admin/class-lingolane-admin.php:1047
+#: admin/class-lingolane-admin.php:1065
+#: admin/class-lingolane-admin.php:1131
 msgid "Display name"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:985
-#: admin/class-lingolane-admin.php:1051
+#: admin/class-lingolane-admin.php:1069
+#: admin/class-lingolane-admin.php:1135
 msgid "WordPress locale"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:988
-#: admin/class-lingolane-strings-admin.php:835
-#: admin/class-lingolane-strings-admin.php:856
+#: admin/class-lingolane-admin.php:1072
+#: admin/class-lingolane-strings-admin.php:839
+#: admin/class-lingolane-strings-admin.php:864
 msgid "Save"
 msgstr ""
 
 #. translators: %s: language
-#: admin/class-lingolane-admin.php:992
+#: admin/class-lingolane-admin.php:1076
 msgid "Make %s the default language? Every page URL will change: this language loses its prefix and the current default gets one. Do this before search engines have indexed your site."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:996
+#: admin/class-lingolane-admin.php:1080
 msgid "Set as default"
 msgstr ""
 
 #. translators: %s: language
-#: admin/class-lingolane-admin.php:998
+#: admin/class-lingolane-admin.php:1082
 msgid "Remove %s from the site? URLs for this language will stop working."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1002
+#: admin/class-lingolane-admin.php:1086
 msgid "Has linked content; cannot remove"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1002
+#: admin/class-lingolane-admin.php:1086
 msgid "Remove language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1002
+#: admin/class-lingolane-admin.php:1086
 msgid "Remove"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1015
+#: admin/class-lingolane-admin.php:1099
 msgid "Pick a language to prefill, or type your own. Only the translations of the languages you add are downloaded from WordPress.org (WordPress, themes and plugins). After adding, create translations for each page in the Posts & pages tab."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1020
+#: admin/class-lingolane-admin.php:1104
 msgid "Language"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1022
+#: admin/class-lingolane-admin.php:1106
 msgid "— Select to prefill —"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1030
+#: admin/class-lingolane-admin.php:1114
 msgid "Popular"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1042
+#: admin/class-lingolane-admin.php:1126
 msgid "Code (used in URLs)"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1044
+#: admin/class-lingolane-admin.php:1128
 msgid "2–3 lowercase letters, for example fr → /fr/"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1081
+#: admin/class-lingolane-admin.php:1171
 msgid "Content to translate"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1082
+#: admin/class-lingolane-admin.php:1172
 msgid "Selected types get a Language column in the post list, a “Translations” box in the editor, and are filtered by language on the front end."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1086
+#: admin/class-lingolane-admin.php:1176
 msgid "Taxonomies"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1087
+#: admin/class-lingolane-admin.php:1177
 msgid "“Shared”: records of shared types appear in every language until you create a separate translation for that record."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1093
+#: admin/class-lingolane-admin.php:1183
+msgid "Language switcher display"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1184
+msgid "Configure how the language switcher button appears across the site by default."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1188
+msgid "Display style"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1190
+msgid "Horizontal list (inline items)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1191
+msgid "Dropdown menu (clean select panel)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1192
+msgid "Pills / Rounded button group"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1193
+msgid "Native select box"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1197
+msgid "Items to display"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1199
+msgid "Flag & Language name (e.g. 🇻🇳 Tiếng Việt)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1200
+msgid "Flag & Language code (e.g. 🇻🇳 VI)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1201
+msgid "Flag only (e.g. 🇻🇳)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1202
+msgid "Language name only"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1203
+msgid "Language code only"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1207
+msgid "Flag shape"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1209
+msgid "Rectangle (standard ratio)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1210
+msgid "Circle / Round"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1211
+msgid "Square"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1215
+msgid "Template tag to place anywhere in source code: <code>&lt;?php if ( function_exists( 'lingolane_switcher' ) ) { lingolane_switcher(); } ?&gt;</code> or shortcode <code>[lingolane_switcher]</code>."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1222
 msgid "When a translation is missing"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1094
-msgid "Untranslated pages always open the original with a small notice for visitors and never return a 404 error."
+#: admin/class-lingolane-admin.php:1223
+msgid "Choose what happens when visitors click a language switcher option for a page that has not been translated yet."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1099
+#: admin/class-lingolane-admin.php:1229
+msgid "Stay on current page & display notice dialog"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1233
+msgid "Notice message:"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1239
+msgid "Redirect to custom fallback link"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1243
+msgid "Fallback redirect URL:"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1249
 msgid "Show untranslated posts in lists"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1100
+#: admin/class-lingolane-admin.php:1250
 msgid "Blog, archive and search pages in other languages will also list original posts that have no translation. Turn off to list translated posts only."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1108
+#: admin/class-lingolane-admin.php:1258
 msgid "Fixed text in themes and plugins (buttons, labels, messages). Translations entered in the Interface strings tab take priority over built-in ones."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1113
+#: admin/class-lingolane-admin.php:1263
 msgid "Translate theme text"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1113
+#: admin/class-lingolane-admin.php:1263
 msgid "Apply saved translations to your active theme."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1117
+#: admin/class-lingolane-admin.php:1267
 msgid "Translate plugin text"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1117
+#: admin/class-lingolane-admin.php:1267
 msgid "Apply saved translations to forms and other plugins."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1120
+#: admin/class-lingolane-admin.php:1270
 msgid "Translate only these text domains"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1121
+#: admin/class-lingolane-admin.php:1271
 msgid "Leave empty = every domain with translations"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1122
+#: admin/class-lingolane-admin.php:1272
 msgid "Example: my-theme, my-plugin. Separate with commas. Leave empty if unsure."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1128
+#: admin/class-lingolane-admin.php:1278
 msgid "Save settings"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1134
+#: admin/class-lingolane-admin.php:1284
 msgid "Tools"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1135
+#: admin/class-lingolane-admin.php:1285
 msgid "Use after updating your theme or importing translations in bulk."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1139
+#: admin/class-lingolane-admin.php:1289
 msgid "Find new strings in the theme"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1139
+#: admin/class-lingolane-admin.php:1289
 msgid "Reads the theme code and adds new text to the list to translate. Existing translations are not changed."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1140
+#: admin/class-lingolane-admin.php:1290
 msgid "Scan interface"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1143
+#: admin/class-lingolane-admin.php:1293
 #: admin/class-lingolane-support.php:193
 msgid "Clear cache"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1143
+#: admin/class-lingolane-admin.php:1293
 msgid "Deletes temporary translation data so the site reads it again immediately."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1144
+#: admin/class-lingolane-admin.php:1294
 msgid "Refresh"
 msgstr ""
 
 #. translators: %d: count
-#: admin/class-lingolane-admin.php:1164
+#: admin/class-lingolane-admin.php:1314
 msgid "Other, rarely used types (%d)"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1179
+#: admin/class-lingolane-admin.php:1329
 msgid "Welcome to Lingolane"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1180
+#: admin/class-lingolane-admin.php:1330
 msgid "Translate pages, menus and interface text in a few steps. Start with the guide below or add your languages first."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1181
+#: admin/class-lingolane-admin.php:1331
 msgid "Set up languages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1185
+#: admin/class-lingolane-admin.php:1335
 msgid "Guide contents"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1186
+#: admin/class-lingolane-admin.php:1336
 msgid "Content"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1188
+#: admin/class-lingolane-admin.php:1338
 msgid "Translate a page"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1189
+#: admin/class-lingolane-admin.php:1339
 msgid "Translate interface text"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1191
+#: admin/class-lingolane-admin.php:1341
 msgid "Language switcher"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1192
+#: admin/class-lingolane-admin.php:1342
 msgid "Shared records"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1193
+#: admin/class-lingolane-admin.php:1343
 msgid "SEO and URLs"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1198
+#: admin/class-lingolane-admin.php:1348
 msgid "1. Translate a page or post"
 msgstr ""
 
 #. translators: %s: link
-#: admin/class-lingolane-admin.php:1200
+#: admin/class-lingolane-admin.php:1350
 msgid "Open the %s tab and find the page to translate (filter by “No published translation” to see what is left)."
 msgstr ""
 
 #. translators: %s: link
-#: admin/class-lingolane-admin.php:1201
+#: admin/class-lingolane-admin.php:1351
 msgid "Click “Create translation” in the language column. A draft is created with all the content, images and terms of the original."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1202
+#: admin/class-lingolane-admin.php:1352
 msgid "Translate the title, content and slug in the editor, then click Publish."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1204
+#: admin/class-lingolane-admin.php:1354
 msgid "You can also do this in the editor: the “Translations” box in the right column shows the post’s language and buttons for missing translations. The Language column in the Pages/Posts lists has the same buttons."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1208
+#: admin/class-lingolane-admin.php:1358
 msgid "2. Translate interface text"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1209
+#: admin/class-lingolane-admin.php:1359
 msgid "Buttons, form labels and messages live in theme/plugin code, so they cannot be edited in the editor."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1211
+#: admin/class-lingolane-admin.php:1361
 msgid "In the Interface strings tab, filter by “Untranslated”."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1212
+#: admin/class-lingolane-admin.php:1362
 msgid "Type the translation, then click Save or press Ctrl/⌘ + Enter (it moves to the next string)."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1213
+#: admin/class-lingolane-admin.php:1363
 msgid "Strings marked “Provided by theme” are already translated by the theme; only enter one to change the wording."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1215
+#: admin/class-lingolane-admin.php:1365
 msgid "Bulk translate: export CSV, edit in Google Sheets/Excel, then import again. Columns: domain, context, source, language, translation."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1219
+#: admin/class-lingolane-admin.php:1369
 msgid "3. Language-specific menus"
 msgstr ""
 
 #. translators: 1: example name
-#: admin/class-lingolane-admin.php:1220
+#: admin/class-lingolane-admin.php:1370
 msgid "Create a new menu under Appearance › Menus and name it using the pattern <code>location language-code</code>, for example %1$s. When visitors view that language, this menu replaces the original at the matching location."
 msgstr ""
 
 #. translators: %s: list
-#: admin/class-lingolane-admin.php:1222
+#: admin/class-lingolane-admin.php:1372
 msgid "Theme menu locations: %s"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1227
+#: admin/class-lingolane-admin.php:1377
 msgid "4. Language switcher"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1228
-msgid "To place a language switcher anywhere:"
+#: admin/class-lingolane-admin.php:1378
+msgid "To place a language switcher anywhere on your site:"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1230
-msgid "Shortcode: <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style=\"dropdown\"]</code>, codes only <code>[lingolane_switcher show=\"code\"]</code>."
+#: admin/class-lingolane-admin.php:1380
+msgid "<strong>PHP Template Tag:</strong> <code>&lt;?php if ( function_exists( 'lingolane_switcher' ) ) { lingolane_switcher(); } ?&gt;</code> (supports <code>style</code>, <code>show</code>, <code>shape</code>, <code>class</code> options)."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1231
+#: admin/class-lingolane-admin.php:1381
+msgid "<strong>Shortcode:</strong> <code>[lingolane_switcher]</code>, dropdown style <code>[lingolane_switcher style=\"dropdown\"]</code>, flags only <code>[lingolane_switcher show=\"flag_only\"]</code>, pills style <code>[lingolane_switcher style=\"pills\"]</code>."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1382
 msgid "Widget: Appearance › Widgets › “Select language”."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1232
+#: admin/class-lingolane-admin.php:1383
 msgid "In a menu: add a Custom Link with the URL <code>#lingolane-switcher</code> and the label <code>{{lingolane}}</code>; it expands into one item per language."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1234
-msgid "The switcher always links to the matching translation of the current page; untranslated pages link to the original with a notice."
+#: admin/class-lingolane-admin.php:1385
+msgid "The switcher always links to the matching translation of the current page; untranslated pages gracefully alert visitors or redirect to your configured fallback."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1238
+#: admin/class-lingolane-admin.php:1389
 msgid "5. Shared records and account pages"
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1239
+#: admin/class-lingolane-admin.php:1390
 msgid "Records of shared post types, shared taxonomies and shared pages (for example account and checkout pages) are shown in every language, so visitors in any language can still find them. Fixed text on those pages is translated through Interface strings; content written by users stays unchanged."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1243
+#: admin/class-lingolane-admin.php:1394
 msgid "6. SEO and URLs"
 msgstr ""
 
 #. translators: %s: example
-#: admin/class-lingolane-admin.php:1245
+#: admin/class-lingolane-admin.php:1396
 msgid "The default language has no prefix; other languages live in their own directory, for example %s."
 msgstr ""
 
 #. translators: %s: example
-#: admin/class-lingolane-admin.php:1246
+#: admin/class-lingolane-admin.php:1397
 msgid "Every translated page automatically gets hreflang, x-default and canonical tags in the right language; Yoast SEO uses the same values."
 msgstr ""
 
-#: admin/class-lingolane-admin.php:1247
+#: admin/class-lingolane-admin.php:1398
 msgid "Internal links inside content automatically switch to the matching translation when one exists."
 msgstr ""
 
-#: admin/class-lingolane-columns.php:22
+#: admin/class-lingolane-admin.php:1414
+msgid "AI translation settings"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1415
+msgid "Lingolane suggests translations with the Translator API built into Chrome. It runs on the computer of the person translating and sends no text to the server. The Google Gemini cloud provider is disabled in this release."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1424
+msgid "1. In-browser translation (Chrome Translator API)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1426
+msgid "Checking…"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1428
+msgid "Built into Google Chrome 138 and later on desktop (Chrome 128 and later can enable it with an experimental flag). Translation runs on the computer of the person translating, with no server load and no cost."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1430
+msgid "Checking whether this browser supports the Translator API…"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1439
+msgid "2. Cloud translation (Google Gemini API)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1442
+msgid "Disabled in this release. The settings below are kept, but the plugin sends no requests to Google."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1450
+msgid "Google Gemini API Key"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1459
+msgid "The API key is stored in the site database without encryption and is never shown in full."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1466
+msgid "Model (Gemini)"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1469
+msgid "recommended"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1470
+msgid "stable"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1471
+msgid "higher quality, slower"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1478
+msgid "Approve machine translations automatically"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1481
+msgid "When unchecked, strings and posts translated with AI are flagged \"Machine translation – needs review\" so a translator can check them before publishing."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1487
+msgid "Save AI settings"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1497
+msgid "3. Getting a free Gemini API key"
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1502
+msgid "Go to <strong>Google AI Studio</strong> at <a href=\"https://aistudio.google.com/\" target=\"_blank\" rel=\"noopener\">aistudio.google.com</a> and sign in with a Google account."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1505
+msgid "Click \"Get API key\" in the left sidebar, then choose \"Create API key\"."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1508
+msgid "Copy the key (it starts with AIzaSy...) and paste it into the Google Gemini API Key field above."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1511
+msgid "Click \"Test connection\" to check the setup, then click \"Save AI settings\"."
+msgstr ""
+
+#: admin/class-lingolane-admin.php:1515
+msgid "Google AI Studio sets its own free-tier limits, and they change over time. Check the current quota in your Google account."
+msgstr ""
+
+#. translators: 1: language name, 2: uppercase code
+#: admin/class-lingolane-columns.php:26
+#: admin/class-lingolane-columns.php:121
+msgid "Written in %1$s (%2$s)"
+msgstr ""
+
+#: admin/class-lingolane-columns.php:36
 msgid "Expand all"
 msgstr ""
 
-#: admin/class-lingolane-columns.php:23
+#: admin/class-lingolane-columns.php:37
 msgid "Collapse all"
 msgstr ""
 
 #. translators: %s: post title
-#: admin/class-lingolane-columns.php:25
+#: admin/class-lingolane-columns.php:39
 msgid "Show translations of %s"
 msgstr ""
 
 #. translators: %s: post title
-#: admin/class-lingolane-columns.php:27
+#: admin/class-lingolane-columns.php:41
 msgid "Hide translations of %s"
 msgstr ""
 
-#. translators: %s: language
-#: admin/class-lingolane-columns.php:95
-msgid "This post is written in %s"
-msgstr ""
-
-#: admin/class-lingolane-columns.php:97
+#: admin/class-lingolane-columns.php:116
+#: admin/class-lingolane-columns.php:159
 msgid "Shown in every language"
 msgstr ""
 
 #. translators: 1: language, 2: status
-#: admin/class-lingolane-columns.php:107
+#: admin/class-lingolane-columns.php:138
+#: admin/class-lingolane-columns.php:169
 msgid "Edit %1$s version (%2$s)"
 msgstr ""
 
+#: admin/class-lingolane-columns.php:140
+msgid "Machine translation (needs review)"
+msgstr ""
+
 #. translators: %s: language
-#: admin/class-lingolane-columns.php:111
+#: admin/class-lingolane-columns.php:145
+#: admin/class-lingolane-columns.php:173
 msgid "Create %s translation"
 msgstr ""
 
-#: admin/class-lingolane-columns.php:126
+#. translators: %s: language
+#: admin/class-lingolane-columns.php:157
+msgid "This post is written in %s"
+msgstr ""
+
+#: admin/class-lingolane-columns.php:188
 msgid "Filter by language"
 msgstr ""
 
@@ -1112,28 +1411,44 @@ msgstr ""
 msgid "Shared: this post is shown in every language. Only create a translation if you need separate content for each language."
 msgstr ""
 
-#: admin/class-lingolane-metabox.php:91
+#: admin/class-lingolane-metabox.php:87
+msgid "Machine translated"
+msgstr ""
+
+#: admin/class-lingolane-metabox.php:87
+msgid "Machine translation – needs review"
+msgstr ""
+
+#: admin/class-lingolane-metabox.php:95
+msgid "Translate the whole post with AI"
+msgstr ""
+
+#: admin/class-lingolane-metabox.php:97
+msgid "Translate with AI"
+msgstr ""
+
+#: admin/class-lingolane-metabox.php:101
 msgid "Save the post first"
 msgstr ""
 
 #. translators: %s: language
-#: admin/class-lingolane-metabox.php:114
+#: admin/class-lingolane-metabox.php:124
 msgid "The language was not changed: this translation group already has a %s version. The post was saved with its previous language."
 msgstr ""
 
-#: admin/class-lingolane-metabox.php:121
+#: admin/class-lingolane-metabox.php:131
 msgid "You do not have permission to edit this content."
 msgstr ""
 
-#: admin/class-lingolane-metabox.php:124
+#: admin/class-lingolane-metabox.php:134
 msgid "Invalid content or language."
 msgstr ""
 
-#: admin/class-lingolane-metabox.php:126
+#: admin/class-lingolane-metabox.php:136
 msgid "You do not have permission to create content of this type."
 msgstr ""
 
-#: admin/class-lingolane-metabox.php:130
+#: admin/class-lingolane-metabox.php:140
 msgid "You do not have permission to edit this translation."
 msgstr ""
 
@@ -1145,62 +1460,66 @@ msgstr ""
 msgid "You do not have permission to start a scan session."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:193
+#: admin/class-lingolane-string-scan.php:194
 msgid "Invalid scan session."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:199
+#: admin/class-lingolane-string-scan.php:200
 msgid "Scan session has expired or does not exist."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:203
+#: admin/class-lingolane-string-scan.php:204
 msgid "Session does not belong to the current user."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:208
+#: admin/class-lingolane-string-scan.php:209
 msgid "Path is disallowed or invalid."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:213
+#: admin/class-lingolane-string-scan.php:214
 msgid "Item payload exceeds maximum per request limit."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:217
+#: admin/class-lingolane-string-scan.php:218
 msgid "Session ceiling of maximum occurrences exceeded."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:221
+#: admin/class-lingolane-string-scan.php:222
 msgid "Maximum request count reached for this session."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:227
+#: admin/class-lingolane-string-scan.php:228
 msgid "Please wait at least 1 second between requests."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:272
+#: admin/class-lingolane-string-scan.php:273
 msgid "You do not have permission to preview strings."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:278
+#: admin/class-lingolane-string-scan.php:279
 msgid "Occurrence not found."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:324
+#: admin/class-lingolane-string-scan.php:334
 msgid "Text no longer found. Scan this page again."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:325
+#: admin/class-lingolane-string-scan.php:335
 msgid "Highlighted element"
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:326
+#: admin/class-lingolane-string-scan.php:336
 msgid "Scan mode active..."
 msgstr ""
 
-#: admin/class-lingolane-string-scan.php:333
-#: admin/class-lingolane-string-scan.php:340
-#: admin/class-lingolane-string-scan.php:352
-#: admin/class-lingolane-string-scan.php:367
+#: admin/class-lingolane-string-scan.php:343
+#: admin/class-lingolane-string-scan.php:350
+#: admin/class-lingolane-string-scan.php:362
+#: admin/class-lingolane-string-scan.php:377
+#: includes/class-lingolane-ai.php:149
+#: includes/class-lingolane-ai.php:171
+#: includes/class-lingolane-incontext.php:266
+#: includes/class-lingolane-incontext.php:297
 msgid "Forbidden."
 msgstr ""
 
@@ -1253,6 +1572,7 @@ msgstr ""
 
 #: admin/class-lingolane-strings-admin.php:50
 #: admin/class-lingolane-strings-admin.php:221
+#: includes/class-lingolane-incontext.php:183
 msgid "Translation saved."
 msgstr ""
 
@@ -1390,172 +1710,192 @@ msgstr ""
 msgid "Search source or translation…"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:717
+#: admin/class-lingolane-strings-admin.php:716
+msgid "Draft AI translations for every untranslated string on this page"
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:718
+msgid "AI-translate missing"
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:721
 msgid "Clear"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:725
+#: admin/class-lingolane-strings-admin.php:729
 msgid "Notice:"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:726
+#: admin/class-lingolane-strings-admin.php:730
 msgid "Using a separate menu for this language. Translations entered here apply to the shared menu."
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:727
+#: admin/class-lingolane-strings-admin.php:731
 msgid "Manage menus in WordPress"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:735
+#: admin/class-lingolane-strings-admin.php:739
 msgid "Taxonomy Terms:"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:736
+#: admin/class-lingolane-strings-admin.php:740
 msgid "Categories and tags are synchronized directly with WordPress taxonomy elements."
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:744
+#: admin/class-lingolane-strings-admin.php:748
 msgid "Developer assistance required:"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:745
-msgid "Một số chuỗi được phát hiện trong mã nguồn nhưng cần developer hỗ trợ bọc hàm dịch hoặc đăng ký gettext."
-msgstr ""
-
-#: admin/class-lingolane-strings-admin.php:752
-msgid "No strings found in this group"
-msgstr ""
-
-#: admin/class-lingolane-strings-admin.php:753
-msgid "Scan frontend pages or your active theme to automatically discover translatable strings."
+#: admin/class-lingolane-strings-admin.php:749
+msgid "Some strings were found in the source code but need a developer to wrap them in a translation function or register them with gettext."
 msgstr ""
 
 #: admin/class-lingolane-strings-admin.php:756
+msgid "No strings found in this group"
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:757
+msgid "Scan frontend pages or your active theme to automatically discover translatable strings."
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:760
 msgid "Scan pages now"
 msgstr ""
 
 #. translators: %s: default language name
-#: admin/class-lingolane-strings-admin.php:765
+#: admin/class-lingolane-strings-admin.php:769
 msgid "Source text (%s)"
 msgstr ""
 
 #. translators: %s: target language name
-#: admin/class-lingolane-strings-admin.php:770
+#: admin/class-lingolane-strings-admin.php:774
 msgid "%s translation"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:786
+#: admin/class-lingolane-strings-admin.php:790
 msgid "Context"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:793
+#: admin/class-lingolane-strings-admin.php:797
 msgid "Highlight on frontend page"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:795
 #: admin/class-lingolane-strings-admin.php:799
-#: admin/class-lingolane-strings-admin.php:804
-msgid "Xem vị trí"
-msgstr ""
-
-#: admin/class-lingolane-strings-admin.php:798
 #: admin/class-lingolane-strings-admin.php:803
-msgid "Chưa quan sát trên trang"
+#: admin/class-lingolane-strings-admin.php:808
+msgid "View location"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:811
-msgid "Cần hỗ trợ"
+#: admin/class-lingolane-strings-admin.php:802
+#: admin/class-lingolane-strings-admin.php:807
+msgid "Not seen on a page yet"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:812
+#: admin/class-lingolane-strings-admin.php:815
+msgid "Needs a developer"
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:816
 msgid "Copy identifier for developers"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:813
-msgid "Chép slug"
+#: admin/class-lingolane-strings-admin.php:817
+msgid "Copy slug"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:832
+#: admin/class-lingolane-strings-admin.php:836
 msgid "Term name"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:833
+#: admin/class-lingolane-strings-admin.php:837
 msgid "Description (optional)"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:842
-msgid "Cần developer hỗ trợ dịch"
+#: admin/class-lingolane-strings-admin.php:840
+#: admin/class-lingolane-strings-admin.php:865
+msgid "Suggest a translation with AI"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:854
+#: admin/class-lingolane-strings-admin.php:842
+#: admin/class-lingolane-strings-admin.php:867
+msgid "AI"
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:850
+msgid "A developer needs to make this string translatable"
+msgstr ""
+
+#: admin/class-lingolane-strings-admin.php:862
 msgid "Enter translation…"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:878
+#: admin/class-lingolane-strings-admin.php:890
 msgid "Scan frontend pages"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:879
+#: admin/class-lingolane-strings-admin.php:891
+#: includes/class-lingolane-switcher.php:322
 msgid "Close"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:885
+#: admin/class-lingolane-strings-admin.php:897
 msgid "Select pages to scan. Lingolane will discover strings on these pages, map their exact locations, and check whether they can be translated automatically."
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:892
+#: admin/class-lingolane-strings-admin.php:904
 msgid "Select all discovered pages"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:912
+#: admin/class-lingolane-strings-admin.php:924
 msgid "Preparing scan…"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:918
+#: admin/class-lingolane-strings-admin.php:930
+#: includes/class-lingolane-incontext.php:179
 msgid "Cancel"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:921
+#: admin/class-lingolane-strings-admin.php:933
 msgid "Start scan"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:924
+#: admin/class-lingolane-strings-admin.php:936
 msgid "Close & refresh"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:931
+#: admin/class-lingolane-strings-admin.php:943
 msgid "Bulk translate with CSV"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:934
+#: admin/class-lingolane-strings-admin.php:946
 msgid "1. Export file"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:935
+#: admin/class-lingolane-strings-admin.php:947
 msgid "Download all strings and existing translations, then open them in Google Sheets or Excel to translate."
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:937
+#: admin/class-lingolane-strings-admin.php:949
 msgid "Download CSV"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:941
+#: admin/class-lingolane-strings-admin.php:953
 msgid "2. Import again"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:944
+#: admin/class-lingolane-strings-admin.php:956
 msgid "CSV file (UTF-8, up to 2 MB)"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:947
+#: admin/class-lingolane-strings-admin.php:959
 msgid "Use the file exported in step 1 (columns domain, context, source, language, translation)."
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:948
+#: admin/class-lingolane-strings-admin.php:960
 msgid "Import translations"
 msgstr ""
 
-#: admin/class-lingolane-strings-admin.php:949
+#: admin/class-lingolane-strings-admin.php:961
 msgid "The file is validated before anything is written; if one row is invalid, no row is saved."
 msgstr ""
 
@@ -1724,45 +2064,195 @@ msgid "Contact: %s"
 msgstr ""
 
 #. translators: %s: language name
-#: admin/class-lingolane-tree.php:316
+#: admin/class-lingolane-tree.php:333
 msgid "%s: not translated yet"
 msgstr ""
 
-#: admin/class-lingolane-tree.php:317
+#: admin/class-lingolane-tree.php:335
 msgid "Create"
 msgstr ""
 
 #. translators: 1: translated languages, 2: all languages
-#: admin/class-lingolane-tree.php:356
+#: admin/class-lingolane-tree.php:374
 msgid "%1$d of %2$d languages"
 msgstr ""
 
-#: includes/class-lingolane-elements.php:42
+#: includes/class-lingolane-ai-post.php:87
+msgid "Duplicating and translating whole posts with AI is temporarily disabled in this release to protect site data, avoid overwriting existing translations and avoid unexpected API costs."
+msgstr ""
+
+#: includes/class-lingolane-ai-post.php:120
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: includes/class-lingolane-ai-post.php:143
+msgid "An AI machine translation was created as a draft."
+msgstr ""
+
+#: includes/class-lingolane-ai-post.php:145
+msgid "The post structure, HTML and blocks were kept as they were. Review the draft and click Publish when it is ready."
+msgstr ""
+
+#: includes/class-lingolane-ai.php:91
+msgid "The server returned no translation."
+msgstr ""
+
+#: includes/class-lingolane-ai.php:92
+msgid "Could not reach the AI translation server."
+msgstr ""
+
+#: includes/class-lingolane-ai.php:93
+msgid "Chrome on-device AI is not available or does not support this language pair. Cloud translation is disabled."
+msgstr ""
+
+#: includes/class-lingolane-ai.php:124
+#: includes/class-lingolane-ai.php:140
+msgid "Google AI cloud translation is temporarily disabled in this release to protect site data and avoid unexpected API costs."
+msgstr ""
+
+#: includes/class-lingolane-ai.php:153
+#: includes/class-lingolane-ai.php:175
+#: includes/class-lingolane-incontext.php:270
+#: includes/class-lingolane-incontext.php:301
+msgid "Invalid security token."
+msgstr ""
+
+#: includes/class-lingolane-elements.php:127
 msgid "Invalid element or language."
 msgstr ""
 
-#: includes/class-lingolane-elements.php:48
+#: includes/class-lingolane-elements.php:133
 msgid "Could not lock the translation group. Please try again."
 msgstr ""
 
-#: includes/class-lingolane-elements.php:57
+#: includes/class-lingolane-elements.php:142
 msgid "The group already has a translation or belongs to a different content type."
 msgstr ""
 
-#: includes/class-lingolane-elements.php:64
+#: includes/class-lingolane-elements.php:149
 msgid "Could not save the translation group."
 msgstr ""
 
-#: includes/class-lingolane-elements.php:105
+#: includes/class-lingolane-elements.php:190
 msgid "Invalid post ID or language."
 msgstr ""
 
-#: includes/class-lingolane-elements.php:109
+#: includes/class-lingolane-elements.php:194
 msgid "The original post was not found."
 msgstr ""
 
-#: includes/class-lingolane-elements.php:114
+#: includes/class-lingolane-elements.php:199
 msgid "The post is already in the target language."
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:95
+msgid "Exit translation mode"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:98
+msgid "Translate this page"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:106
+msgid "Leave the Lingolane in-context editor"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:106
+msgid "Open the Lingolane in-context editor on this page"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:172
+msgid "In-context translation"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:173
+msgid "Translating to:"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:174
+msgid "Exit"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:175
+msgid "Post content: open it in the editor"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:176
+msgid "Edit post"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:177
+msgid "Save translation"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:180
+msgid "Original"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:181
+msgid "Translation"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:182
+msgid "Location:"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:184
+msgid "Could not save the translation."
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:185
+msgid "AI suggestion"
+msgstr ""
+
+#. translators: 1: translated string count, 2: total string count.
+#: includes/class-lingolane-incontext.php:189
+msgid "%1$d/%2$d strings translated"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:190
+msgid "Translate this string"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:191
+msgid "This is full post content with blocks or HTML. To avoid breaking the layout, edit it in the WordPress editor."
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:192
+msgid "Enter the translation here…"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:193
+msgid "Ctrl + Enter to save • Esc to cancel"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:194
+msgid "Translating with AI…"
+msgstr ""
+
+#. translators: %s: translation engine name
+#: includes/class-lingolane-incontext.php:196
+msgid "Suggested translation from %s"
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:197
+msgid "The AI returned no translation."
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:212
+msgid "You do not have permission to save translations."
+msgstr ""
+
+#: includes/class-lingolane-incontext.php:225
+msgid "Source text and language code are required."
+msgstr ""
+
+#: includes/class-lingolane-install.php:43
+msgid "Lingolane 1.0 does not support network activation yet. Activate it on each site separately."
+msgstr ""
+
+#: includes/class-lingolane-install.php:44
+msgid "Activation not supported"
 msgstr ""
 
 #: includes/class-lingolane-packs.php:43
@@ -1776,6 +2266,22 @@ msgstr ""
 #. translators: %s: WordPress locale, for example fr_FR
 #: includes/class-lingolane-packs.php:53
 msgid "WordPress.org has no translation for %s, or it could not be downloaded. Check the locale or try again later."
+msgstr ""
+
+#: includes/class-lingolane-router.php:35
+msgid "Lingolane: another multilingual plugin (Polylang or WPML) is active."
+msgstr ""
+
+#: includes/class-lingolane-router.php:37
+msgid "The Lingolane router is paused to avoid URL conflicts. Deactivate the other plugin before using Lingolane."
+msgstr ""
+
+#: includes/class-lingolane-router.php:42
+msgid "Lingolane: the site uses plain permalinks."
+msgstr ""
+
+#: includes/class-lingolane-router.php:44
+msgid "For language URLs such as /en/ and /vi/, switch to the Post name structure in Settings > Permalinks."
 msgstr ""
 
 #: includes/class-lingolane-string-locations.php:24
@@ -1864,10 +2370,68 @@ msgstr ""
 msgid "Could not save the string translation."
 msgstr ""
 
-#: includes/class-lingolane-switcher.php:79
+#: includes/class-lingolane-switcher.php:246
+#: includes/class-lingolane-switcher.php:270
+#: includes/class-lingolane-switcher.php:411
 msgid "Select language"
 msgstr ""
 
-#: includes/class-lingolane-switcher.php:79
-msgid "Languages that have a translation of the current page."
+#: includes/class-lingolane-switcher.php:326
+msgid "Notice"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:328
+msgid "Got it"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:412
+msgid "Display language switcher with flags and customizable styles."
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:435
+msgid "Title:"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:439
+msgid "Style:"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:441
+msgid "List"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:442
+msgid "Dropdown"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:443
+msgid "Pills"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:444
+msgid "Select"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:448
+msgid "Show:"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:450
+msgid "Flag & Name"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:451
+msgid "Flag & Code"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:452
+msgid "Flag only"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:453
+msgid "Name only"
+msgstr ""
+
+#: includes/class-lingolane-switcher.php:454
+msgid "Code only"
 msgstr ""

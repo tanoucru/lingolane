@@ -84,7 +84,7 @@ class Lingolane_AI_Post {
 	public static function translate_post( $post_id, $target_lang ) {
 		return new WP_Error(
 			'ai_post_translation_disabled',
-			__( 'Tính năng nhân bản và dịch toàn bài bằng AI tạm thời bị vô hiệu hóa để bảo đảm an toàn dữ liệu, chống ghi đè bản dịch và chống rủi ro chi phí/race condition theo tiêu chuẩn phát hành.', 'lingolane' )
+			__( 'Duplicating and translating whole posts with AI is temporarily disabled in this release to protect site data, avoid overwriting existing translations and avoid unexpected API costs.', 'lingolane' )
 		);
 	}
 
@@ -117,7 +117,7 @@ class Lingolane_AI_Post {
 		$lang    = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : '';
 
 		if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
-			wp_die( esc_html__( 'Bạn không có quyền thực hiện thao tác này.', 'lingolane' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'lingolane' ), '', array( 'response' => 403 ) );
 		}
 
 		check_admin_referer( 'lingolane_ai_post_' . $post_id . '_' . $lang );
@@ -140,9 +140,9 @@ class Lingolane_AI_Post {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['lingolane_ai_created'] ) && '1' === (string) sanitize_text_field( wp_unslash( $_GET['lingolane_ai_created'] ) ) ) {
 			echo '<div class="notice notice-info is-dismissible"><p><strong>' .
-				 esc_html__( 'Bản dịch máy bằng AI đã được tạo thành công ở dạng Bản nháp.', 'lingolane' ) .
+				 esc_html__( 'An AI machine translation was created as a draft.', 'lingolane' ) .
 				 '</strong> ' .
-				 esc_html__( 'Cấu trúc bài viết, thẻ HTML và các khối Gutenberg đã được giữ nguyên vẹn. Vui lòng rà soát và nhấn Đăng khi hoàn tất.', 'lingolane' ) .
+				 esc_html__( 'The post structure, HTML and blocks were kept as they were. Review the draft and click Publish when it is ready.', 'lingolane' ) .
 				 '</p></div>';
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
