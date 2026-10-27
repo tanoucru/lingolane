@@ -33,9 +33,15 @@ class Lingolane_Elements {
         }
 
         $placeholders = implode( ',', array_fill( 0, count( $uncached ), '%d' ) );
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}lingolane_translations WHERE element_type = %s AND element_id IN ($placeholders)", array_merge( array( $type ), array_values( $uncached ) ) );
-        $rows = $wpdb->get_results( $sql, ARRAY_A );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table; results are cached per element below.
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated list of %d placeholders.
+                "SELECT * FROM {$wpdb->prefix}lingolane_translations WHERE element_type = %s AND element_id IN ($placeholders)",
+                array_merge( array( $type ), array_values( $uncached ) )
+            ),
+            ARRAY_A
+        );
 
         $found_ids = array();
         if ( is_array( $rows ) ) {

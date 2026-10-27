@@ -1,12 +1,12 @@
-# P5 AI Translation (Gợi ý dịch AI kết hợp Chrome Translator API & Gemini) Implementation Plan
+# P5 AI Translation (AI Translation Suggestions Combining Chrome Translator API & Gemini) Implementation Plan
 
-**Goal:** Triển khai tính năng gợi ý dịch bằng AI (P5) kết hợp 2 nguồn: mặc định trên thiết bị qua Chrome Translator API (miễn phí 100%, không cần cài đặt, không cần API key, nội dung không rời máy) và tuỳ chọn qua Google Gemini Flash API (chất lượng cao, miễn phí từ Google AI Studio), hỗ trợ dịch chuỗi đơn lẻ, dịch theo lô và nhân bản dịch trọn vẹn bài viết/trang bảo toàn cấu trúc HTML/Gutenberg Blocks.
+**Goal:** Implement AI translation suggestions (P5) using 2 sources: on-device translation via Chrome Translator API by default (100% free, no installation or API key required, content stays on the device) and optional Google Gemini Flash API translation (high quality, free through Google AI Studio). Support single-string translation, batch translation, and duplication of entire posts/pages into translated versions while preserving HTML/Gutenberg Blocks structure.
 
 **Architecture:** 
-- Backend `Lingolane_AI` quản lý cấu hình API key an toàn (che key khi hiển thị, gọi Gemini qua WordPress HTTP API máy chủ, không lộ key ra frontend), endpoint AJAX kiểm tra key và dịch văn bản.
-- Frontend `ai-translate.js` tạo lớp trừu tượng `LingolaneAI.translate()`: tự động phát hiện Chrome On-Device Translator API (`window.translation` hoặc `ai.translator`). Nếu trình duyệt hỗ trợ, dịch tức thì trên máy; nếu không, tự động chuyển tiếp sang server-side Gemini endpoint.
-- Tích hợp nút "Gợi ý AI" vào bảng chuỗi P3, popover In-Context P4, metabox bài viết và bảng danh sách cây P1.
-- Backend `Lingolane_AI_Post` xử lý dịch bài viết: bóc tách văn bản cần dịch, bảo toàn nguyên vẹn `<!-- wp:... -->` block comments, HTML tags, links, media URLs, shortcodes, gán trạng thái nháp (`draft`) và meta `_lingolane_machine_translated = 1`.
+- The `Lingolane_AI` backend manages API key settings securely (masks the key for display, calls Gemini through the server-side WordPress HTTP API, and never exposes the key to the frontend), with AJAX endpoints for key validation and text translation.
+- The `ai-translate.js` frontend provides the `LingolaneAI.translate()` abstraction: it automatically detects the Chrome On-Device Translator API (`window.translation` or `ai.translator`). If the browser supports it, translation runs immediately on-device; otherwise, it automatically falls back to the server-side Gemini endpoint.
+- Integrate an "AI Suggestion" button into the P3 string table, P4 In-Context popover, post metabox, and P1 tree list table.
+- The `Lingolane_AI_Post` backend handles post translation: extracts translatable text, preserves `<!-- wp:... -->` block comments, HTML tags, links, media URLs, and shortcodes intact, and assigns draft status (`draft`) and the `_lingolane_machine_translated = 1` meta flag.
 
 **Tech Stack:** PHP 7.4+, WordPress Core APIs (`wp_remote_post`, AJAX, Options), Chrome On-Device Translator API (`window.translation` / `window.ai.translator`), Google Gemini API (v1beta `gemini-2.5-flash`), Vanilla JS / jQuery.
 
@@ -14,19 +14,19 @@
 
 ## Global Constraints
 
-- Hỗ trợ tối thiểu WordPress 6.2 và PHP 7.4.33+.
-- Chuẩn lập trình WordPress Coding Standards (WPCS 3.1) sạch 0 lỗi, 0 cảnh báo.
-- Bảo mật: API key Gemini chỉ lưu trong options (`lingolane_ai_settings`), chỉ người dùng có quyền `manage_options` mới xem/sửa, luôn che dạng `AIzaSy...xxxx` khi trả về UI, tuyệt đối KHÔNG in ra HTML hay truyền xuống frontend JS.
-- Mọi thao tác gọi Gemini qua `wp_remote_post()` thực hiện từ server backend.
-- Bản dịch máy mặc định gán cờ `_lingolane_machine_translated = 1` và nhãn "Máy dịch – chờ duyệt", bài viết gán trạng thái nháp (`draft`).
+- Support WordPress 6.2 and PHP 7.4.33+ at minimum.
+- Meet WordPress Coding Standards (WPCS 3.1) with 0 errors and 0 warnings.
+- Security: store the Gemini API key only in options (`lingolane_ai_settings`); only users with the `manage_options` capability may view/edit it. Always mask it as `AIzaSy...xxxx` when returning it to the UI; NEVER print it in HTML or pass it to frontend JS.
+- Make all Gemini calls through `wp_remote_post()` on the backend server.
+- By default, assign machine translations the `_lingolane_machine_translated = 1` flag and the "Machine-translated – pending review" label, and assign posts draft status (`draft`).
 
 ## Review Focus
 
-1. Bảo vệ API Key: Không lộ key trong response HTML, JS data hay log lỗi.
-2. Bảo toàn cấu trúc bài viết: Thân bài Gutenberg/Classic chứa thẻ HTML và block comments không bị AI làm biến dạng hoặc hỏng cú pháp.
-3. Chịu lỗi mạng / Rate Limit: Khi gọi Gemini gặp lỗi (mất mạng, key sai, quota 429), trả thông báo lỗi thân thiện thay vì làm đơ giao diện.
-4. Tự động tương thích Chrome Translator API: Hỗ trợ cả hai chuẩn cú pháp `window.translation.createTranslator` và `window.ai.translator`.
-5. Độc lập module: Nếu không có Chrome AI và chưa nhập Gemini key, hệ thống hiển thị hướng dẫn rõ ràng từng bước lấy key miễn phí mà không gây lỗi.
+1. API Key Protection: Do not expose the key in HTML responses, JS data, or error logs.
+2. Post Structure Preservation: AI must not distort or break the syntax of HTML tags and block comments in Gutenberg/Classic post content.
+3. Network / Rate Limit Resilience: When a Gemini call fails (network outage, invalid key, quota 429), return a friendly error message instead of freezing the interface.
+4. Automatic Chrome Translator API Compatibility: Support both `window.translation.createTranslator` and `window.ai.translator` syntax.
+5. Module Independence: If Chrome AI is unavailable and no Gemini key has been entered, show clear, step-by-step instructions for obtaining a free key without causing errors.
 
 ---
 
@@ -42,19 +42,19 @@
 - Produces: `Lingolane_AI::init()`, `Lingolane_AI::get_settings()`, `Lingolane_AI::save_settings()`, `Lingolane_AI::mask_key()`, `Lingolane_AI::test_api_key()`, `Lingolane_AI::translate_text()`.
 
 - [ ] **Step 1: Write the failing tests**
-  - Tạo `tests/phpunit/test-ai.php` kiểm tra lưu cấu hình, che API key, kiểm tra phân quyền và hàm dịch văn bản mock.
+  - Create `tests/phpunit/test-ai.php` to test settings persistence, API key masking, permission checks, and mocked text translation.
 
 - [ ] **Step 2: Run test to verify it fails**
-  - Chạy: `phpunit --filter Test_Lingolane_AI` -> FAIL.
+  - Run: `phpunit --filter Test_Lingolane_AI` -> FAIL.
 
 - [ ] **Step 3: Implement `Lingolane_AI` in `lingolane/includes/class-lingolane-ai.php`**
-  - Lưu và đọc options `lingolane_ai_settings`.
-  - Che key: giữ lại 6 ký tự đầu và 4 ký tự cuối.
-  - Gọi Gemini API endpoint `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}` với prompt dịch chuyên dụng.
-  - Xử lý AJAX endpoints: `lingolane_ai_test_key` và `lingolane_ai_translate`.
+  - Save and read the `lingolane_ai_settings` options.
+  - Mask the key: retain the first 6 and last 4 characters.
+  - Call the Gemini API endpoint `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}` with a dedicated translation prompt.
+  - Handle AJAX endpoints: `lingolane_ai_test_key` and `lingolane_ai_translate`.
 
 - [ ] **Step 4: Run test to verify it passes**
-  - Chạy: `phpunit --filter Test_Lingolane_AI` -> PASS.
+  - Run: `phpunit --filter Test_Lingolane_AI` -> PASS.
 
 - [ ] **Step 5: Commit**
   - `git add lingolane/includes/class-lingolane-ai.php tests/phpunit/test-ai.php lingolane/lingolane.php`
@@ -71,18 +71,18 @@
 
 **Interfaces:**
 - Consumes: `Lingolane_AI::get_settings()`, `Lingolane_UI::card()`.
-- Produces: Tab "Dịch AI" (`tab=ai`) trong Lingolane Settings với thẻ trạng thái Chrome on-device AI và thiết lập Gemini key.
+- Produces: An "AI Translation" tab (`tab=ai`) in Lingolane Settings with a Chrome on-device AI status card and Gemini key settings.
 
 - [ ] **Step 1: Write test for AI settings tab rendering**
-  - Thêm test trong `test-ai.php` xác nhận tab AI hiển thị cho admin và có các trường cấu hình.
+  - Add a test in `test-ai.php` to confirm that the AI tab is displayed to admins and includes the configuration fields.
 
-- [ ] **Step 2: Implement UI tab "Dịch AI" trong `Lingolane_Admin`**
-  - Thẻ 1: "AI có sẵn trong trình duyệt (Chrome On-Device Translator)" với trình kiểm tra trực tiếp qua JS.
-  - Thẻ 2: "AI đám mây (Google Gemini Flash)" với ô nhập API key, nút "Kiểm tra key", lựa chọn model (`gemini-2.5-flash`, `gemini-1.5-flash`), tuỳ chọn "Tự duyệt bản dịch máy".
-  - Thẻ 3: Hướng dẫn chi tiết từng bước lấy key miễn phí từ Google AI Studio kèm lưu ý quota miễn phí.
+- [ ] **Step 2: Implement the "AI Translation" UI tab in `Lingolane_Admin`**
+  - Card 1: "Browser AI (Chrome On-Device Translator)" with a live JS availability check.
+  - Card 2: "Cloud AI (Google Gemini Flash)" with an API key input, a "Test Key" button, model selection (`gemini-2.5-flash`, `gemini-1.5-flash`), and an "Auto-approve machine translations" option.
+  - Card 3: Detailed, step-by-step instructions for obtaining a free key from Google AI Studio, including notes on the free quota.
 
 - [ ] **Step 3: Run tests and verify**
-  - Chạy `phpunit --filter Test_Lingolane_AI` -> PASS.
+  - Run `phpunit --filter Test_Lingolane_AI` -> PASS.
 
 - [ ] **Step 4: Commit**
   - `git add lingolane/admin/class-lingolane-admin.php`
@@ -100,18 +100,18 @@
 - Produces: Global object `window.LingolaneAI = { isChromeAvailable, translate, batchTranslate }`.
 
 - [ ] **Step 1: Implement `lingolane/assets/ai-translate.js`**
-  - Kiểm tra `window.translation` hoặc `window.ai.translator`.
-  - Hàm `LingolaneAI.translate(text, sourceLang, targetLang)`:
-    - Nếu Chrome Translator khả dụng: gọi `createTranslator({ sourceLanguage, targetLanguage })` -> trả kết quả ngay lập tức.
-    - Nếu Chrome Translator không khả dụng hoặc lỗi: gửi AJAX `lingolane_ai_translate` đến backend server Gemini.
-  - Hàm `LingolaneAI.batchTranslate(items, onProgress, onComplete)`:
-    - Chạy dịch theo hàng đợi tuần tự, cập nhật thanh tiến độ và có nút Huỷ.
+  - Check for `window.translation` or `window.ai.translator`.
+  - Function `LingolaneAI.translate(text, sourceLang, targetLang)`:
+    - If Chrome Translator is available: call `createTranslator({ sourceLanguage, targetLanguage })` -> return the result immediately.
+    - If Chrome Translator is unavailable or fails: send a `lingolane_ai_translate` AJAX request to the Gemini backend server.
+  - Function `LingolaneAI.batchTranslate(items, onProgress, onComplete)`:
+    - Translate items sequentially in a queue, update the progress bar, and provide a Cancel button.
 
-- [ ] **Step 2: Enqueue script trong admin và in-context mode**
-  - Nạp `ai-translate.js` trong màn quản trị Lingolane và khi ở chế độ `is_active()` của In-Context.
+- [ ] **Step 2: Enqueue the script in admin and in-context mode**
+  - Load `ai-translate.js` on the Lingolane admin screen and when In-Context mode `is_active()`.
 
 - [ ] **Step 3: Test syntax and build**
-  - Chạy `bin/build.sh` và kiểm tra đóng gói.
+  - Run `bin/build.sh` and verify packaging.
 
 - [ ] **Step 4: Commit**
   - `git add lingolane/assets/ai-translate.js lingolane/admin/class-lingolane-admin.php`
@@ -130,14 +130,14 @@
 - Consumes: `window.LingolaneAI.translate()`, `window.LingolaneAI.batchTranslate()`.
 
 - [ ] **Step 1: Integrate into P3 String Groups table**
-  - Thêm nút "Gợi ý AI" cạnh mỗi ô nhập bản dịch trong tab Chuỗi. Bấm vào tự động điền bản dịch nháp.
-  - Thêm nút "Dịch nháp tất cả còn thiếu" (Batch AI Translation) ở thanh công cụ nhóm chuỗi, hiển thị progress modal.
+  - Add an "AI Suggestion" button next to each translation input in the Strings tab. Clicking it automatically fills in a draft translation.
+  - Add a "Draft all missing translations" button (Batch AI Translation) to the string group toolbar, displaying a progress modal.
 
 - [ ] **Step 2: Integrate into P4 In-Context Editor popover**
-  - Kích hoạt nút `#lingolane-ic-ai-suggest`: khi bấm, gọi `LingolaneAI.translate(sourceText, 'auto', state.targetLang)` và điền trực tiếp vào ô textarea bản dịch.
+  - Activate the `#lingolane-ic-ai-suggest` button: on click, call `LingolaneAI.translate(sourceText, 'auto', state.targetLang)` and fill the translation textarea directly.
 
 - [ ] **Step 3: Test and verify**
-  - Chạy phpunit và kiểm tra frontend.
+  - Run phpunit and check the frontend.
 
 - [ ] **Step 4: Commit**
   - `git add lingolane/assets/string-groups.js lingolane/assets/incontext.js lingolane/admin/class-lingolane-strings-admin.php`
@@ -145,7 +145,7 @@
 
 ---
 
-### Task 5: Post & Page AI Translation ("Tạo bằng AI" & HTML/Block Preserving)
+### Task 5: Post & Page AI Translation ("Create with AI" & HTML/Block Preserving)
 
 **Files:**
 - Create: `lingolane/includes/class-lingolane-ai-post.php`
@@ -159,20 +159,20 @@
 - Produces: `Lingolane_AI_Post::translate_post( $post_id, $target_lang )`, `Lingolane_AI_Post::translate_html( $html, $source_lang, $target_lang )`.
 
 - [ ] **Step 1: Write failing tests for HTML-preserving translation and post translation**
-  - Tạo `tests/phpunit/test-ai-post.php` kiểm tra việc giữ nguyên thẻ HTML, URL, `<!-- wp:paragraph -->` khi dịch.
+  - Create `tests/phpunit/test-ai-post.php` to verify that HTML tags, URLs, and `<!-- wp:paragraph -->` are preserved during translation.
 
 - [ ] **Step 2: Implement `Lingolane_AI_Post`**
-  - Thuật toán bóc tách văn bản: duyệt DOM / regex bảo vệ thẻ tags, block comments và chỉ dịch text nodes.
-  - Nhân bản bài viết gốc sang ngôn ngữ đích dạng `draft`.
-  - Dịch `post_title`, `post_excerpt`, và `post_content`.
-  - Gán meta `_lingolane_machine_translated = 1` và hiển thị nhãn "Máy dịch – chờ duyệt".
-  - Endpoint AJAX: `lingolane_ai_translate_post`.
+  - Text extraction algorithm: traverse the DOM / use regex to protect tags and block comments, translating only text nodes.
+  - Duplicate the source post into the target language as a `draft`.
+  - Translate `post_title`, `post_excerpt`, and `post_content`.
+  - Set the `_lingolane_machine_translated = 1` meta flag and display the "Machine-translated – pending review" label.
+  - AJAX endpoint: `lingolane_ai_translate_post`.
 
 - [ ] **Step 3: Add UI buttons in Metabox and Post List Table**
-  - Thêm nút "Tạo bằng AI" cạnh nút "Tạo bản dịch" trong Metabox và cột danh sách cây.
+  - Add a "Create with AI" button next to the "Create Translation" button in the Metabox and tree list column.
 
 - [ ] **Step 4: Run tests and verify**
-  - Chạy `phpunit --filter Test_Lingolane_AI_Post` -> PASS.
+  - Run `phpunit --filter Test_Lingolane_AI_Post` -> PASS.
 
 - [ ] **Step 5: Commit**
   - `git add lingolane/includes/class-lingolane-ai-post.php tests/phpunit/test-ai-post.php lingolane/admin/class-lingolane-metabox.php lingolane/admin/class-lingolane-columns.php lingolane/lingolane.php`

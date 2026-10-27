@@ -1,21 +1,21 @@
-# Ma trận tương thích Lingolane 1.0 (Compatibility Matrix)
+# Lingolane 1.0 Compatibility Matrix
 
-Cập nhật: 2026-10-26 (Sau audit phát hành).
+Updated: 2026-10-26 (After the release audit).
 
-Phân định nghiêm ngặt:
-- **VERIFIED:** Đã kiểm chứng thực tế bằng test suite hoặc trên môi trường Local by Flywheel.
-- **CONTAINED / FAIL-CLOSED:** Đã bổ sung cơ chế bảo vệ an toàn (chặn kích hoạt hoặc từ chối thực thi để bảo vệ dữ liệu).
-- **NOT YET TESTED:** Chưa chạy thử nghiệm trên site thật có cài đặt các plugin này. Tuyệt đối không quảng bá là đã tương thích hoàn toàn.
+Strict status definitions:
+- **VERIFIED:** Verified through the test suite or in a Local by Flywheel environment.
+- **CONTAINED / FAIL-CLOSED:** Safety mechanisms have been added (blocking activation or refusing execution to protect data).
+- **NOT YET TESTED:** Not yet tested on an actual site with these plugins installed. Must not be advertised as fully compatible.
 
 ---
 
 ## 1. SEO & Sitemaps
 
-| Thành phần | Trạng thái | Bằng chứng kiểm chứng |
+| Component | Status | Verification Evidence |
 |---|---|---|
-| Yoast SEO (`WPSEO_VERSION`) | VERIFIED (Adapter hooks) | Unit test adapter, canonical filter, hreflang, sitemap entry filter. |
-| Rank Math SEO (`RANK_MATH_VERSION`) | VERIFIED (Adapter hooks) | Canonical filter, sitemap entry filter qua `register_seo_adapters()`. |
-| All in One SEO (`AIOSEO_VERSION`) | VERIFIED (Adapter hooks) | Canonical filter qua `register_seo_adapters()`. |
+| Yoast SEO (`WPSEO_VERSION`) | VERIFIED (Adapter hooks) | Adapter unit test, canonical filter, hreflang, sitemap entry filter. |
+| Rank Math SEO (`RANK_MATH_VERSION`) | VERIFIED (Adapter hooks) | Canonical filter, sitemap entry filter through `register_seo_adapters()`. |
+| All in One SEO (`AIOSEO_VERSION`) | VERIFIED (Adapter hooks) | Canonical filter through `register_seo_adapters()`. |
 | SEOPress (`SEOPRESS_VERSION`) | VERIFIED (Adapter hooks) | Canonical filter, single entry sitemap filter. |
 | WordPress Core XML Sitemaps | VERIFIED | `wp_sitemaps_posts_entry`, `wp_sitemaps_taxonomies_entry`. |
 
@@ -23,20 +23,20 @@ Phân định nghiêm ngặt:
 
 ## 2. WPML Ecosystem Shim
 
-| Thành phần | Trạng thái | Bằng chứng kiểm chứng |
+| Component | Status | Verification Evidence |
 |---|---|---|
 | WPML API Shim (`wpml_object_id`, `wpml_default_language`) | VERIFIED | `class-lingolane-wpml-shim.php`, `test-wpml-shim.php`. |
-| `wpml-config.xml` Parser | VERIFIED (Chủ động parse) | Đọc custom-fields, admin-texts từ theme cha và con. |
-| WPML Taxonomy filter runtime | NOT YET TESTED | Cần môi trường thực tế để xác minh độ trễ hook. |
+| `wpml-config.xml` Parser | VERIFIED (Active parsing) | Reads custom-fields and admin-texts from parent and child themes. |
+| WPML Taxonomy filter runtime | NOT YET TESTED | Requires a real environment to verify hook timing. |
 
 ---
 
-## 3. Kiến trúc hệ thống & Môi trường
+## 3. System Architecture & Environment
 
-| Thành phần | Trạng thái | Bằng chứng kiểm chứng |
+| Component | Status | Verification Evidence |
 |---|---|---|
-| Single Site (Subdirectory URLs) | VERIFIED | Hoạt động chuẩn xác trên `check.local` (`/`, `/vi/`, `/fr/`). |
-| Multisite Network Activation | CONTAINED (FAIL-CLOSED) | Chặn kích hoạt toàn mạng tại `Lingolane_Install::activate($network_wide)` kèm `wp_die`. |
-| Page Builders (Elementor, Divi, Bricks) | NOT YET TESTED | Chưa có runtime QA suite trên site có builder. |
-| WooCommerce Store & Checkout | NOT YET TESTED | Chưa có kiểm thử giỏ hàng song ngữ. |
-| Cloud AI Integration (Gemini) | CONTAINED (FAIL-CLOSED) | Tạm khóa server endpoint và auto-fallback để bảo vệ dữ liệu và chi phí. |
+| Single Site (Subdirectory URLs) | VERIFIED | Works correctly on `check.local` (`/`, `/vi/`, `/fr/`). |
+| Multisite Network Activation | CONTAINED (FAIL-CLOSED) | Blocks network-wide activation in `Lingolane_Install::activate($network_wide)` with `wp_die`. |
+| Page Builders (Elementor, Divi, Bricks) | NOT YET TESTED | No runtime QA suite has been run on a site with a builder. |
+| WooCommerce Store & Checkout | NOT YET TESTED | Bilingual shopping cart testing has not been performed. |
+| Cloud AI Integration (Gemini) | CONTAINED (FAIL-CLOSED) | The server endpoint and auto-fallback are temporarily disabled to protect data and control costs. |

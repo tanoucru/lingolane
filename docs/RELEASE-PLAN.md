@@ -1,191 +1,189 @@
-# Kế hoạch phát hành Lingolane 1.0 (chạy được trên website bất kỳ)
+# Lingolane 1.0 release plan (runs on any website)
 
-## Tiến độ khắc phục sau audit — 2026-10-26
+## Post-audit remediation progress — 2026-10-26
 
-Luồng: **Chuẩn bị → AI an toàn → Gói cài → M3 compatibility → QA check.local → Review độc lập cuối**.
-Cập nhật sau mỗi bước; không suy ra release-ready từ số phase đã code.
+Flow: **Preparation → Safe AI → Installation package → M3 compatibility → QA on the Local site → Final independent review**.
+Update after each step; do not infer release-ready from the number of phases that have been coded.
 
-| Bước | Trạng thái | Bằng chứng / điều kiện chuyển bước |
+| Step | Status | Evidence / criteria for moving to the next step |
 |---|---|---|
-| 0. Audit và phạm vi | PRD đang sửa theo review | Public NO-GO; 56 file ZIP/bản cài khớp 124d073; lint Local 34 PHP đạt. |
-| 1. AI an toàn | Đã khóa fail-closed | Vô hiệu hóa Gemini server, translate_post và test_api_key trả lỗi; client bỏ silent fallback; test-ai-remediation.php và lint đạt. Đã review độc lập. Tính năng đầy đủ chưa mở lại. |
-| 2. Package/privacy/i18n | Đã hoàn thành | Thống nhất version 1.0.0-dev; ZIP có GPL đầy đủ; readme khai báo đúng AI on-device/disable cloud; multisite activation guard; build sạch SHA-256: f16c3662... |
-| 3. M3 compatibility | Đã hoàn thành đóng gói | Đã đưa SEO adapters an toàn plugins_loaded, WPML shim & config, Switcher block vào gói build sạch. Đã tạo docs/COMPAT.md phân định rõ verified và not-tested. SHA-256 ZIP: f223b9c2... |
-| 4. QA check.local bản mới | ĐÃ HOÀN THÀNH ĐẠT | Gói ZIP mới f223b9c2... đã cài đặt và kích hoạt thành công trên check.local. Runtime nạp đầy đủ WPML Shim/Config; API translate_post fail-closed. 100% route EN/VI/FR 200, 404 đúng. Đã kiểm tra UI Admin Overview và tab Dịch AI (0 lỗi console, hiển thị credit @tannguyen). |
-| 5. Review độc lập cuối | Đã hoàn thành (Chuyển tiếp) | Đã review độc lập và kiểm chứng thực tế toàn bộ diff, ZIP hash, DB backup và runtime trên Local. |
-| Phê duyệt phát hành | ĐÃ DUYỆT (2026-10-26) | Đã duyệt đưa mã nguồn lên GitHub tanoucru/lingolane và đóng gói plugin. |
-| Cổng public release | Giữ Private theo chỉ đạo | Đưa lên GitHub repo private tanoucru/lingolane; đóng gói ZIP hoàn chỉnh phân phối nội bộ/fleet; tiếp tục kiểm thử fleet trước khi mở public. |
+| 0. Audit and scope | PRD being revised following review | Public NO-GO; 56 ZIP/installed files match 124d073; Local lint passed for 34 PHP files. |
+| 1. Safe AI | Locked down fail-closed | Server-side Gemini disabled, translate_post and test_api_key return errors; client no longer silently falls back; test-ai-remediation.php and lint passed. Independently reviewed. Full functionality not re-enabled yet. |
+| 2. Package/privacy/i18n | Completed | Version unified at 1.0.0-dev; ZIP includes the full GPL; readme correctly declares on-device AI/cloud disabled; multisite activation guard; clean build SHA-256: f16c3662... |
+| 3. M3 compatibility | Packaging completed | SEO adapters (safe at plugins_loaded), WPML shim & config, and Switcher block included in the clean build package. Created docs/COMPAT.md to clearly separate verified from not-tested. ZIP SHA-256: f223b9c2... |
+| 4. QA of the new build on the Local site | COMPLETED — PASSED | The new ZIP f223b9c2... was installed and activated successfully on the Local test site. Runtime loads the full WPML Shim/Config; translate_post API fails closed. 100% of EN/VI/FR routes return 200, 404 handled correctly. Admin Overview UI and the AI Translation tab were checked (0 console errors, @tannguyen credit displayed). |
+| 5. Final independent review | Completed (handed over) | The full diff, ZIP hash, DB backup and runtime on Local were independently reviewed and verified in practice. |
+| Maintainer approval | APPROVED (2026-10-26) | The maintainer approved pushing the entire source code to the private GitHub repo tanoucru/lingolane and packaging the complete plugin. |
+| Public release gate | Kept private as directed | Push to the private GitHub repo tanoucru/lingolane; package a complete ZIP for internal/fleet distribution; continue fleet testing before going public. |
 
-Baseline chưa đạt QA đầy đủ: smoke mới đếm hreflang, chưa chứng minh URL; có 5 ảnh chưa tải/hỏng; resize chưa ra viewport mobile thật; blog_public=1 trên Local. Không chạy AI thật. Không sửa source M3 để ghi tiến độ.
+The baseline has not passed full QA: the smoke test only counts hreflang entries and does not prove the URLs; 5 images are unloaded/broken; resizing has not produced a true mobile viewport; blog_public=1 on Local. No real AI was run. M3 source was not modified to record progress.
 
 ---
 
-Ngày rà soát: 2026-10-21. Phạm vi: `lingolane/` (~3.500 dòng PHP, 7 file test thủ công).
+Review date: 2026-10-21. Scope: `lingolane/` (~3.500 lines of PHP, 7 manual test files).
 
-## 1. Hiện trạng (đã rà bằng mã nguồn)
+## 1. Current state (reviewed against the source code)
 
-**Đạt, giữ nguyên**
-- Bảo mật cơ bản: mọi `admin_post_*` đi qua `TML_Admin::guard()` (`manage_options` + `check_admin_referer`); metabox kiểm `edit_post` + nonce; AJAX có `ajax_guard()`; không còn `$_GET/$_POST` thô; không có `$wpdb` raw thiếu `prepare`.
-- Router bỏ qua `wp-admin`, `wp-json`, `wp-login.php`, `wp-cron`, `admin-ajax` (`class-tml-router.php:21-25`).
-- Bảng DB dùng `dbDelta` + `get_charset_collate`, có `tml_db_version` tự nâng cấp; cache object/transient có xoá đúng chỗ.
-- Gỡ plugin không xoá dữ liệu (chủ ý). Đã gỡ phụ thuộc Teachme bằng filter.
+**Passed, keep as is**
+- Basic security: every `admin_post_*` goes through `TML_Admin::guard()` (`manage_options` + `check_admin_referer`); metabox checks `edit_post` + nonce; AJAX has `ajax_guard()`; no raw `$_GET/$_POST` remains; no raw `$wpdb` without `prepare`.
+- Router skips `wp-admin`, `wp-json`, `wp-login.php`, `wp-cron`, `admin-ajax` (`class-tml-router.php:21-25`).
+- DB tables use `dbDelta` + `get_charset_collate`, with `tml_db_version` for automatic upgrades; object/transient caches are invalidated in the right places.
+- Uninstalling the plugin does not delete data (intentional). The Teachme dependency has been removed via filters.
 
-**Chưa đạt (chặn phát hành)**
-| # | Vấn đề | Bằng chứng | Mức |
+**Not passed (release blockers)**
+| # | Issue | Evidence | Level |
 |---|---|---|---|
-| B1 | Chuỗi gốc là tiếng Việt (~256 dòng), không `load_plugin_textdomain`, không thư mục `languages/`, không `.pot` | admin 175, strings-admin 51, metabox 12… | Chặn |
-| B2 | `readme.txt` cũ: tiếng Việt, nhắc "hồ sơ gia sư", `License: Proprietary`, changelog 1.2 của Teachme | `readme.txt` | Chặn |
-| B3 | Giấy phép: `LICENSE` là bản tóm tắt tự viết, chưa phải GPL đầy đủ; chưa quyết định kênh phân phối | `LICENSE` | Chặn |
-| B4 | Chưa có test tự động/CI; test cũ là `wp eval-file` chỉ chạy trên host `.local/.test`, chưa chạy lại sau khi tách | `tests/` | Chặn |
-| B5 | Chỉ tương thích Yoast. Không xử lý Rank Math, AIOSEO, SEOPress, sitemap lõi WP (`wp-sitemap.xml`) | `class-tml-seo.php` | Chặn |
+| B1 | Source strings are in Vietnamese (~256 lines), no `load_plugin_textdomain`, no `languages/` directory, no `.pot` | admin 175, strings-admin 51, metabox 12… | Blocker |
+| B2 | Old `readme.txt`: in Vietnamese, mentions "tutor profiles", `License: Proprietary`, Teachme 1.2 changelog | `readme.txt` | Blocker |
+| B3 | License: `LICENSE` is a self-written summary, not the full GPL; distribution channel not yet decided | `LICENSE` | Blocker |
+| B4 | No automated tests/CI; old tests are `wp eval-file` that only run on `.local/.test` hosts and have not been rerun since the split | `tests/` | Blocker |
+| B5 | Only compatible with Yoast. No handling for Rank Math, AIOSEO, SEOPress, or the WP core sitemap (`wp-sitemap.xml`) | `class-tml-seo.php` | Blocker |
 
-**Rủi ro khi gắn vào site lạ (cần kiểm, chưa có bằng chứng)**
-R1 Multisite (không có mã xử lý). R2 Site cài trong thư mục con, permalink "Plain", HTTPS/proxy. R3 Theme khối (FSE) và block Navigation (switcher hiện hỗ trợ `wp_nav_menu`/widget/shortcode). R4 Page builder (Elementor, Divi, Bricks), ACF/meta tuỳ chỉnh, WooCommerce. R5 Plugin cache (WP Rocket, LiteSpeed, Cloudflare) với URL theo ngôn ngữ. R6 Chạy cùng Polylang/WPML gây xung đột. R7 Hiệu năng truy vấn lọc theo ngôn ngữ trên site lớn (10k+ bài). R8 Tiền tố `tml_` chỉ 3 ký tự (ĐÃ XỬ LÝ ở M0: đổi thành `lingolane_`). R9 Phiên bản lặp ở 3 nơi (header, `TML_VERSION`, readme). R10 Chưa kiểm có gọi HTTP ra ngoài hay không (ảnh hưởng chính sách riêng tư).
+**Risks when attached to unfamiliar sites (need verification, no evidence yet)**
+R1 Multisite (no handling code). R2 Sites installed in a subdirectory, "Plain" permalinks, HTTPS/proxy. R3 Block themes (FSE) and the Navigation block (the switcher currently supports `wp_nav_menu`/widget/shortcode). R4 Page builders (Elementor, Divi, Bricks), custom ACF/meta, WooCommerce. R5 Cache plugins (WP Rocket, LiteSpeed, Cloudflare) with language-based URLs. R6 Running alongside Polylang/WPML causes conflicts. R7 Performance of language-filtered queries on large sites (10k+ posts). R8 The `tml_` prefix is only 3 characters (RESOLVED in M0: changed to `lingolane_`). R9 Version repeated in 3 places (header, `TML_VERSION`, readme). R10 Not yet checked whether outbound HTTP calls are made (affects the privacy policy).
 
-## 2. Quyết định cần Tan (chặn M0)
-1. **Kênh phân phối:** WordPress.org (miễn phí, GPL, duyệt thủ công 1–4 tuần) · bán/phát hành riêng trên site (GPL, tự cập nhật qua GitHub Releases) · cả hai (bản lite + bản trả phí).
-2. **Tên thương hiệu và slug cuối** ("Lingolane" là tên nội bộ; cần kiểm trùng tên). Nếu đổi prefix `tml_` thành ≥4 ký tự, làm **trước** khi có người dùng ngoài.
-3. **Phạm vi 1.0:** đơn site, không multisite (khuyến nghị) · hỗ trợ Yoast + Rank Math + sitemap lõi (khuyến nghị) · WooCommerce để 1.1.
-4. Tạo repo GitHub (private trước, public khi phát hành).
+## 2. Decisions needed from the maintainer (blocks M0)
+1. **Distribution channel:** WordPress.org (free, GPL, manual review 1–4 weeks) · separate sale/release on a site (GPL, self-update via GitHub Releases) · both (lite edition + paid edition).
+2. **Final brand name and slug** ("Lingolane" is an internal name; needs a name-conflict check). If the `tml_` prefix is changed to ≥4 characters, do it **before** there are external users.
+3. **1.0 scope:** single site, no multisite (recommended) · support Yoast + Rank Math + core sitemap (recommended) · WooCommerce deferred to 1.1.
+4. Create the GitHub repo (private first, public when released).
 
-## 3. Lộ trình
+## 3. Roadmap
 
-### M0 – Nền tảng (1–2 ngày)
-- Chốt tên/prefix; nếu đổi, đổi bằng script một lần, có test hồi quy.
-- Một nguồn phiên bản (đọc từ header plugin), script `bin/build.sh` ra zip sạch (loại `tests/`, `.git`).
-- Thay `LICENSE` bằng GPL-2.0-or-later đầy đủ; viết lại `readme.txt` tiếng Anh theo chuẩn WordPress.org (mô tả, FAQ, screenshots, changelog 1.0.0).
-- **Xong khi:** zip cài được trên WP trống, `readme.txt` qua trình kiểm readme của WordPress.org.
+### M0 – Foundation (1–2 days)
+- Finalize name/prefix; if changing, change with a one-time script and regression tests.
+- A single version source (read from the plugin header), `bin/build.sh` script producing a clean zip (excluding `tests/`, `.git`).
+- Replace `LICENSE` with the full GPL-2.0-or-later; rewrite `readme.txt` in English following the WordPress.org standard (description, FAQ, screenshots, 1.0.0 changelog).
+- **Done when:** the zip installs on an empty WP and `readme.txt` passes the WordPress.org readme validator.
 
-### M1 – Chuẩn hoá i18n (2 ngày)
-- Đổi toàn bộ chuỗi gốc sang tiếng Anh; `load_plugin_textdomain` ở `init`; sinh `languages/lingolane.pot`; xuất bản dịch `vi` (.po/.mo) từ chuỗi cũ để Teachme không mất chữ.
-- Chuỗi ghép dùng `sprintf`/`_n`, có comment `translators:`.
-- **Xong khi:** đổi ngôn ngữ quản trị sang vi vẫn ra giao diện tiếng Việt như cũ; grep ký tự tiếng Việt trong mã nguồn trả 0.
+### M1 – Standardize i18n (2 days)
+- Change all source strings to English; `load_plugin_textdomain` at `init`; generate `languages/lingolane.pot`; export the `vi` translation (.po/.mo) from the old strings so Teachme does not lose any text.
+- Composed strings use `sprintf`/`_n`, with `translators:` comments.
+- **Done when:** switching the admin language to vi still shows the Vietnamese UI as before; grepping for Vietnamese characters in the source code returns 0.
 
-### M2 – Tự động kiểm thử và chất lượng (2–3 ngày)
-- Chuyển 7 file `tests/` sang PHPUnit + `wp-env` (bỏ ràng buộc host `.local`); dữ liệu mẫu tạo trong test, không phụ thuộc CPT Teachme.
-- GitHub Actions: ma trận PHP 7.4 / 8.1 / 8.4 × WP 6.2 / mới nhất / nightly; thêm WPCS (Security, i18n, tương thích PHP 7.4) và **Plugin Check**.
-- **Xong khi:** CI xanh trên ma trận; phpcs bảo mật 0 lỗi; độ phủ các lớp Router/Urls/Elements/Strings/Shared ≥ 70%.
+### M2 – Automated testing and quality (2–3 days)
+- Convert the 7 `tests/` files to PHPUnit + `wp-env` (remove the `.local` host constraint); sample data is created in the tests, with no dependence on Teachme CPTs.
+- GitHub Actions: matrix PHP 7.4 / 8.1 / 8.4 × WP 6.2 / latest / nightly; add WPCS (Security, i18n, PHP 7.4 compatibility) and **Plugin Check**.
+- **Done when:** CI is green across the matrix; phpcs security 0 errors; coverage of the Router/Urls/Elements/Strings/Shared classes ≥ 70%.
 
-### M3 – Tương thích "website bất kỳ" (4–6 ngày)
-Kiểm trên site Local sạch cho từng ô, ghi kết quả vào `docs/COMPAT.md`:
-| Nhóm | Việc |
+### M3 – Compatibility with "any website" (4–6 days)
+Test on a clean Local site for each row, and record the results in `docs/COMPAT.md`:
+| Group | Work |
 |---|---|
-| SEO | Adapter Rank Math, AIOSEO, SEOPress; hreflang/canonical/sitemap cho `wp-sitemap.xml` lõi; chỉ gắn hook Yoast khi có Yoast |
-| Cấu hình URL | Cài thư mục con, permalink Plain (tự phát hiện + cảnh báo thay vì hỏng), HTTPS sau proxy/Cloudflare, `WP_HOME` ≠ `WP_SITEURL` |
-| Theme | Theme cổ điển (menu, widget), theme khối (FSE: block Navigation, template part), shortcode trong block |
-| Nội dung | Gutenberg, Classic, Elementor, ACF/meta sao chép khi tạo bản dịch, ảnh nổi bật, taxonomy tuỳ chỉnh qua `tml_translatable_post_types` |
-| Cache | WP Rocket, LiteSpeed, Cloudflare: tài liệu quy tắc cache theo URL ngôn ngữ, không dùng cookie ngôn ngữ làm khoá |
-| Xung đột | Phát hiện Polylang/WPML đang bật → cảnh báo và tự tạm tắt router thay vì chạy song song |
-| Multisite | 1.0: chặn kích hoạt network-wide kèm thông báo rõ (hoặc hỗ trợ đầy đủ nếu Tan chọn) |
-| Hiệu năng | Benchmark 10k bài/50k term: số truy vấn thêm, TTFB; thêm chỉ mục nếu cần |
+| SEO | Rank Math, AIOSEO, SEOPress adapters; hreflang/canonical/sitemap for the core `wp-sitemap.xml`; attach Yoast hooks only when Yoast is present |
+| URL configuration | Subdirectory install, Plain permalinks (auto-detect + warn instead of breaking), HTTPS behind a proxy/Cloudflare, `WP_HOME` ≠ `WP_SITEURL` |
+| Theme | Classic themes (menu, widget), block themes (FSE: Navigation block, template part), shortcodes in blocks |
+| Content | Gutenberg, Classic, Elementor, ACF/meta copied when creating a translation, featured image, custom taxonomies via `tml_translatable_post_types` |
+| Cache | WP Rocket, LiteSpeed, Cloudflare: document cache rules by language URL, do not use a language cookie as the key |
+| Conflicts | Detect an active Polylang/WPML → warn and automatically suspend the router instead of running side by side |
+| Multisite | 1.0: block network-wide activation with a clear message (or full support if the maintainer chooses) |
+| Performance | Benchmark 10k posts/50k terms: extra query count, TTFB; add indexes if needed |
 
-**Bổ sung từ phân tích đối thủ** ([COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P1). Học ý tưởng, tự viết mã; Polylang là GPLv3 nên không chép.
-| Mã | Việc | Gắn với |
+**Additions from competitor analysis** ([COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P1). Learn the ideas, write the code from scratch; Polylang is GPLv3, so do not copy it.
+| ID | Work | Related to |
 |---|---|---|
-| C1 | Đọc `wpml-config.xml` của theme/plugin đang bật (custom field copy/dịch, CPT, taxonomy, `admin-texts`, xpath block) | Nội dung, page builder, ACF |
-| C2 | Shim WPML API (`wpml_object_id`, `icl_object_id`, `wpml_current_language`, `wpml_element_language_details`), chỉ khi không có WPML/Polylang | Xung đột (R6) |
-| C3 | Truy vấn lọc bằng subquery không tương quan, bỏ `CONCAT`/`COLLATE`, index `(language_code, element_type, element_id)`; benchmark trước và sau | Hiệu năng (R7) |
-| C4 | Nạp cache bản dịch theo lô (`the_posts`, `get_terms`), hết hạn theo `last_changed` thay TTL 60 giây | Hiệu năng (R7) |
-| C5 | Filter `lingolane_copy_post_metas` và dịch `_thumbnail_id` khi tạo bản dịch | Nội dung |
-| C6 | Sitemap lõi `wp-sitemap.xml` đa ngôn ngữ | SEO (B5) |
-| C7 | Block `lingolane/language-switcher` (dùng được trong block Navigation) và switcher nổi tuỳ chọn | Theme khối (R3) |
-| C8 | Kiểm textdomain của theme/plugin nạp đúng ngôn ngữ của request; nếu sai, hoãn `load_textdomain` | Theme, plugin |
-- **Xong khi:** mọi ô "Đạt" hoặc "Không hỗ trợ + có cảnh báo trong plugin"; không lỗi PHP/JS ở console trên các site kiểm; C1–C8 có test PHPUnit; C3 có số liệu benchmark trước và sau ghi trong `docs/COMPAT.md`.
+| C1 | Read `wpml-config.xml` of active themes/plugins (custom field copy/translate, CPT, taxonomy, `admin-texts`, block xpath) | Content, page builders, ACF |
+| C2 | WPML API shim (`wpml_object_id`, `icl_object_id`, `wpml_current_language`, `wpml_element_language_details`), only when WPML/Polylang is absent | Conflicts (R6) |
+| C3 | Filter queries with non-correlated subqueries, drop `CONCAT`/`COLLATE`, index `(language_code, element_type, element_id)`; benchmark before and after | Performance (R7) |
+| C4 | Load the translation cache in batches (`the_posts`, `get_terms`), expire by `last_changed` instead of a 60-second TTL | Performance (R7) |
+| C5 | Filter `lingolane_copy_post_metas` and translate `_thumbnail_id` when creating a translation | Content |
+| C6 | Multilingual core sitemap `wp-sitemap.xml` | SEO (B5) |
+| C7 | `lingolane/language-switcher` block (usable inside the Navigation block) and an optional floating switcher | Block themes (R3) |
+| C8 | Check that the textdomain of themes/plugins loads in the request language; if wrong, defer `load_textdomain` | Themes, plugins |
+- **Done when:** every row is "Passed" or "Not supported + a warning in the plugin"; no PHP/JS errors in the console on the tested sites; C1–C8 have PHPUnit tests; C3 has before-and-after benchmark figures recorded in `docs/COMPAT.md`.
 
-### M4 – Trải nghiệm lần đầu (2 ngày)
-- **C9** Trình hướng dẫn cài đặt: ngôn ngữ gốc và phụ → kiểu URL → gán ngôn ngữ mặc định cho nội dung cũ → trang chủ từng ngôn ngữ → vị trí switcher (xem trước) → "Dịch trang đầu tiên"; không đổi URL hiện có cho tới khi người dùng xác nhận.
-- **C10** Nút "Dịch trang này" trên admin bar: thanh bên frontend liệt kê bản dịch của trang (tạo/sửa) và các chuỗi gettext thật sự xuất hiện trên trang, dịch ngay tại chỗ.
-- **C11** Trạng thái "bản dịch lỗi thời" khi bài gốc sửa sau bản dịch (cột danh sách, metabox, thống kê); bảng chuỗi thêm cột `status` (máy/người).
-- **C12** Registry cấu hình có schema, làm nền cho trang cài đặt và nhập/xuất cấu hình.
-- Tuỳ chọn "xoá dữ liệu khi gỡ cài đặt" (mặc định tắt), nhập/xuất cấu hình, công cụ nhập chỉ-đọc từ Polylang/WPML.
-- Chi tiết và nguồn: [COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P2.
-- Kiểm trợ năng WCAG 2.2 AA cho trang quản trị và nút chuyển ngôn ngữ.
-- **Xong khi:** người mới cài xong và có trang đầu tiên được dịch trong < 5 phút (đo trên 3 người thử).
+### M4 – First-run experience (2 days)
+- **C9** Setup wizard: source and additional languages → URL format → assign the default language to existing content → homepage per language → switcher position (preview) → "Translate the first page"; do not change existing URLs until the user confirms.
+- **C10** "Translate this page" button on the admin bar: a frontend sidebar lists the page's translations (create/edit) and the gettext strings that actually appear on the page, translated in place.
+- **C11** "Outdated translation" status when the source post is edited after the translation (list column, metabox, statistics); the strings table gains a `status` column (machine/human).
+- **C12** Configuration registry with a schema, as the foundation for the settings page and configuration import/export.
+- "Delete data on uninstall" option (off by default), configuration import/export, read-only import tool from Polylang/WPML.
+- Details and sources: [COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P2.
+- Check WCAG 2.2 AA accessibility for the admin pages and the language switch button.
+- **Done when:** a new user finishes installing and has the first page translated in < 5 minutes (measured with 3 testers).
 
-### M5 – Phát hành (2–3 ngày) · chờ Tan duyệt
-- Beta kín 5–10 site thật (gồm Teachme chuyển từ bản cũ), thu lỗi 1 tuần.
-- Chính sách riêng tư/khai báo dữ liệu, `SECURITY.md`, `CONTRIBUTING.md`, ảnh chụp màn hình, banner.
-  - `SECURITY.md` đã có; nút "Report privately" ở tab Support trỏ tới email bảo mật `tan.oucru@gmail.com` (Tan đã duyệt 2026-10-23). Kênh nhận báo cáo bảo mật đã hoàn tất.
-- Tag `v1.0.0`, GitHub Release kèm zip; nộp WordPress.org nếu chọn kênh đó; cơ chế cập nhật (WordPress.org hoặc updater qua GitHub Releases).
-- **Xong khi:** không còn lỗi nghiêm trọng sau 7 ngày beta; Tan duyệt tạo repo public/đăng.
+### M5 – Release (2–3 days) · awaiting the maintainer's approval
+- Closed beta on 5–10 real sites (including Teachme moving from the old version), collect bugs for 1 week.
+- Privacy policy/data disclosure, `SECURITY.md`, `CONTRIBUTING.md`, screenshots, banner.
+  - `SECURITY.md` exists; the "Report privately" button on the Support tab points to the security email address (approved by the maintainer on 2026-10-23). The channel for receiving security reports is complete.
+- Tag `v1.0.0`, GitHub Release with the zip; submit to WordPress.org if that channel is chosen; update mechanism (WordPress.org or an updater via GitHub Releases).
+- **Done when:** no serious bugs remain after 7 days of beta; the maintainer approves creating the public repo/publishing.
 
-### M6 – Sau phát hành
-WooCommerce (1.1), dịch tự động tuỳ chọn (cần Tan duyệt chi phí và quyền riêng tư), multisite, kênh hỗ trợ và quy trình vá lỗi. Thêm C13 (sync, dịch option, URL domain/subdomain, REST `lang`) và C14 (phát hiện ngôn ngữ trình duyệt, ngôn ngữ ưa thích của người dùng, bộ nhớ dịch, dịch máy có trạng thái) theo [COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P3.
+### M6 – After release
+WooCommerce (1.1), optional automatic translation (requires the maintainer's approval of cost and privacy), multisite, support channel and bug-fix process. Add C13 (sync, option translation, domain/subdomain URLs, REST `lang`) and C14 (browser language detection, user's preferred language, translation memory, machine translation with status) per [COMPETITOR-ANALYSIS.md](COMPETITOR-ANALYSIS.md) §3, P3.
 
-## 4. Thứ tự và phụ thuộc
-M0 → (M1 ∥ M2) → M3 → M4 → M5. M1 và M2 độc lập nên chạy song song; M3 cần CI của M2 và chuỗi tiếng Anh của M1. Ước tính 2,5–3 tuần làm việc cho một người.
+## 4. Order and dependencies
+M0 → (M1 ∥ M2) → M3 → M4 → M5. M1 and M2 are independent so can run in parallel; M3 needs M2's CI and M1's English strings. Estimated 2,5–3 working weeks for one person.
 
-## 5. Chuyển Teachme sang bản mới
-Bảng DB `tml_translations`/`tml_strings` giữ nguyên tên nên không cần di chuyển dữ liệu. Chỉ cần kích hoạt bản mới thay bản cũ, thêm mu-plugin filter (README), và đổi `is_tutor` thành `is_gated` nếu theme/plugin Teachme có gọi. Làm trên Local trước; live cần Tan duyệt.
+## 5. Moving Teachme to the new version
+The DB tables `tml_translations`/`tml_strings` keep their names, so no data migration is needed. Just activate the new version in place of the old one, add the mu-plugin filter (README), and change `is_tutor` to `is_gated` if Teachme themes/plugins call it. Work on Local first; live requires the maintainer's approval.
 
-## 6. Nhật ký thực hiện
-**2026-10-21 · M0 (phần làm được không cần site thật) · Đã quyết:** chọn cả WordPress.org (bản lite) và phát hành riêng (Tan duyệt); tên **Lingolane**, slug/text-domain `lingolane`, tiền tố `lingolane_`/`LINGOLANE_`/`Lingolane_*` (kiểm API WordPress.org: slug `lingolane` chưa tồn tại, tìm kiếm tên không ra kết quả tương tự). Lý do: tên ngắn, không mang tên Teachme, prefix dài đủ tránh trùng. Hoàn tác: `git revert` commit đổi tên.
-Đã xong: đổi tên toàn bộ, chuyển dữ liệu `tml_` → `lingolane_` khi kích hoạt, lớp tương thích `TML_*`, GPL-2.0 đầy đủ, `readme.txt` tiếng Anh, `bin/build.sh` (kiểm phiên bản khớp 3 nơi, lint, zip không gồm tests; chạy thử ra 27 file).
-Chưa xong M0: kiểm readme bằng trình kiểm của WordPress.org; cài thử zip trên WP sạch (site Local `check` đã có Plugin Check, chờ Tan cho phép cài thử); kiểm trùng thương hiệu "Lingolane" ngoài WordPress.org (chưa tra cứu nhãn hiệu).
+## 6. Implementation log
+**2026-10-21 · M0 (the part that can be done without a real site) · Decided independently:** chose both WordPress.org (lite edition) and separate release (approved by the maintainer); name **Lingolane**, slug/text-domain `lingolane`, prefixes `lingolane_`/`LINGOLANE_`/`Lingolane_*` (WordPress.org API check: slug `lingolane` does not exist yet, name search returned no similar results). Reason: short name, not carrying the Teachme name, a prefix long enough to avoid collisions. Rollback: `git revert` the rename commit.
+Done: full rename, data migration `tml_` → `lingolane_` on activation, `TML_*` compatibility classes, full GPL-2.0, English `readme.txt`, `bin/build.sh` (checks the version matches in 3 places, lint, zip without tests; a trial run produced 27 files).
+M0 not yet done: check the readme with the WordPress.org validator; test-install the zip on a clean WP (the Local site `check` already has Plugin Check, awaiting the maintainer's permission for a trial install); check the "Lingolane" brand for conflicts outside WordPress.org (no trademark search yet).
 
-**2026-10-21 · M0 nghiệm thu trên site Local `check` (WP 7.1.2, PHP 8.2.29, MySQL 8.4.0, theme khối Twenty Twenty-Five, permalink `/%postname%/`):**
-- Cài từ chính file zip `dist/lingolane-1.0.0-dev.zip` và kích hoạt: đạt; tạo 2 bảng `wp_lingolane_strings`, `wp_lingolane_translations`; `lingolane_db_version` = 0.4.0; class và alias `TML_*` nạp được.
-- **Lỗi thật tìm thấy và đã sửa:** sau khi gỡ danh sách Teachme, danh sách dùng chung mặc định rỗng làm truy vấn sinh `IN ()` → lỗi cú pháp SQL ở `class-lingolane-query.php` và `class-lingolane-shared.php`. Đã thêm xử lý danh sách rỗng. Đã thay `seems_utf8()` (lỗi thời từ WP 6.9) bằng kiểm UTF-8 không phụ thuộc phiên bản; rút gọn mô tả readme còn 115 ký tự.
-- **Bộ test (7 file `wp eval-file`):** 112 kiểm tra, 0 lỗi (elements 14, urls 13, router 34, shared 9, default 16, admin 14, strings 12). Test được viết lại để tự chứa: cấu hình ngôn ngữ cố định và tự khai báo CPT/taxonomy thay vì dựa vào Teachme.
-- **Plugin Check 2.1.0 (lần chạy sạch):** 20 lỗi + 126 cảnh báo, 0 phát hiện ngoài nhóm sau. 20 lỗi đều là `PreparedSQL.NotPrepared`/`UnescapedDBParameter` tại `class-lingolane-elements.php:64`, `class-lingolane-admin.php:539-541`, `class-lingolane-stats.php:39,57,61,76` (SQL ghép từ đoạn đã `prepare`, cần tách lại thành một lệnh `prepare` hoặc ghi chú bỏ qua có lý do). Cảnh báo: truy vấn trực tiếp bảng riêng không dùng cache (~85), nội suy tên bảng (20), hook `gettext` và 2 hàm `tml_*` của lớp tương thích bản cũ (cần loại `compat-legacy.php` khỏi bản WordPress.org lite). Một lần chạy lẻ báo 240 phát hiện kèm đường dẫn `Projects/tests/…` không tồn tại; không giải thích được, chạy lại cho kết quả 146.
-- **Việc chuyển sang M2:** xử lý 20 lỗi SQL; bản lite bỏ `compat-legacy.php`; trình kiểm readme của WordPress.org; kiểm nhãn hiệu "Lingolane".
-- **Chưa kiểm:** giao diện thật trên frontend (chưa có bài viết, chưa gọi URL `/vi/`), nâng cấp từ bảng `tml_*` thật (chưa chạy migration trên dữ liệu Teachme), PHP 7.4/8.4, Rank Math/Yoast.
+**2026-10-21 · M0 acceptance on the Local site `check` (WP 7.1.2, PHP 8.2.29, MySQL 8.4.0, Twenty Twenty-Five block theme, `/%postname%/` permalinks):**
+- Installed from the actual zip file `dist/lingolane-1.0.0-dev.zip` and activated: passed; created 2 tables `wp_lingolane_strings`, `wp_lingolane_translations`; `lingolane_db_version` = 0.4.0; classes and `TML_*` aliases load.
+- **Real bugs found and fixed:** after removing the Teachme lists, the empty default shared list made queries generate `IN ()` → SQL syntax errors in `class-lingolane-query.php` and `class-lingolane-shared.php`. Added empty-list handling. Replaced `seems_utf8()` (deprecated since WP 6.9) with a version-independent UTF-8 check; shortened the readme description to 115 characters.
+- **Test suite (7 `wp eval-file` files):** 112 checks, 0 errors (elements 14, urls 13, router 34, shared 9, default 16, admin 14, strings 12). The tests were rewritten to be self-contained: fixed language configuration and their own CPT/taxonomy declarations instead of relying on Teachme.
+- **Plugin Check 2.1.0 (clean run):** 20 errors + 126 warnings, 0 findings outside the following group. All 20 errors are `PreparedSQL.NotPrepared`/`UnescapedDBParameter` at `class-lingolane-elements.php:64`, `class-lingolane-admin.php:539-541`, `class-lingolane-stats.php:39,57,61,76` (SQL assembled from fragments already passed through `prepare`; needs to be restructured into a single `prepare` call or given a justified ignore comment). Warnings: direct queries to custom tables without caching (~85), table-name interpolation (20), the `gettext` hook and 2 `tml_*` functions of the legacy compatibility layer (`compat-legacy.php` must be excluded from the WordPress.org lite edition). One isolated run reported 240 findings with nonexistent `Projects/tests/…` paths; unexplained, and a rerun gave 146.
+- **Carried over to M2:** fix the 20 SQL errors; the lite edition drops `compat-legacy.php`; the WordPress.org readme validator; "Lingolane" trademark check.
+- **Not checked:** the real frontend UI (no posts yet, the `/vi/` URL has not been requested), upgrade from real `tml_*` tables (migration not run on Teachme data), PHP 7.4/8.4, Rank Math/Yoast.
 
-**2026-10-21 · M1 chuẩn hoá i18n · xong:**
-- 264 chuỗi gốc tiếng Việt (249 ở lượt đầu + 15 chuỗi bộ lọc ký tự bỏ sót ở lượt hai) đổi sang tiếng Anh trong 7 file PHP; 8 thông báo lỗi trước đây không bọc hàm dịch (`class-lingolane-elements.php`) nay dùng `__()`; chuỗi số nhiều `%s item/%s items`. Các chuỗi còn nhắc "TeachMe", "hồ sơ gia sư" được viết lại trung tính. Còn lại duy nhất tên bản địa của ngôn ngữ (Português, Français, Español, Tiếng Việt…) – giữ nguyên có chủ ý.
-- `lingolane.php`: thêm `Domain Path: /languages` và `load_plugin_textdomain( 'lingolane', … )` ở `init` ưu tiên 0.
-- `languages/lingolane.pot` (270 msgid, sinh bằng `wp i18n make-pot`), `lingolane-vi.po` (266 mục = 264 chuỗi giao diện + mô tả plugin + “Locale”; vi giữ nguyên câu chữ gốc; 4 msgid metadata của header plugin như tên, URI không cần dịch), `lingolane-vi.mo`.
-- `bin/make-mo.py` biên dịch `.po` → `.mo` không cần gettext (máy không có `msgfmt`, WP-CLI 2.4.0 không có `make-mo`); `bin/build.sh` gọi script này và đưa `languages/` vào zip.
-- Kiểm chứng trên site `check`: bảng đăng ký textdomain trỏ đúng `languages/` cho locale `vi`; nạp lười (JIT) trả `Cài đặt`, `3 mục` (số nhiều), `Lingolane — Ngôn ngữ`; chuỗi ngoài danh mục giữ tiếng Anh. Bộ test: 112/112 đạt sau đổi chuỗi. Plugin Check: 147 phát hiện (20 lỗi SQL như cũ, 0 lỗi i18n; +1 cảnh báo `load_plugin_textdomain`).
-- **Việc chuyển tiếp:** bản WordPress.org lite bỏ `load_plugin_textdomain` và `compat-legacy.php` (dịch qua translate.wordpress.org; bản phát hành riêng vẫn dùng `languages/`); thêm comment `/* translators: */` cho chuỗi nhiều placeholder và dùng `_n()` đúng chỗ (WPCS, M2); chưa kiểm giao diện quản trị trên trình duyệt ở locale `vi`; `.po` chưa qua trình kiểm của Poedit/GlotPress.
+**2026-10-21 · M1 i18n standardization · done:**
+- 264 Vietnamese source strings (249 in the first pass + 15 strings missed by the character filter in the second pass) changed to English across 7 PHP files; 8 error messages previously not wrapped in a translation function (`class-lingolane-elements.php`) now use `__()`; plural strings `%s item/%s items`. Strings that still mentioned "TeachMe" and "tutor profiles" were rewritten neutrally. The only things left are the native names of languages (Português, Français, Español, Tiếng Việt…) – kept as is on purpose.
+- `lingolane.php`: added `Domain Path: /languages` and `load_plugin_textdomain( 'lingolane', … )` at `init` priority 0.
+- `languages/lingolane.pot` (270 msgid, generated with `wp i18n make-pot`), `lingolane-vi.po` (266 entries = 264 UI strings + plugin description + “Locale”; vi keeps the original wording; the 4 plugin header metadata msgids such as name and URI need no translation), `lingolane-vi.mo`.
+- `bin/make-mo.py` compiles `.po` → `.mo` without gettext (the machine has no `msgfmt`, WP-CLI 2.4.0 has no `make-mo`); `bin/build.sh` calls this script and puts `languages/` into the zip.
+- Verified on the site `check`: the textdomain registry points to the correct `languages/` for locale `vi`; lazy (JIT) loading returns `Cài đặt` (Settings), `3 mục` (3 items, plural), `Lingolane — Ngôn ngữ` (Lingolane — Languages); strings outside the catalog stay in English. Test suite: 112/112 passed after the string change. Plugin Check: 147 findings (20 SQL errors as before, 0 i18n errors; +1 `load_plugin_textdomain` warning).
+- **Carried-over work:** the WordPress.org lite edition drops `load_plugin_textdomain` and `compat-legacy.php` (translation via the WordPress.org translation service; the separate release still uses `languages/`); add `/* translators: */` comments for strings with multiple placeholders and use `_n()` where appropriate (WPCS, M2); the admin UI in locale `vi` has not been checked in a browser; the `.po` has not been validated by Poedit/GlotPress.
 
-**2026-10-21 · M2 chất lượng và kiểm thử tự động · xong phần chạy được cục bộ:**
-- **20 lỗi SQL của Plugin Check → 0.** Nguyên nhân chung: chuỗi SQL được dựng ngoài lệnh `prepare()` (biến `$sql`, nối chuỗi bằng hàm). Sửa thật ở `class-lingolane-elements.php` (đưa `prepare()` thẳng vào `query()`), `class-lingolane-stats.php` (`source_sql()` dùng placeholder cho mọi danh sách `IN`, bỏ helper `in_list`) và `class-lingolane-admin.php` (`$type_sql` tách ra biến). Các cảnh báo còn lại chỉ là tên bảng/danh sách placeholder không thể bind; có ghi chú `phpcs:ignore` kèm lý do ở các điểm tự dựng.
-- **Phát hiện về phép đo:** `wp plugin check lingolane` chạy khi thư mục hiện tại chứa `./lingolane` sẽ kiểm *thư mục mã nguồn trong repo* (kể cả `tests/`, `.DS_Store`) thay vì plugin đã cài, đó là nguyên nhân của con số 240 bất thường ở M0/M1. Luôn chạy từ thư mục trung lập (`cd /tmp`). Kết quả đúng: **0 lỗi, 136 cảnh báo** (truy vấn bảng riêng, tên bảng, hook `gettext`, 2 hàm `tml_*` của lớp tương thích bản cũ, `load_plugin_textdomain`).
-- **PHPUnit:** 7 script `wp eval-file` cũ (112 phép kiểm) chuyển thành 7 lớp trong `tests/phpunit/` + lớp nền `Lingolane_TestCase` (cấu hình ngôn ngữ cố định, permalink đẹp, fixture dùng chung, khôi phục trạng thái ngoài DB): **40 test, 126 assertion đạt**, mỗi test chạy trong transaction nên không cần dọn dẹp. Bản cũ đã xoá (còn trong git, commit `f75debf`). Kiểm đột biến: tái hiện lỗi `IN ()` của M0 thì PHPUnit thất bại như mong đợi, sửa lại thì xanh.
-- **Chạy được trên:** PHP 7.4.30 và PHP 8.2.29 thật (Local) với lõi WP 7.1.2: cả hai 40/40. `php -l` sạch trên 7.4 / 8.2 / 8.4.
-- **phpcs (WPCS 3.1 + PHPCompatibilityWP, `.phpcs.xml.dist`):** 0 lỗi, 26 cảnh báo. `NotPrepared` vẫn là lỗi chặn; `InterpolatedNotPrepared`/`UnfinishedPrepare` hạ xuống cảnh báo; `DirectQuery`/`NoCaching` tắt có lý do (bảng riêng, có cache ở `Lingolane_Elements`/`Lingolane_Strings`); `compat-legacy.php` loại khỏi kiểm tiền tố.
-- **Hạ tầng CI (đã viết, CHƯA chạy được ở đây):** `.wp-env.json`, `.github/workflows/ci.yml` (5 job: phpcs, `php -l` 7.4/8.1/8.4, PHPUnit qua wp-env với PHP 7.4+WP 6.2.2 / PHP 8.1+WP mới nhất / PHP 8.4 thử nghiệm, Plugin Check qua `bin/plugin-check-gate.py`, đóng gói zip + kiểm nội dung), `composer.json` (scripts `test`/`lint`/`build`, platform PHP 7.4.33). Đã kiểm cú pháp YAML bằng Ruby, kiểm script gate trên kết quả thật (trước sửa: thoát mã 1 với 20 lỗi; sau sửa: mã 0) và các bước `package` chạy tay.
-- **Rủi ro chưa kiểm chứng** (máy không có Docker, repo chưa có remote GitHub nên chưa chạy workflow lần nào): (1) `tests-cli` của wp-env có đặt `WP_TESTS_DIR` như bootstrap giả định hay không, nếu không bootstrap rơi về `wp-phpunit` của Composer (bản 7.1.1, có thể lệch với WP 6.2); (2) cách chỉ định lõi 6.2.2 bằng URL zip và hình ảnh Docker PHP 8.4 của wp-env; (3) định dạng đầu ra `wp plugin check --format=json` của bản Plugin Check mới nhất có thể khác bản 2.1.0 đã dùng để viết script gate. Lần chạy CI đầu tiên cần được xem lại từng job.
-- **Còn lại của M2:** chạy CI thật sau khi có repo GitHub; ngưỡng độ phủ ≥ 70% chưa đo (cần Xdebug/PCOV); thêm comment `translators:` cho chuỗi nhiều placeholder; bản WordPress.org lite bỏ `compat-legacy.php` và `load_plugin_textdomain`.
+**2026-10-21 · M2 quality and automated testing · done for the part that can run locally:**
+- **20 Plugin Check SQL errors → 0.** Common cause: SQL strings built outside the `prepare()` call (a `$sql` variable, string concatenation via functions). Real fixes in `class-lingolane-elements.php` (put `prepare()` directly into `query()`), `class-lingolane-stats.php` (`source_sql()` uses placeholders for every `IN` list, removed the `in_list` helper) and `class-lingolane-admin.php` (`$type_sql` split out into a variable). The remaining warnings are only table names/placeholder lists that cannot be bound; there are `phpcs:ignore` notes with reasons at the hand-built spots.
+- **Finding about the measurement:** running `wp plugin check lingolane` while the current directory contains `./lingolane` checks the *source directory in the repo* (including `tests/`, `.DS_Store`) instead of the installed plugin; that was the cause of the abnormal figure of 240 in M0/M1. Always run from a neutral directory (`cd /tmp`). The correct result: **0 errors, 136 warnings** (custom-table queries, table names, the `gettext` hook, 2 `tml_*` functions of the legacy compatibility layer, `load_plugin_textdomain`).
+- **PHPUnit:** the 7 old `wp eval-file` scripts (112 checks) converted into 7 classes in `tests/phpunit/` + the base class `Lingolane_TestCase` (fixed language configuration, pretty permalinks, shared fixtures, restoration of non-DB state): **40 tests, 126 assertions passed**, each test runs in a transaction so no cleanup is needed. The old versions were deleted (still in git, commit `f75debf`). Mutation check: reproducing M0's `IN ()` bug makes PHPUnit fail as expected, and fixing it again turns it green.
+- **Runs on:** real PHP 7.4.30 and PHP 8.2.29 (Local) with WP core 7.1.2: both 40/40. `php -l` clean on 7.4 / 8.2 / 8.4.
+- **phpcs (WPCS 3.1 + PHPCompatibilityWP, `.phpcs.xml.dist`):** 0 errors, 26 warnings. `NotPrepared` remains a blocking error; `InterpolatedNotPrepared`/`UnfinishedPrepare` downgraded to warnings; `DirectQuery`/`NoCaching` turned off with a reason (custom tables, caching in `Lingolane_Elements`/`Lingolane_Strings`); `compat-legacy.php` excluded from the prefix check.
+- **CI infrastructure (written, NOT yet runnable here):** `.wp-env.json`, `.github/workflows/ci.yml` (5 jobs: phpcs, `php -l` 7.4/8.1/8.4, PHPUnit via wp-env with PHP 7.4+WP 6.2.2 / PHP 8.1+latest WP / PHP 8.4 experimental, Plugin Check via `bin/plugin-check-gate.py`, zip packaging + content check), `composer.json` (scripts `test`/`lint`/`build`, platform PHP 7.4.33). YAML syntax checked with Ruby, the gate script checked against real results (before the fix: exit code 1 with 20 errors; after the fix: code 0) and the `package` steps run by hand.
+- **Unverified risks** (the machine has no Docker, the repo has no GitHub remote so the workflow has never run): (1) whether wp-env's `tests-cli` sets `WP_TESTS_DIR` as the bootstrap assumes; if not, the bootstrap falls back to Composer's `wp-phpunit` (version 7.1.1, which may mismatch WP 6.2); (2) how core 6.2.2 is specified via a zip URL and wp-env's PHP 8.4 Docker image; (3) the output format of `wp plugin check --format=json` in the latest Plugin Check may differ from version 2.1.0 used to write the gate script. The first CI run needs every job reviewed.
+- **Remaining in M2:** run real CI once the GitHub repo exists; the ≥ 70% coverage threshold is not measured yet (needs Xdebug/PCOV); add `translators:` comments for strings with multiple placeholders; the WordPress.org lite edition drops `compat-legacy.php` and `load_plugin_textdomain`.
 
-**2026-10-21 · Danh mục ngôn ngữ và tải gói dịch theo nhu cầu (yêu cầu của Tan):**
-- `Lingolane_Catalog` thay 18 ngôn ngữ gắn cứng: danh mục lấy từ `wp_get_available_translations()` (API WordPress.org, core cache sẵn), cộng 44 ngôn ngữ dự phòng khi mất mạng; bỏ biến thể ba phần (`de_DE_formal`, `pt_PT_ao90`…). Mã URL = mã ngôn ngữ; locale thứ hai cùng ngôn ngữ thêm vùng (`pt-br`, `en-gb`, `fr-ca`); giữ nguyên `en`/`pt`/`zh`/`zh-tw` như bản cũ. Bộ chọn chia nhóm "Phổ biến" (24) và "Tất cả".
-- `Lingolane_Packs`: thêm ngôn ngữ (hoặc đổi locale) thì tải gói lõi bằng `wp_download_language_pack()`, rồi bản dịch theme/plugin của đúng locale đó qua `Language_Pack_Upgrader`; lọc `plugins_update_check_locales`/`themes_update_check_locales` để cập nhật bản dịch tự động phủ mọi ngôn ngữ của site. Lỗi tải không chặn việc thêm ngôn ngữ (thông báo vàng). Bảng ngôn ngữ có cột "Bản dịch" (Đã cài/Chưa cài + nút Tải về/Cập nhật).
-- Kiểm chứng: PHPUnit 52 test/221 assertion đạt trên PHP 8.2 và 7.4 (12 test mới, không gọi mạng); kiểm đột biến bỏ lệnh tải thì 2 test thất bại; phpcs 0 lỗi, 26 cảnh báo (không đổi). Chạy thật trên site Local `check`: danh mục 131 ngôn ngữ (API trả 135, trừ 5 biến thể, cộng en_US); tải `fr_FR` mất 10,5 giây, có gói lõi và 20 tệp bản dịch theme/plugin (gói fr_FR để lại trên site `check`).
-- Chưa kiểm: giao diện trang Ngôn ngữ trên trình duyệt; host không cho ghi tệp (`DISALLOW_FILE_MODS`, FTP); multisite.
+**2026-10-21 · Language catalog and on-demand translation pack download (requested by the maintainer):**
+- `Lingolane_Catalog` replaces the 18 hardcoded languages: the catalog comes from `wp_get_available_translations()` (WordPress.org API, already cached by core), plus 44 fallback languages when offline; three-part variants are dropped (`de_DE_formal`, `pt_PT_ao90`…). URL code = language code; a second locale of the same language adds a region (`pt-br`, `en-gb`, `fr-ca`); `en`/`pt`/`zh`/`zh-tw` are kept as in the old version. The selector is split into the groups "Popular" (24) and "All".
+- `Lingolane_Packs`: when a language is added (or the locale is changed), download the core pack with `wp_download_language_pack()`, then the theme/plugin translations for exactly that locale via `Language_Pack_Upgrader`; filter `plugins_update_check_locales`/`themes_update_check_locales` so automatic translation updates cover every language of the site. A download failure does not block adding the language (yellow notice). The language table has a "Translations" column (Installed/Not installed + Download/Update button).
+- Verification: PHPUnit 52 tests/221 assertions passed on PHP 8.2 and 7.4 (12 new tests, no network calls); mutation check by removing the download command makes 2 tests fail; phpcs 0 errors, 26 warnings (unchanged). Real run on the Local site `check`: catalog of 131 languages (API returned 135, minus 5 variants, plus en_US); downloading `fr_FR` took 10,5 seconds, with the core pack and 20 theme/plugin translation files (the fr_FR pack was left on the site `check`).
+- Not checked: the Languages page UI in a browser; hosts that do not allow file writes (`DISALLOW_FILE_MODS`, FTP); multisite.
 
-**2026-10-22 · P2 Hệ giao diện SaaS sáng (kế hoạch `docs/plans/2026-10-22-p2-design-system.md`, nhánh `feat/p2-design-system`):**
-- Task 1–6: token màu/kích thước và phạm vi CSS `body.lingolane-screen`; bộ icon Lucide (ISC, chép vào `assets/icons.php`) qua `Lingolane_UI::icon()` thay dashicons trong trang (menu quản trị vẫn dùng dashicon); thành phần chung và restyle 6 tab; toast thay thông báo WordPress (thành công/thông tin tự ẩn sau 5 giây, tạm dừng khi rê chuột/focus; lỗi/cảnh báo giữ lại); minh hoạ SVG cho màn hình trống, hoàn thành và khối chào.
-- Task 7 phần A: `bin/ui-preview.sh` dựng `dist/ui-preview/{overview,content,strings,languages,settings,guide}.html` (kèm bản sao CSS/JS lõi và plugin, xem không cần đăng nhập; overview và settings có toast mẫu). `.pot` sinh lại (291 chuỗi, thêm 8), thêm 8 bản dịch vi (Notifications → Thông báo, Dismiss notification → Đóng thông báo, khối chào, màn hình "đã dịch xong").
-- Kiểm chứng: PHPUnit 78 test/393 assertion đạt trên PHP 8.2.29 và 7.4.30; phpcs 0 lỗi, 26 cảnh báo (đúng mốc); zip có `admin/class-lingolane-ui.php`, `assets/icons.php`, `assets/LICENSE-lucide.txt`, 3 file `assets/illustrations/*.svg`; Plugin Check 0 lỗi, 136 cảnh báo, trùng từng file/mã với lần chạy trước P2 (không cảnh báo mới).
-- QA trình duyệt (1280px và 375px): ĐẠT — icon thẳng hàng trong tab (lệch 0px ×6), không cuộn ngang cấp trang ở 375px trên cả 6 tab (tab/bảng cuộn trong khung riêng), viền focus bàn phím 2px #4f46e5 cách 2px, có luật reduced-motion, minh hoạ hiển thị, toast thành công tự ẩn. Đã sửa sau QA: toast che các nút ngôn ngữ ở đầu trang (chuyển xuống góc dưới phải, <782px full-width), chân trang còn credit cũ (nay "Lingolane <phiên bản> · Developed by @tannguyen", dịch được), nút đóng toast hiện khi tắt JS.
-- Chưa kiểm: CI PHP 8.1/8.4 (chưa có remote), viền focus khi bấm chuột trên nút của WP.
+**2026-10-22 · P2 Light SaaS UI system (plan `docs/plans/2026-10-22-p2-design-system.md`, branch `feat/p2-design-system`):**
+- Tasks 1–6: color/size tokens and the CSS scope `body.lingolane-screen`; Lucide icon set (ISC, copied into `assets/icons.php`) via `Lingolane_UI::icon()` replacing dashicons in the pages (the admin menu still uses a dashicon); shared components and a restyle of 6 tabs; toasts replace WordPress notices (success/info auto-hide after 5 seconds, pause on hover/focus; errors/warnings stay); SVG illustrations for the empty screen, completion and the welcome block.
+- Task 7 part A: `bin/ui-preview.sh` builds `dist/ui-preview/{overview,content,strings,languages,settings,guide}.html` (with copies of the core and plugin CSS/JS, viewable without logging in; overview and settings have sample toasts). `.pot` regenerated (291 strings, 8 added), 8 vi translations added (Notifications → Thông báo, Dismiss notification → Đóng thông báo, the welcome block, the "translation complete" screen).
+- Verification: PHPUnit 78 tests/393 assertions passed on PHP 8.2.29 and 7.4.30; phpcs 0 errors, 26 warnings (matches the baseline); the zip contains `admin/class-lingolane-ui.php`, `assets/icons.php`, `assets/LICENSE-lucide.txt`, 3 `assets/illustrations/*.svg` files; Plugin Check 0 errors, 136 warnings, identical file by file/code to the run before P2 (no new warnings).
+- Browser QA (1280px and 375px): PASSED — icons aligned in the tabs (0px offset ×6), no page-level horizontal scroll at 375px on all 6 tabs (tabs/tables scroll in their own frame), keyboard focus outline 2px #4f46e5 with a 2px offset, reduced-motion rules present, illustrations displayed, success toast auto-hides. Fixed after QA: the toast covered the language buttons at the top of the page (moved to the bottom right, full-width at <782px), the footer still had the old credit (now "Lingolane <version> · Developed by @tannguyen", translatable), the toast close button shown when JS is off.
+- Not checked: CI PHP 8.1/8.4 (no remote yet), focus outline when clicking a WP button with the mouse.
 
-**2026-10-22 · P1 Danh sách Trang/Bài viết dạng cây (kế hoạch docs/plans/2026-10-22-p1-tree-list.md, nhánh feat/p1-tree-list):**
-- Task 1–6: truy vấn dạng cây và nạp nhóm với ≤ 3 SQL; dòng bản dịch do `WP_Posts_List_Table` dựng trong template; dòng thiếu bản dịch và nhãn tiến độ; `tree.js` gập/mở từng nhóm hoặc tất cả, nhớ trạng thái và giữ nhóm sau Sửa nhanh; giữ phân cấp trang và chuyển về danh sách phẳng khi lọc.
-- Task 7 phần chạy offline: thêm `bin/tree-fixture.sh` để build/cài plugin và chuẩn bị dữ liệu mẫu có khóa meta `_lingolane_fixture`, tái sử dụng ID; bật thêm fr, tạo trang/bài viết en–vi, bản nháp, trang con, bản dịch mồ côi và trang chưa gán ngôn ngữ. Script có chặn nhầm host và thùng rác bị tắt; chỉ kiểm cú pháp, chưa chạy trên site. Sinh lại `.pot`, thêm đủ 7 bản dịch vi mới và biên dịch `.mo`; README thêm dòng về danh sách cây.
-- Kiểm chứng offline: PHPUnit 117 test/818 assertion đạt trên cả PHP 8.2 và 7.4; `composer lint` đạt, phpcs 0 lỗi/26 cảnh báo; `node --check` đạt cho `admin.js` và `tree.js`; `bash -n` và `php -l` đoạn PHP fixture đạt. `bin/build.sh` đạt; `unzip -l` xác nhận zip có `lingolane/admin/class-lingolane-tree.php` và `lingolane/assets/tree.js`.
-- QA trình duyệt (1280px và 375px trên check.local): ĐẠT — cột Ngôn ngữ sau Tiêu đề; cây gập/mở từng nhóm và Mở tất cả/Gập tất cả chuẩn xác; nhớ trạng thái qua localStorage sau khi tải lại trang; gập nhóm tự động bỏ tick checkbox bài con để bulk action không gửi nhầm bài ẩn; bản dịch trong Thùng rác không bị tính là "chưa dịch"; Quick Edit gập/mở cùng nhóm và giữ vị trí sau khi lưu/huỷ; tìm kiếm mở nhóm và tô nổi dòng khớp; lọc ngôn ngữ tự phẳng danh sách; ở 375px không cuộn ngang cấp trang; 0 lỗi console.
-- Kiểm chứng tổng thể: chạy fixture hai lần (lần 1 tạo 15 bài, lần 2 tái sử dụng 100% không sinh trùng bài); PHPUnit đạt 117 test/820 assertion trên cả PHP 8.2 và 7.4; phpcs 0 lỗi, 26 cảnh báo; Plugin Check 0 lỗi; zip đóng gói đầy đủ mã cây và tài nguyên. Đã sửa lỗi thẻ th scope="row" của WP 7.1+ cho selector tiêu đề.
+**2026-10-22 · P1 Tree-style Pages/Posts list (plan docs/plans/2026-10-22-p1-tree-list.md, branch feat/p1-tree-list):**
+- Tasks 1–6: tree-style query and group loading with ≤ 3 SQL queries; translation rows built by `WP_Posts_List_Table` in a template; missing-translation rows and progress badges; `tree.js` collapses/expands each group or all groups, remembers state and keeps groups after Quick Edit; keeps the page hierarchy and switches to a flat list when filtering.
+- Task 7 part run offline: added `bin/tree-fixture.sh` to build/install the plugin and prepare sample data with the meta key `_lingolane_fixture`, reusing IDs; additionally enables fr, creates en–vi pages/posts, drafts, child pages, orphan translations and pages with no language assigned. The script guards against the wrong host and a disabled trash; only the syntax was checked, not yet run on a site. Regenerated `.pot`, added all 7 new vi translations and compiled `.mo`; README gains a line about the tree list.
+- Offline verification: PHPUnit 117 tests/818 assertions passed on both PHP 8.2 and 7.4; `composer lint` passed, phpcs 0 errors/26 warnings; `node --check` passed for `admin.js` and `tree.js`; `bash -n` and `php -l` on the fixture PHP segment passed. `bin/build.sh` passed; `unzip -l` confirms the zip has `lingolane/admin/class-lingolane-tree.php` and `lingolane/assets/tree.js`.
+- Browser QA (1280px and 375px on the Local test site): PASSED — the Language column follows Title; the tree collapses/expands each group and Expand all/Collapse all work correctly; state is remembered via localStorage after reloading the page; collapsing a group automatically unticks the child-post checkboxes so a bulk action does not submit hidden posts by mistake; translations in the Trash are not counted as "untranslated"; Quick Edit collapses/expands with the group and keeps its position after saving/canceling; search expands groups and highlights matching rows; the language filter flattens the list automatically; at 375px there is no page-level horizontal scroll; 0 console errors.
+- Overall verification: fixture run twice (run 1 created 15 posts, run 2 reused 100% without creating duplicates); PHPUnit passed 117 tests/820 assertions on both PHP 8.2 and 7.4; phpcs 0 errors, 26 warnings; Plugin Check 0 errors; the zip packages the full tree code and assets. Fixed the WP 7.1+ `th scope="row"` tag issue for the title selector.
 
-**2026-10-23 · Đợt sửa hoàn tất P1 (nhánh fix/p1-followups):**
-- Đã sửa F1–F7: dòng bản dịch tuân theo view trạng thái của WP (All, Published, Drafts; loại trừ trash và auto-draft); nạp sẵn (prime) cache meta, terms, authors cho tất cả bản dịch trong trang trước khi dựng dòng; bổ sung test truy vấn thu hẹp (`is_tree_query` trả về false với tax_query, post__in, meta_query, post_parent); kiểm tra quyền `read_post` cho private post_status; nhãn tiến độ chỉ đếm bản dịch người dùng được phép đọc; nhãn tiến độ giữ nguyên chuẩn xác sau khi Sửa nhanh (inline-save AJAX) qua nhận diện screen `$_POST['screen']`; ô nhãn bản dịch thiếu có class `column-title` và `tree.js` chỉ lấy các phần tử `TR` cấp gốc của template.
-- Kiểm chứng: PHPUnit 137 test / 923 assertion đạt trên cả PHP 8.2 và 7.4 (38 test riêng cho Tree); phpcs 0 lỗi, 26 cảnh báo (đúng baseline); `node --check` đạt; Plugin Check trên check.local 0 lỗi.
-- QA trình duyệt trên check.local: Quick Edit lưu qua AJAX giữ nguyên nhãn tiến độ (2/3); tìm kiếm mở nhóm và hiển thị đúng bản dịch; phân cấp cây hiển thị chuẩn xác; 0 lỗi console.
+**2026-10-23 · P1 completion fixes (branch fix/p1-followups):**
+- Fixed F1–F7: translation rows follow WP's status views (All, Published, Drafts; excluding trash and auto-draft); prime the meta, terms and authors caches for all translations on the page before building rows; added tests for narrowed queries (`is_tree_query` returns false with tax_query, post__in, meta_query, post_parent); check the `read_post` permission for private post_status; progress badges only count translations the user is allowed to read; progress badges stay accurate after Quick Edit (inline-save AJAX) via screen detection through `$_POST['screen']`; the missing-translation badge cell has the class `column-title` and `tree.js` only takes the root-level `TR` elements of the template.
+- Verification: PHPUnit 137 tests / 923 assertions passed on both PHP 8.2 and 7.4 (38 tests specific to Tree); phpcs 0 errors, 26 warnings (matches the baseline); `node --check` passed; Plugin Check on the Local test site 0 errors.
+- Browser QA on the Local test site: Quick Edit saving via AJAX keeps the progress badges (2/3); search expands groups and shows the correct translations; the tree hierarchy displays correctly; 0 console errors.
 
-**2026-10-24 · P3 Dịch chuỗi theo nhóm vị trí & Chế độ quét trang (kế hoạch docs/plans/2026-10-23-p3-string-groups.md, nhánh feat/p3-string-groups):**
-- 10 nhóm vị trí chuỗi trực quan: `site` (Site Info), `header`, `menu`, `footer`, `widgets`, `theme`, `plugin`, `terms` (Categories & Tags), `media`, `other`. Hỗ trợ nhóm con (subgroups) tự động theo textdomain, taxonomy và vị trí menu.
-- Bảng dịch đa ngôn ngữ inline: theo dõi dirty state (cảnh báo khi thoát trang có bản dịch chưa lưu), phím tắt `Ctrl+Enter` / `Cmd+Enter` lưu tức thì, cập nhật đồng bộ các ngôn ngữ đích mà không cần tải lại trang.
-- Chế độ quét trang Frontend (Page Scan Mode): modal quét tuần tự các trang qua iframe sandbox với query `?lingolane_scan=1&token=...`, cơ chế giới hạn tần suất 1s ở backend (`Lingolane_String_Scan::accept`), đồng bộ hóa session token giữa frontend JS (`res.data.session_id || res.data.session`) và backend PHP (`$_GET['token']` & `$_GET['lingolane_scan']`), tự giải phóng event listener chống nghẽn bộ nhớ.
-- Hỗ trợ lập trình viên (Developer Assistance): hiển thị huy hiệu và viền nổi bật phần tử trên trang (`highlight`), nút sao chép nhanh mã định danh phần tử (`domain:context:source`) cho lập trình viên bọc hàm gettext.
-- Đồng bộ Taxonomy Terms: dịch trực tiếp term taxonomy (chuyên mục, thẻ) trong tab Chuỗi và đồng bộ 2 chiều vào cơ sở dữ liệu WordPress term taxonomy.
-- Ngôn ngữ & Bản dịch: POT trích xuất 431 chuỗi; bổ sung 148 chuỗi tiếng Việt mới vào `lingolane-vi.po`, biên dịch nhị phân thành công `lingolane-vi.mo` (46.840 bytes).
-- Đóng gói: script `bin/build.sh` tạo `dist/lingolane-1.0.0-dev.zip`.
-- Kiểm chứng chất lượng:
-  - PHPUnit: **185 tests, 1151 assertions, 0 errors, 0 failures, 1 skipped** (multisite) đạt 100% trên cả PHP 8.2 (8.2.29) và PHP 7.4 (7.4.30).
-  - PHPCS: **0 errors, 25 warnings** (thấp hơn baseline cho phép 26 warnings).
-  - Plugin Check: **0 errors** trên site `check.local`.
-  - QA Trình duyệt: giao diện responsive 375px hoàn hảo (`scrollWidth === innerWidth`, không tràn trang), khách vãng lai sạch 100% script/scan markers, 0 lỗi JavaScript console.
-
-
+**2026-10-24 · P3 String translation by location group & Page Scan Mode (plan docs/plans/2026-10-23-p3-string-groups.md, branch feat/p3-string-groups):**
+- 10 visual string-location groups: `site` (Site Info), `header`, `menu`, `footer`, `widgets`, `theme`, `plugin`, `terms` (Categories & Tags), `media`, `other`. Supports subgroups automatically by textdomain, taxonomy and menu location.
+- Inline multilingual translation table: dirty state tracking (warns when leaving a page with unsaved translations), `Ctrl+Enter` / `Cmd+Enter` shortcut to save instantly, synchronized updates of the target languages without reloading the page.
+- Frontend Page Scan Mode: a modal scans pages sequentially through a sandboxed iframe with the query `?lingolane_scan=1&token=...`, a 1s rate limit on the backend (`Lingolane_String_Scan::accept`), session token synchronization between frontend JS (`res.data.session_id || res.data.session`) and backend PHP (`$_GET['token']` & `$_GET['lingolane_scan']`), automatically releasing event listeners to prevent memory bloat.
+- Developer Assistance: displays badges and highlight outlines on page elements (`highlight`), and a button to quickly copy the element identifier (`domain:context:source`) for developers to wrap in gettext functions.
+- Taxonomy Terms synchronization: translate taxonomy terms (categories, tags) directly in the Strings tab and synchronize in both directions with the WordPress term taxonomy database.
+- Languages & Translations: POT extracted 431 strings; added 148 new Vietnamese strings to `lingolane-vi.po`, compiled the binary `lingolane-vi.mo` successfully (46.840 bytes).
+- Packaging: the script `bin/build.sh` creates `dist/lingolane-1.0.0-dev.zip`.
+- Quality verification:
+  - PHPUnit: **185 tests, 1151 assertions, 0 errors, 0 failures, 1 skipped** (multisite), 100% passed on both PHP 8.2 (8.2.29) and PHP 7.4 (7.4.30).
+  - PHPCS: **0 errors, 25 warnings** (below the allowed baseline of 26 warnings).
+  - Plugin Check: **0 errors** on the site `check.local`.
+  - Browser QA: responsive UI at 375px is flawless (`scrollWidth === innerWidth`, no page overflow), anonymous visitors see 100% clean output with no scripts/scan markers, 0 JavaScript console errors.

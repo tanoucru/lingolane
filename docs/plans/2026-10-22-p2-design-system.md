@@ -1,151 +1,151 @@
-# P2 Hệ giao diện SaaS sáng – Kế hoạch triển khai
+# P2 Light SaaS Design System – Implementation Plan
 
-**Goal:** Đưa mọi màn hình quản trị của Lingolane về một hệ giao diện "SaaS sáng, hiện đại" thống nhất: token màu và kích thước, icon SVG nét đều thay dashicons, minh hoạ cho màn hình trống, toast cho thông báo, hiệu ứng nhẹ có tôn trọng giảm chuyển động.
+**Goal:** Bring every Lingolane admin screen into a consistent "light, modern SaaS" design system: color and sizing tokens, uniform-stroke SVG icons replacing dashicons, empty-state illustrations, toast notifications, and subtle effects that respect reduced-motion preferences.
 
-**Architecture:** CSS vẫn là một file thuần `lingolane/assets/admin.css`, sắp lại thành ba lớp theo thứ tự: token, thành phần, màn hình. Mọi selector gói trong các gốc `.lingolane-*` sẵn có, cộng `body.lingolane-screen` cho nền trang. Thêm lớp PHP `Lingolane_UI` (`lingolane/admin/class-lingolane-ui.php`) sinh SVG icon và minh hoạ. Mọi chỗ đang in dashicons chuyển sang `Lingolane_UI::icon()`. Thông báo flash hiện thành toast, có `admin.js` lo việc tự ẩn. Không thêm bước build, không thêm thư viện JS.
+**Architecture:** CSS remains a single plain file, `lingolane/assets/admin.css`, reorganized into three layers in order: tokens, components, screens. Scope all selectors to the existing `.lingolane-*` roots, plus `body.lingolane-screen` for the page background. Add a PHP class, `Lingolane_UI` (`lingolane/admin/class-lingolane-ui.php`), to generate SVG icons and illustrations. Replace every dashicon output with `Lingolane_UI::icon()`. Display flash messages as toasts, with `admin.js` handling automatic dismissal. No additional build step or JS library.
 
-**Tech Stack:** PHP 7.4+ (WordPress ≥ 6.2), CSS thuần với custom properties, JS thuần (đang phụ thuộc `wp-a11y`), PHPUnit 9.6 + wp-phpunit, icon Lucide (ISC) chép tay vào plugin.
+**Tech Stack:** PHP 7.4+ (WordPress ≥ 6.2), plain CSS with custom properties, vanilla JS (currently depends on `wp-a11y`), PHPUnit 9.6 + wp-phpunit, Lucide icons (ISC) copied manually into the plugin.
 
-**Spec:** `docs/specs/2026-10-22-ux-translation-design.md` (mục P2 và mục 2–3).
+**Spec:** `docs/specs/2026-10-22-ux-translation-design.md` (P2 and sections 2–3).
 
 ## Global Constraints
 
-- WP ≥ 6.2, PHP ≥ 7.4. CI chạy PHP 7.4 / 8.1 / 8.4.
-- GPL-2.0-or-later. Icon Lucide (ISC) chép vào plugin kèm file giấy phép, **không tải qua CDN**.
-- **Không tải font ngoài, không gọi máy chủ ngoài.** Dùng font hệ thống: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`.
-- CSS/JS không được làm lệch các màn hình WordPress khác: mọi selector nằm trong các gốc đã liệt kê ở Task 1.
-- Tương phản WCAG 2.2 AA (≥ 4.5:1 cho chữ thường), dùng được bằng bàn phím, có viền focus thấy rõ, không tràn ngang ở bề rộng 375px.
-- Mọi hiệu ứng tắt khi `prefers-reduced-motion: reduce`.
-- Chuỗi giao diện viết bằng tiếng Anh, bọc `__()`/`esc_html__()` với text-domain `lingolane`; cập nhật `languages/lingolane.pot` và `lingolane-vi.po/.mo`.
-- Plugin Check 0 lỗi; phpcs (`composer lint`) 0 lỗi, không thêm cảnh báo mới ngoài mốc 26.
-- Lệnh chạy test cục bộ: `bash /private/tmp/lingolane-run/phpunit.sh` (DB riêng `lingolane_tests`, xem README mục "Chạy không cần Docker"). Mốc hiện tại: 52 test đạt.
-- Credit hiển thị (nếu có ở chân trang Hướng dẫn): "Developed by @tannguyen".
+- WP ≥ 6.2, PHP ≥ 7.4. CI runs PHP 7.4 / 8.1 / 8.4.
+- GPL-2.0-or-later. Copy Lucide icons (ISC) into the plugin with their license file; **do not load them from a CDN**.
+- **No external fonts or external server requests.** Use system fonts: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`.
+- CSS/JS must not alter other WordPress screens: scope every selector to the roots listed in Task 1.
+- WCAG 2.2 AA contrast (≥ 4.5:1 for normal text), keyboard accessibility, clearly visible focus outlines, and no horizontal page overflow at a width of 375px.
+- Disable all effects when `prefers-reduced-motion: reduce`.
+- Write UI strings in English, wrapped in `__()`/`esc_html__()` with the `lingolane` text-domain; update `languages/lingolane.pot` and `lingolane-vi.po/.mo`.
+- Plugin Check: 0 errors; phpcs (`composer lint`): 0 errors, with no new warnings beyond the baseline of 26.
+- Local test command: `bash /private/tmp/lingolane-run/phpunit.sh` (dedicated DB `lingolane_tests`; see the README section "Running without Docker"). Current baseline: 52 passing tests.
+- Display credit (if included in the Guide footer): "Developed by @tannguyen".
 
 ## Review Focus
 
-1. **Tên icon gõ sai hoặc không có trong bộ:** phải trả chuỗi rỗng kèm `_doing_it_wrong`, không làm vỡ trang. Test ở Task 2.
-2. **Bề rộng điện thoại (375px):** thanh tab và bảng ngôn ngữ phải cuộn ngang trong khung của chúng, không đẩy cả trang tràn ngang. Kiểm ở Task 7 (bước QA ảnh chụp).
-3. **Màn hình WordPress khác (Bài viết, Cài đặt chung):** không bị đổi nền hay font. Test phạm vi selector ở Task 1, cộng kiểm `body_class` chỉ thêm lớp trên trang Lingolane.
-4. **Thông báo lỗi bị tự ẩn trước khi người dùng kịp đọc:** lỗi và cảnh báo không tự ẩn, chỉ thành công và thông tin mới ẩn sau 5 giây; rê chuột hoặc focus vào thì tạm dừng. Test markup ở Task 5.
-5. **Trình duyệt tắt JS:** toast vẫn hiện đầy đủ (chỉ không tự ẩn); icon và minh hoạ là SVG nội tuyến nên không phụ thuộc JS. Test ở Task 5 (markup có sẵn nội dung, không cần JS dựng).
+1. **Misspelled or unavailable icon names:** return an empty string with `_doing_it_wrong`, without breaking the page. Test in Task 2.
+2. **Mobile width (375px):** the tab bar and language table must scroll horizontally within their own containers, without causing page-level horizontal overflow. Check in Task 7 (screenshot QA step).
+3. **Other WordPress screens (Posts, General Settings):** their backgrounds and fonts must remain unchanged. Test selector scoping in Task 1, and verify that `body_class` adds the class only on Lingolane pages.
+4. **Error messages disappearing before users can read them:** errors and warnings must not auto-hide; only success and information messages hide after 5 seconds, pausing on hover or focus. Test markup in Task 5.
+5. **Browsers with JS disabled:** toasts remain fully visible (without auto-hide); icons and illustrations are inline SVG and do not depend on JS. Test in Task 5 (content is present in the markup and does not require JS rendering).
 
 ---
 
-### Task 1: Token giao diện, phạm vi CSS và lớp nền trang
+### Task 1: Design Tokens, CSS Scoping, and Page Background Class
 
 **Files:**
-- Modify: `lingolane/assets/admin.css` (thay khối token đầu file, dòng 1–25; sửa comment đầu file từ "TeachMe Multilingual" thành "Lingolane")
-- Modify: `lingolane/admin/class-lingolane-admin.php` (`init()` thêm hook; thêm `body_class()`)
+- Modify: `lingolane/assets/admin.css` (replace the opening token block, lines 1–25; change the opening comment from "TeachMe Multilingual" to "Lingolane")
+- Modify: `lingolane/admin/class-lingolane-admin.php` (add a hook in `init()`; add `body_class()`)
 - Test: `tests/phpunit/test-ui-tokens.php`
 
 **Interfaces:**
 - Produces:
-  - Các biến CSS khai báo trên `.lingolane-wrap, .lingolane-box, .lingolane-col, .lingolane-toasts`: `--lingolane-bg`, `--lingolane-card`, `--lingolane-line`, `--lingolane-ink`, `--lingolane-muted`, `--lingolane-accent`, `--lingolane-accent-2`, `--lingolane-accent-ink`, `--lingolane-accent-soft`, `--lingolane-ok`, `--lingolane-ok-bg`, `--lingolane-warn`, `--lingolane-warn-bg`, `--lingolane-danger`, `--lingolane-danger-bg`, `--lingolane-info`, `--lingolane-info-bg`, `--lingolane-radius` (12px), `--lingolane-radius-sm` (8px), `--lingolane-shadow-sm`, `--lingolane-shadow-md`, `--lingolane-space-1…6` (4/8/12/16/24/32px), `--lingolane-ease` (`cubic-bezier(.2,.8,.2,1)`), `--lingolane-dur` (160ms), `--lingolane-font`.
-  - `Lingolane_Admin::body_class( string $classes ): string`. Thêm ` lingolane-screen` khi `get_current_screen()->id === 'toplevel_page_lingolane'`, ngược lại trả nguyên `$classes`.
+  - CSS variables declared on `.lingolane-wrap, .lingolane-box, .lingolane-col, .lingolane-toasts`: `--lingolane-bg`, `--lingolane-card`, `--lingolane-line`, `--lingolane-ink`, `--lingolane-muted`, `--lingolane-accent`, `--lingolane-accent-2`, `--lingolane-accent-ink`, `--lingolane-accent-soft`, `--lingolane-ok`, `--lingolane-ok-bg`, `--lingolane-warn`, `--lingolane-warn-bg`, `--lingolane-danger`, `--lingolane-danger-bg`, `--lingolane-info`, `--lingolane-info-bg`, `--lingolane-radius` (12px), `--lingolane-radius-sm` (8px), `--lingolane-shadow-sm`, `--lingolane-shadow-md`, `--lingolane-space-1…6` (4/8/12/16/24/32px), `--lingolane-ease` (`cubic-bezier(.2,.8,.2,1)`), `--lingolane-dur` (160ms), `--lingolane-font`.
+  - `Lingolane_Admin::body_class( string $classes ): string`. Append ` lingolane-screen` when `get_current_screen()->id === 'toplevel_page_lingolane'`; otherwise return `$classes` unchanged.
 
-Giá trị màu (hex, không dùng `var()` cho các token màu để test đọc được): bg `#f7f8fb`, card `#ffffff`, line `#e6e8ef`, ink `#1f2433`, muted `#5b6275`, accent `#4f46e5`, accent-2 `#7c3aed`, accent-ink `#4338ca`, accent-soft `#eef0ff`, ok `#15803d`/`#ecfdf3`, warn `#b45309`/`#fffbeb`, danger `#b91c1c`/`#fef2f2`, info `#1d4ed8`/`#eff6ff`. Token cũ đang dùng ở chỗ khác (`--lingolane-soft`, `--lingolane-brand`, `--lingolane-shadow`) giữ lại làm bí danh trỏ sang token mới cho tới khi Task 4 gỡ hết.
+Color values (hex; do not use `var()` for color tokens so tests can read them): bg `#f7f8fb`, card `#ffffff`, line `#e6e8ef`, ink `#1f2433`, muted `#5b6275`, accent `#4f46e5`, accent-2 `#7c3aed`, accent-ink `#4338ca`, accent-soft `#eef0ff`, ok `#15803d`/`#ecfdf3`, warn `#b45309`/`#fffbeb`, danger `#b91c1c`/`#fef2f2`, info `#1d4ed8`/`#eff6ff`. Keep old tokens still used elsewhere (`--lingolane-soft`, `--lingolane-brand`, `--lingolane-shadow`) as aliases pointing to the new tokens until Task 4 removes them all.
 
-- [ ] **Step 1: Viết test hỏng** `tests/phpunit/test-ui-tokens.php`, lớp `Test_Lingolane_UI_Tokens extends Lingolane_TestCase`:
-  - Helper `tokens(): array` đọc `LINGOLANE_DIR . 'assets/admin.css'`, gom `--lingolane-([a-z0-9-]+):\s*(#[0-9a-fA-F]{3,6})` thành `name => hex`.
-  - Helper `contrast( string $fg, string $bg ): float` tính tỉ lệ tương phản theo WCAG 2.x (độ sáng tương đối sRGB).
-  - `test_text_pairs_meet_wcag_aa()`: với mỗi cặp `[ink,card] [ink,bg] [muted,card] [muted,bg] [accent-ink,accent-soft] [ok,ok-bg] [warn,warn-bg] [danger,danger-bg] [info,info-bg]`, `assertGreaterThanOrEqual( 4.5, contrast(...) )`; và `contrast('#ffffff', tokens['accent']) >= 4.5`.
-  - `test_every_selector_is_scoped()`: bỏ comment, bỏ phần thân `@keyframes`, tách selector trước mỗi `{` (bỏ dòng bắt đầu bằng `@`). Mỗi selector sau khi tách dấu phẩy và trim phải khớp `/^(\.lingolane|body\.lingolane-screen|\.column-lingolane_language|\.wp-list-table \.column-lingolane_language|:root)/`. Thông báo lỗi in ra selector vi phạm.
-  - `test_body_class_only_on_lingolane_screen()`: `set_current_screen( 'toplevel_page_lingolane' )` thì `body_class('a')` chứa `lingolane-screen`; `set_current_screen( 'edit-post' )` thì trả đúng `'a'`.
-- [ ] **Step 2: Chạy** `bash /private/tmp/lingolane-run/phpunit.sh --filter Test_Lingolane_UI_Tokens`. Kỳ vọng: FAIL (thiếu `accent-soft`…, thiếu `body_class`).
-- [ ] **Step 3: Cài đặt** khối token theo giá trị trên. Thêm `add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) )` trong `init()`. CSS nền: `body.lingolane-screen #wpcontent, body.lingolane-screen #wpbody-content { background: var(--lingolane-bg) }`. Vì body nằm ngoài gốc token nên đặt màu literal `#f7f8fb` ở đây kèm comment. Đặt `font-family: var(--lingolane-font)` trên các gốc. Thêm khối `@media (prefers-reduced-motion: reduce)` đặt `--lingolane-dur: 0ms` và `animation: none` cho các gốc.
-- [ ] **Step 4: Chạy lại** test của task và toàn bộ suite. Kỳ vọng: PASS, tổng 55 test.
-- [ ] **Step 5: Commit** `feat(ui): token giao diện SaaS sáng, phạm vi CSS và lớp nền trang`.
+- [ ] **Step 1: Write failing tests** in `tests/phpunit/test-ui-tokens.php`, class `Test_Lingolane_UI_Tokens extends Lingolane_TestCase`:
+  - Helper `tokens(): array` reads `LINGOLANE_DIR . 'assets/admin.css'` and collects `--lingolane-([a-z0-9-]+):\s*(#[0-9a-fA-F]{3,6})` matches into `name => hex`.
+  - Helper `contrast( string $fg, string $bg ): float` calculates the WCAG 2.x contrast ratio (sRGB relative luminance).
+  - `test_text_pairs_meet_wcag_aa()`: for each pair `[ink,card] [ink,bg] [muted,card] [muted,bg] [accent-ink,accent-soft] [ok,ok-bg] [warn,warn-bg] [danger,danger-bg] [info,info-bg]`, `assertGreaterThanOrEqual( 4.5, contrast(...) )`; also check `contrast('#ffffff', tokens['accent']) >= 4.5`.
+  - `test_every_selector_is_scoped()`: remove comments and `@keyframes` bodies, then extract selectors before each `{` (skip lines starting with `@`). After splitting on commas and trimming, every selector must match `/^(\.lingolane|body\.lingolane-screen|\.column-lingolane_language|\.wp-list-table \.column-lingolane_language|:root)/`. Include the offending selector in the error message.
+  - `test_body_class_only_on_lingolane_screen()`: after `set_current_screen( 'toplevel_page_lingolane' )`, `body_class('a')` contains `lingolane-screen`; after `set_current_screen( 'edit-post' )`, it returns exactly `'a'`.
+- [ ] **Step 2: Run** `bash /private/tmp/lingolane-run/phpunit.sh --filter Test_Lingolane_UI_Tokens`. Expected: FAIL (missing `accent-soft`…, missing `body_class`).
+- [ ] **Step 3: Implement** the token block using the values above. Add `add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) )` in `init()`. Background CSS: `body.lingolane-screen #wpcontent, body.lingolane-screen #wpbody-content { background: var(--lingolane-bg) }`. Since the body is outside the token roots, use the literal color `#f7f8fb` here with a comment. Set `font-family: var(--lingolane-font)` on the roots. Add an `@media (prefers-reduced-motion: reduce)` block setting `--lingolane-dur: 0ms` and `animation: none` on the roots.
+- [ ] **Step 4: Rerun** the task tests and the full suite. Expected: PASS, 55 tests in total.
+- [ ] **Step 5: Commit** `feat(ui): light SaaS UI tokens, CSS scoping and page background layer`.
 
-### Task 2: Bộ icon SVG và `Lingolane_UI::icon()`
+### Task 2: SVG Icon Set and `Lingolane_UI::icon()`
 
 **Files:**
 - Create: `lingolane/admin/class-lingolane-ui.php`
-- Create: `lingolane/assets/icons.php` (trả `array` tên ⇒ phần tử SVG bên trong, lấy từ Lucide `lucide-static@0.460.0`, viewBox 24)
-- Create: `lingolane/assets/LICENSE-lucide.txt` (nguyên văn giấy phép ISC của Lucide)
-- Modify: `lingolane/lingolane.php` (require `admin/class-lingolane-ui.php` trong khối `is_admin()`, trước `class-lingolane-admin.php`)
-- Modify: `lingolane/assets/admin.css` (thành phần `.lingolane-icon`)
+- Create: `lingolane/assets/icons.php` (returns an `array` mapping names ⇒ inner SVG elements, taken from Lucide `lucide-static@0.460.0`, viewBox 24)
+- Create: `lingolane/assets/LICENSE-lucide.txt` (the full, unmodified Lucide ISC license)
+- Modify: `lingolane/lingolane.php` (require `admin/class-lingolane-ui.php` inside the `is_admin()` block, before `class-lingolane-admin.php`)
+- Modify: `lingolane/assets/admin.css` (`.lingolane-icon` component)
 - Test: `tests/phpunit/test-ui.php`
 
 **Interfaces:**
-- Produces: `Lingolane_UI::icon( string $name, int $size = 20, string $label = '' ): string`. Trả `<svg class="lingolane-icon lingolane-icon--{name}" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" …>{inner}</svg>`:
-  - Khi `$label === ''`: thêm `aria-hidden="true" focusable="false"`.
-  - Khi có nhãn: `role="img"` và `<title>` đã escape.
-  - Tên không có trong bộ: trả `''` và gọi `_doing_it_wrong( 'Lingolane_UI::icon', …, '1.0.0' )`.
-  - `$size` được kẹp trong khoảng 12–48.
-- Produces: `Lingolane_UI::icons(): array` (danh sách tên, đọc `assets/icons.php` một lần, cache tĩnh).
-- Bộ tên bắt buộc (22): `layout-dashboard, files, type, languages, settings, life-buoy, circle-check, eye, triangle-alert, upload, download, search, plus, info, users, external-link, chevron-down, chevron-right, x, sparkles, globe, loader`.
+- Produces: `Lingolane_UI::icon( string $name, int $size = 20, string $label = '' ): string`. Returns `<svg class="lingolane-icon lingolane-icon--{name}" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" …>{inner}</svg>`:
+  - When `$label === ''`: add `aria-hidden="true" focusable="false"`.
+  - When a label is provided: add `role="img"` and an escaped `<title>`.
+  - For names not in the set: return `''` and call `_doing_it_wrong( 'Lingolane_UI::icon', …, '1.0.0' )`.
+  - Clamp `$size` to 12–48.
+- Produces: `Lingolane_UI::icons(): array` (list of names; read `assets/icons.php` once and cache statically).
+- Required names (22): `layout-dashboard, files, type, languages, settings, life-buoy, circle-check, eye, triangle-alert, upload, download, search, plus, info, users, external-link, chevron-down, chevron-right, x, sparkles, globe, loader`.
 
-- [ ] **Step 1: Viết test hỏng** `tests/phpunit/test-ui.php`, lớp `Test_Lingolane_UI extends Lingolane_TestCase` (require file UI trong `wpSetUpBeforeClass` giống `test-admin.php`):
-  - `test_every_required_icon_exists()`: mỗi tên trong danh sách 22 có trong `Lingolane_UI::icons()`.
-  - `test_decorative_icon_is_hidden_from_screen_readers()`: `icon('globe')` chứa `aria-hidden="true"`, `width="20"`, `class="lingolane-icon lingolane-icon--globe"`, và không chứa `<title>`.
-  - `test_labelled_icon_has_escaped_title()`: `icon('info', 16, 'A <b>')` chứa `role="img"`, `<title>A &lt;b&gt;</title>`, `width="16"`.
+- [ ] **Step 1: Write failing tests** in `tests/phpunit/test-ui.php`, class `Test_Lingolane_UI extends Lingolane_TestCase` (require the UI file in `wpSetUpBeforeClass`, as in `test-admin.php`):
+  - `test_every_required_icon_exists()`: each name in the list of 22 is present in `Lingolane_UI::icons()`.
+  - `test_decorative_icon_is_hidden_from_screen_readers()`: `icon('globe')` contains `aria-hidden="true"`, `width="20"`, `class="lingolane-icon lingolane-icon--globe"`, and no `<title>`.
+  - `test_labelled_icon_has_escaped_title()`: `icon('info', 16, 'A <b>')` contains `role="img"`, `<title>A &lt;b&gt;</title>`, `width="16"`.
   - `test_unknown_icon_returns_empty_string()`: `setExpectedIncorrectUsage( 'Lingolane_UI::icon' )`; `assertSame( '', icon('nope') )`.
-  - `test_size_is_clamped()`: `icon('x', 500)` chứa `width="48"`; `icon('x', 1)` chứa `width="12"`.
-- [ ] **Step 2: Chạy** `--filter Test_Lingolane_UI`. Kỳ vọng: FAIL (lớp chưa có).
-- [ ] **Step 3: Cài đặt** lớp, file icon, file giấy phép. CSS `.lingolane-icon { flex: none; display: inline-block; vertical-align: -0.2em; }`. Khi icon đứng trong nút hoặc tab, căn bằng `display:inline-flex; align-items:center; gap: var(--lingolane-space-2)` ở thành phần cha, không dùng margin lẻ (đây là nguyên nhân "icon lệch").
-- [ ] **Step 4: Chạy lại** test của task và toàn bộ suite. Kỳ vọng: PASS.
-- [ ] **Step 5: Commit** `feat(ui): bộ icon SVG Lucide và Lingolane_UI::icon`.
+  - `test_size_is_clamped()`: `icon('x', 500)` contains `width="48"`; `icon('x', 1)` contains `width="12"`.
+- [ ] **Step 2: Run** `--filter Test_Lingolane_UI`. Expected: FAIL (the class does not exist yet).
+- [ ] **Step 3: Implement** the class, icon file, and license file. CSS: `.lingolane-icon { flex: none; display: inline-block; vertical-align: -0.2em; }`. When an icon is inside a button or tab, align it using `display:inline-flex; align-items:center; gap: var(--lingolane-space-2)` on the parent component, not ad hoc margins (the cause of "misaligned icons").
+- [ ] **Step 4: Rerun** the task tests and the full suite. Expected: PASS.
+- [ ] **Step 5: Commit** `feat(ui): Lucide SVG icon set and Lingolane_UI::icon`.
 
-### Task 3: Thay toàn bộ dashicons, bỏ phụ thuộc dashicons
+### Task 3: Replace All Dashicons and Remove the Dashicons Dependency
 
 **Files:**
-- Modify: `lingolane/admin/class-lingolane-admin.php` (`tabs()` dòng 26–35: phần tử thứ 2 đổi thành tên icon; markup tab dòng ~403; header dòng ~383; 18 chỗ `dashicons`; `enqueue()` dòng 140 bỏ `'dashicons'` khỏi deps)
-- Modify: `lingolane/admin/class-lingolane-strings-admin.php` (4 chỗ: 307, 370, 424, 435)
-- Modify: `lingolane/admin/class-lingolane-metabox.php` (1 chỗ dashicons; `wp_enqueue_style` dòng 16 bỏ deps `dashicons`)
-- Modify: `lingolane/admin/class-lingolane-columns.php` (1 chỗ dashicons; `enqueue()` dòng 15 bỏ deps `dashicons`)
-- Test: `tests/phpunit/test-ui.php` (thêm test)
+- Modify: `lingolane/admin/class-lingolane-admin.php` (`tabs()` lines 26–35: change the 2nd element to the icon name; tab markup around line ~403; header around line ~383; 18 occurrences of `dashicons`; in `enqueue()` at line 140, remove `'dashicons'` from the dependencies)
+- Modify: `lingolane/admin/class-lingolane-strings-admin.php` (4 occurrences: 307, 370, 424, 435)
+- Modify: `lingolane/admin/class-lingolane-metabox.php` (1 dashicons occurrence; remove the `dashicons` dependency from `wp_enqueue_style` at line 16)
+- Modify: `lingolane/admin/class-lingolane-columns.php` (1 dashicons occurrence; remove the `dashicons` dependency from `enqueue()` at line 15)
+- Test: `tests/phpunit/test-ui.php` (add tests)
 
 **Interfaces:**
 - Consumes: `Lingolane_UI::icon()` (Task 2).
-- Produces: `Lingolane_Admin::tabs()` trả `key => array( label, icon_name )`. Ánh xạ: overview→`layout-dashboard`, content→`files`, strings→`type`, languages→`languages`, settings→`settings`, guide→`life-buoy`. Ánh xạ cho các chỗ còn lại: yes-alt→`circle-check`, translation→`languages`, visibility→`eye`, warning→`triangle-alert`, upload→`upload`, download→`download`, sos→`life-buoy`, search→`search`, plus→`plus`, info→`info`, groups→`users`, external→`external-link`, editor-textcolor→`type`, dashboard→`layout-dashboard`, admin-page→`files`, admin-generic→`settings`.
+- Produces: `Lingolane_Admin::tabs()` returns `key => array( label, icon_name )`. Mapping: overview→`layout-dashboard`, content→`files`, strings→`type`, languages→`languages`, settings→`settings`, guide→`life-buoy`. Mapping for other occurrences: yes-alt→`circle-check`, translation→`languages`, visibility→`eye`, warning→`triangle-alert`, upload→`upload`, download→`download`, sos→`life-buoy`, search→`search`, plus→`plus`, info→`info`, groups→`users`, external→`external-link`, editor-textcolor→`type`, dashboard→`layout-dashboard`, admin-page→`files`, admin-generic→`settings`.
 
-- [ ] **Step 1: Viết test hỏng** (thêm vào `Test_Lingolane_UI`, nạp thêm các file admin như `test-admin.php`, đăng nhập administrator):
-  - `test_no_screen_uses_dashicons()`: với mỗi `$tab` trong `array_keys( Lingolane_Admin::tabs() )`, đặt `$_GET['tab']`, `set_current_screen('toplevel_page_lingolane')`, `ob_start(); Lingolane_Admin::render(); $html = ob_get_clean();`. Assert `assertStringNotContainsString( 'dashicons', $html, $tab )` và `assertStringContainsString( 'lingolane-icon', $html, $tab )`.
-  - `test_metabox_and_column_use_svg_icons()`: render `Lingolane_Metabox::render( get_post( $page ) )` (trang có bản dịch) và `Lingolane_Columns::render( 'lingolane_language', $page )` qua output buffer; không chứa `dashicons`.
-  - `test_styles_no_longer_depend_on_dashicons()`: gọi `Lingolane_Admin::enqueue( 'toplevel_page_lingolane' )`; `assertNotContains( 'dashicons', wp_styles()->registered['lingolane-admin']->deps )`.
-- [ ] **Step 2: Chạy** `--filter Test_Lingolane_UI`. Kỳ vọng: FAIL ở 3 test mới.
-- [ ] **Step 3: Thay** từng chỗ theo bảng ánh xạ. Mọi chỗ in icon dùng `echo Lingolane_UI::icon( '…' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list`. Tìm sót bằng `grep -rn dashicons lingolane/` (kỳ vọng 0 kết quả ngoài `.pot/.po`).
-- [ ] **Step 4: Chạy lại** test của task và toàn bộ suite. Kỳ vọng: PASS.
-- [ ] **Step 5: Commit** `refactor(ui): thay dashicons bằng icon SVG trên mọi màn hình`.
+- [ ] **Step 1: Write failing tests** (add to `Test_Lingolane_UI`, load the additional admin files as in `test-admin.php`, and log in as an administrator):
+  - `test_no_screen_uses_dashicons()`: for each `$tab` in `array_keys( Lingolane_Admin::tabs() )`, set `$_GET['tab']`, `set_current_screen('toplevel_page_lingolane')`, `ob_start(); Lingolane_Admin::render(); $html = ob_get_clean();`. Assert `assertStringNotContainsString( 'dashicons', $html, $tab )` and `assertStringContainsString( 'lingolane-icon', $html, $tab )`.
+  - `test_metabox_and_column_use_svg_icons()`: render `Lingolane_Metabox::render( get_post( $page ) )` (a page with a translation) and `Lingolane_Columns::render( 'lingolane_language', $page )` through an output buffer; neither contains `dashicons`.
+  - `test_styles_no_longer_depend_on_dashicons()`: call `Lingolane_Admin::enqueue( 'toplevel_page_lingolane' )`; `assertNotContains( 'dashicons', wp_styles()->registered['lingolane-admin']->deps )`.
+- [ ] **Step 2: Run** `--filter Test_Lingolane_UI`. Expected: FAIL for the 3 new tests.
+- [ ] **Step 3: Replace** each occurrence using the mapping. Use `echo Lingolane_UI::icon( '…' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list` wherever an icon is printed. Find remaining occurrences with `grep -rn dashicons lingolane/` (expected: 0 results outside `.pot/.po`).
+- [ ] **Step 4: Rerun** the task tests and the full suite. Expected: PASS.
+- [ ] **Step 5: Commit** `refactor(ui): replace dashicons with SVG icons on every screen`.
 
-### Task 4: Thành phần chung và restyle các màn hình
+### Task 4: Shared Components and Screen Restyling
 
 **Files:**
-- Modify: `lingolane/assets/admin.css` (viết lại phần thành phần và màn hình; gỡ bí danh token cũ của Task 1)
-- Modify: `lingolane/admin/class-lingolane-admin.php` (header: ô logo `<span class="lingolane-logo">` chứa `icon('globe')`; thêm lớp cho thẻ số liệu ở `render_overview()`)
-- Test: `tests/phpunit/test-ui.php` (thêm test)
+- Modify: `lingolane/assets/admin.css` (rewrite the component and screen sections; remove the old token aliases from Task 1)
+- Modify: `lingolane/admin/class-lingolane-admin.php` (header: logo tile `<span class="lingolane-logo">` containing `icon('globe')`; add classes for metric cards in `render_overview()`)
+- Test: `tests/phpunit/test-ui.php` (add tests)
 
 **Interfaces:**
-- Consumes: token (Task 1), icon (Task 2–3).
-- Produces: các lớp thành phần dùng chung cho P1/P3/P4/P5 sau này, mô tả trong comment đầu mỗi khối CSS:
+- Consumes: tokens (Task 1), icons (Task 2–3).
+- Produces: shared component classes for later use in P1/P3/P4/P5, documented in a comment at the start of each CSS block:
   - `.lingolane-logo`;
-  - `.lingolane-tabs` (dạng pill, mục đang chọn nền `accent-soft`, chữ `accent-ink`);
-  - `.lingolane-card` (nền card, viền `line`, `radius`, `shadow-sm`, rê chuột lên `shadow-md` nếu có lớp `.is-interactive`);
-  - `.lingolane-kpi` (số 28px/700, nhãn 12px `muted`);
-  - `.lingolane-progress` (thanh 6px, phần đầy gradient `accent→accent-2`, chạy từ 0 khi tải trang bằng `transition: width var(--lingolane-dur)`, và giữ nguyên khi giảm chuyển động);
-  - `.lingolane-chip--*` (giữ các biến thể ok/warn/info/brand hiện có);
-  - `.lingolane-table` (đầu bảng 12px chữ hoa `muted`, dòng rê chuột nền `bg`);
-  - `.lingolane-button` (bổ sung cho `.button` của WP: bo `radius-sm`, nút chính nền `accent`, focus `outline: 2px solid var(--lingolane-accent); outline-offset: 2px`);
-  - `.lingolane-field` (input bo `radius-sm`, focus viền `accent`).
+  - `.lingolane-tabs` (pill style; selected item uses an `accent-soft` background and `accent-ink` text);
+  - `.lingolane-card` (card background, `line` border, `radius`, `shadow-sm`, increasing to `shadow-md` on hover if the `.is-interactive` class is present);
+  - `.lingolane-kpi` (28px/700 numbers, 12px `muted` labels);
+  - `.lingolane-progress` (6px bar, filled portion uses an `accent→accent-2` gradient, animates from 0 on page load with `transition: width var(--lingolane-dur)`, and remains static with reduced motion);
+  - `.lingolane-chip--*` (keep the existing ok/warn/info/brand variants);
+  - `.lingolane-table` (12px uppercase `muted` headers, `bg` background on row hover);
+  - `.lingolane-button` (extends WP's `.button`: `radius-sm` corners, `accent` background for primary buttons, focus `outline: 2px solid var(--lingolane-accent); outline-offset: 2px`);
+  - `.lingolane-field` (inputs with `radius-sm` corners and an `accent` border on focus).
 
-  Áp dụng cho các màn hình: Tổng quan, Bài & trang (bảng ma trận), Chuỗi, Ngôn ngữ, Cài đặt, Hướng dẫn. Áp dụng thêm cho hộp "Bản dịch" trong trình soạn thảo (`.lingolane-box`) và cột ngôn ngữ ở danh sách Trang/Bài viết (`.lingolane-col`): hai phần này không có `body.lingolane-screen`, nên chỉ dùng token trên gốc của chính chúng. Dưới 782px: header xếp dọc, `.lingolane-tabs` và `.lingolane-table-wrap` dùng `overflow-x:auto` trong khung riêng.
+  Apply to these screens: Overview, Posts & Pages (matrix table), Strings, Languages, Settings, Guide. Also apply to the "Translations" box in the editor (`.lingolane-box`) and the language column in the Pages/Posts list (`.lingolane-col`): neither has `body.lingolane-screen`, so use only the tokens on their own roots. Below 782px: stack the header vertically, and give `.lingolane-tabs` and `.lingolane-table-wrap` `overflow-x:auto` within their own containers.
 
-- [ ] **Step 1: Viết test hỏng**:
-  - `test_header_has_logo_tile()`: render tab overview chứa `class="lingolane-logo"` và `lingolane-icon--globe`.
-  - `test_overview_uses_kpi_cards()`: render overview khi có 2 ngôn ngữ chứa `lingolane-kpi` và `lingolane-progress`.
-  - `test_old_token_aliases_removed()`: `admin.css` không còn `--lingolane-brand` và `--lingolane-soft`.
-- [ ] **Step 2: Chạy**. Kỳ vọng: FAIL.
-- [ ] **Step 3: Cài đặt** CSS và markup như trên. Không đổi tên lớp đang được `admin.js` dùng (`data-lingolane-*`, `.lingolane-string*`, `.lingolane-popover`).
-- [ ] **Step 4: Chạy lại** test của task và toàn bộ suite. Kỳ vọng: PASS. Chạy thêm `composer lint` từ gốc repo. Kỳ vọng: 0 lỗi.
-- [ ] **Step 5: Commit** `feat(ui): thành phần chung và restyle các màn hình quản trị`.
+- [ ] **Step 1: Write failing tests**:
+  - `test_header_has_logo_tile()`: the rendered overview tab contains `class="lingolane-logo"` and `lingolane-icon--globe`.
+  - `test_overview_uses_kpi_cards()`: the rendered overview with 2 languages contains `lingolane-kpi` and `lingolane-progress`.
+  - `test_old_token_aliases_removed()`: `admin.css` no longer contains `--lingolane-brand` or `--lingolane-soft`.
+- [ ] **Step 2: Run**. Expected: FAIL.
+- [ ] **Step 3: Implement** the CSS and markup described above. Do not rename classes used by `admin.js` (`data-lingolane-*`, `.lingolane-string*`, `.lingolane-popover`).
+- [ ] **Step 4: Rerun** the task tests and the full suite. Expected: PASS. Also run `composer lint` from the repository root. Expected: 0 errors.
+- [ ] **Step 5: Commit** `feat(ui): shared components and restyled admin screens`.
 
-### Task 5: Toast thay cho thông báo WordPress
+### Task 5: Toasts Replacing WordPress Notices
 
 **Files:**
-- Modify: `lingolane/admin/class-lingolane-admin.php` (`render_notices()` dòng ~427–434)
-- Modify: `lingolane/assets/admin.js` (thêm khối toast độc lập ở đầu IIFE, trước phần preset)
-- Modify: `lingolane/assets/admin.css` (thành phần `.lingolane-toasts`, `.lingolane-toast--{success|info|warning|error}`, hiệu ứng trượt vào 160ms)
-- Test: `tests/phpunit/test-ui.php` (thêm test)
+- Modify: `lingolane/admin/class-lingolane-admin.php` (`render_notices()` around lines ~427–434)
+- Modify: `lingolane/assets/admin.js` (add an independent toast block at the start of the IIFE, before the preset section)
+- Modify: `lingolane/assets/admin.css` (`.lingolane-toasts`, `.lingolane-toast--{success|info|warning|error}` components, 160ms slide-in effect)
+- Test: `tests/phpunit/test-ui.php` (add tests)
 
 **Interfaces:**
 - Produces: markup
@@ -157,68 +157,68 @@ Giá trị màu (hex, không dùng `var()` cho các token màu để test đọc
     </div>
   </div>
   ```
-  - `role="alert"` và `data-autohide="0"` cho `error` và `warning`; `role="status"` và `data-autohide="5000"` cho `success` và `info`.
-  - Icon theo loại: success→`circle-check`, info→`info`, warning/error→`triangle-alert`.
-  - JS: `window.lingolaneToast( message: string, type: string ): void` tạo một toast cùng markup (để các phần P3–P5 dùng cho thao tác AJAX); tự ẩn theo `data-autohide`, tạm dừng khi `mouseenter`/`focusin`, nút đóng gỡ toast. Khi giảm chuyển động thì không chạy hiệu ứng.
+  - `role="alert"` and `data-autohide="0"` for `error` and `warning`; `role="status"` and `data-autohide="5000"` for `success` and `info`.
+  - Icons by type: success→`circle-check`, info→`info`, warning/error→`triangle-alert`.
+  - JS: `window.lingolaneToast( message: string, type: string ): void` creates a toast with the same markup (for AJAX operations in P3–P5); auto-hides according to `data-autohide`, pauses on `mouseenter`/`focusin`, and removes the toast when the close button is clicked. Do not animate when reduced motion is enabled.
 
-- [ ] **Step 1: Viết test hỏng**:
-  - `test_success_notice_renders_as_autohiding_toast()`: `Lingolane_Admin::flash( 'success', 'Saved <b>' )` rồi render overview. HTML chứa `lingolane-toast--success`, `role="status"`, `data-autohide="5000"`, `Saved &lt;b&gt;`, `lingolane-toast__close`, và không chứa `notice notice-`.
-  - `test_error_notice_stays_until_dismissed()`: với `flash('error', …)` thì có `role="alert"`, `data-autohide="0"`, `lingolane-icon--triangle-alert`.
-- [ ] **Step 2: Chạy**. Kỳ vọng: FAIL.
-- [ ] **Step 3: Cài đặt** PHP, CSS, JS như trên. Chuỗi mới: "Notifications", "Dismiss notification".
-- [ ] **Step 4: Chạy lại** test của task và toàn bộ suite. Kỳ vọng: PASS.
-- [ ] **Step 5: Commit** `feat(ui): toast cho thông báo, tự ẩn với thành công, giữ với lỗi`.
+- [ ] **Step 1: Write failing tests**:
+  - `test_success_notice_renders_as_autohiding_toast()`: call `Lingolane_Admin::flash( 'success', 'Saved <b>' )`, then render the overview. The HTML contains `lingolane-toast--success`, `role="status"`, `data-autohide="5000"`, `Saved &lt;b&gt;`, `lingolane-toast__close`, and no `notice notice-`.
+  - `test_error_notice_stays_until_dismissed()`: with `flash('error', …)`, the output contains `role="alert"`, `data-autohide="0"`, `lingolane-icon--triangle-alert`.
+- [ ] **Step 2: Run**. Expected: FAIL.
+- [ ] **Step 3: Implement** PHP, CSS, and JS as described above. New strings: "Notifications", "Dismiss notification".
+- [ ] **Step 4: Rerun** the task tests and the full suite. Expected: PASS.
+- [ ] **Step 5: Commit** `feat(ui): toasts for notices, auto-hide on success, persist on error`.
 
-### Task 6: Minh hoạ cho màn hình trống và khối chào
+### Task 6: Empty-State Illustrations and Welcome Block
 
 **Files:**
-- Create: `lingolane/assets/illustrations/welcome.svg`, `empty-languages.svg`, `all-done.svg` (SVG tự vẽ, mỗi file ≤ 4 KB, viewBox 160×120, màu qua `var(--lingolane-accent, #4f46e5)` / `var(--lingolane-accent-2, #7c3aed)` / `var(--lingolane-accent-soft, #eef0ff)`, không `<script>`, không link ngoài)
-- Modify: `lingolane/admin/class-lingolane-ui.php` (thêm `illustration()`)
+- Create: `lingolane/assets/illustrations/welcome.svg`, `empty-languages.svg`, `all-done.svg` (original SVG artwork, each file ≤ 4 KB, viewBox 160×120, colors via `var(--lingolane-accent, #4f46e5)` / `var(--lingolane-accent-2, #7c3aed)` / `var(--lingolane-accent-soft, #eef0ff)`, no `<script>` or external links)
+- Modify: `lingolane/admin/class-lingolane-ui.php` (add `illustration()`)
 - Modify: `lingolane/admin/class-lingolane-admin.php`:
-  - `render_overview()`: khối `lingolane-empty` dòng ~444 dùng `empty-languages`;
-  - khi mọi ngôn ngữ đạt 100% thì dùng `all-done`;
-  - tab Hướng dẫn mở đầu bằng `welcome`.
-- Modify: `lingolane/admin/class-lingolane-strings-admin.php:248` (màn hình trống dùng `empty-languages`)
-- Modify: `lingolane/assets/admin.css` (`.lingolane-illustration`, `.lingolane-empty` dạng căn giữa có minh hoạ ở trên)
-- Test: `tests/phpunit/test-ui.php` (thêm test)
+  - `render_overview()`: the `lingolane-empty` block around line ~444 uses `empty-languages`;
+  - when all languages reach 100%, use `all-done`;
+  - start the Guide tab with `welcome`.
+- Modify: `lingolane/admin/class-lingolane-strings-admin.php:248` (use `empty-languages` for the empty state)
+- Modify: `lingolane/assets/admin.css` (`.lingolane-illustration`, centered `.lingolane-empty` layout with an illustration above)
+- Test: `tests/phpunit/test-ui.php` (add tests)
 
 **Interfaces:**
-- Produces: `Lingolane_UI::illustration( string $name ): string`. Tên hợp lệ: `welcome`, `empty-languages`, `all-done`. Trả `<div class="lingolane-illustration" aria-hidden="true">{nội dung file svg}</div>`. Tên khác: `''` kèm `_doing_it_wrong`. Đọc file bằng `file_get_contents` kèm `// phpcs:ignore WordPress.WP.AlternativeFunctions -- local bundled asset`, giống `class-lingolane-switcher.php:16`.
+- Produces: `Lingolane_UI::illustration( string $name ): string`. Valid names: `welcome`, `empty-languages`, `all-done`. Returns `<div class="lingolane-illustration" aria-hidden="true">{svg file contents}</div>`. Other names: `''` with `_doing_it_wrong`. Read files with `file_get_contents` and `// phpcs:ignore WordPress.WP.AlternativeFunctions -- local bundled asset`, as in `class-lingolane-switcher.php:16`.
 
-- [ ] **Step 1: Viết test hỏng**:
-  - `test_illustrations_are_safe_inline_svg()`: với mỗi tên, kết quả bắt đầu bằng `<div class="lingolane-illustration" aria-hidden="true"><svg`, không chứa `<script`, `href="http`, `xlink:href="http`; kích thước file ≤ 4096 byte.
+- [ ] **Step 1: Write failing tests**:
+  - `test_illustrations_are_safe_inline_svg()`: for each name, the output starts with `<div class="lingolane-illustration" aria-hidden="true"><svg` and contains no `<script`, `href="http`, or `xlink:href="http`; file size ≤ 4096 bytes.
   - `test_unknown_illustration_returns_empty()`: `setExpectedIncorrectUsage( 'Lingolane_UI::illustration' )`, `'' === illustration('../../wp-config')`.
-  - `test_empty_states_show_illustration()`: lọc `pre_option_lingolane_settings` chỉ còn một ngôn ngữ; render overview và tab strings đều chứa `lingolane-illustration`.
-- [ ] **Step 2: Chạy**. Kỳ vọng: FAIL.
-- [ ] **Step 3: Cài đặt** như trên.
-- [ ] **Step 4: Chạy lại** test của task và toàn bộ suite. Kỳ vọng: PASS.
-- [ ] **Step 5: Commit** `feat(ui): minh hoạ cho màn hình trống, hoàn thành và hướng dẫn`.
+  - `test_empty_states_show_illustration()`: filter `pre_option_lingolane_settings` to leave only one language; the rendered overview and strings tab both contain `lingolane-illustration`.
+- [ ] **Step 2: Run**. Expected: FAIL.
+- [ ] **Step 3: Implement** as described above.
+- [ ] **Step 4: Rerun** the task tests and the full suite. Expected: PASS.
+- [ ] **Step 5: Commit** `feat(ui): illustrations for empty, completed and guide screens`.
 
-### Task 7: Kiểm giao diện thật, i18n và tài liệu
+### Task 7: Visual QA, i18n, and Documentation
 
 **Files:**
-- Create: `bin/ui-preview.sh` (dựng HTML tĩnh của từng tab để xem không cần đăng nhập)
-- Modify: `.gitignore` (thêm `dist/ui-preview/`)
+- Create: `bin/ui-preview.sh` (generate static HTML for each tab for viewing without logging in)
+- Modify: `.gitignore` (add `dist/ui-preview/`)
 - Modify: `lingolane/languages/lingolane.pot`, `lingolane-vi.po`, `lingolane-vi.mo`
-- Modify: `docs/RELEASE-PLAN.md` (nhật ký P2), `README.md` (dòng về giao diện, credit Lucide)
+- Modify: `docs/RELEASE-PLAN.md` (P2 log), `README.md` (UI description and Lucide credit)
 
 **Interfaces:**
-- Produces: `bin/ui-preview.sh`, không tham số. Script build và cài plugin lên site Local `check` bằng `/tmp/wpc.sh` giống `cycle.sh`. Sau đó, với mỗi tab, chạy `wp eval` dựng `Lingolane_Admin::render()` (nạp các file admin như test) thành `dist/ui-preview/<tab>.html`, có `<link>` tới CSS lõi `http://check.local/wp-admin/css/{common,forms,buttons,list-tables}.min.css` và `http://check.local/wp-content/plugins/lingolane/assets/admin.css`, có `<body class="wp-admin lingolane-screen">`, và cuối cùng in đường dẫn file.
+- Produces: `bin/ui-preview.sh`, with no arguments. The script builds and installs the plugin on the Local site `check` using `/tmp/wpc.sh`, as in `cycle.sh`. Then, for each tab, run `wp eval` to render `Lingolane_Admin::render()` (loading admin files as in the tests) into `dist/ui-preview/<tab>.html`, with `<link>` elements pointing to the core CSS at `http://check.local/wp-admin/css/{common,forms,buttons,list-tables}.min.css` and `http://check.local/wp-content/plugins/lingolane/assets/admin.css`, a `<body class="wp-admin lingolane-screen">`, and finally print the file path.
 
-- [ ] **Step 1: Viết** `bin/ui-preview.sh`, chạy nó. Kỳ vọng: 6 file `dist/ui-preview/{overview,content,strings,languages,settings,guide}.html`.
-- [ ] **Step 2: Kiểm bằng trình duyệt** (khung trình duyệt của app, phục vụ thư mục `dist/ui-preview` bằng `python3 -m http.server`) ở bề rộng 1280px và 375px. Đạt khi:
-  - icon thẳng hàng với chữ trong tab, nút và chip;
-  - không có thanh cuộn ngang ở cấp trang khi rộng 375px;
-  - viền focus thấy rõ khi bấm Tab;
-  - toast hiện và tự ẩn với thông báo thành công;
-  - chạy `matchMedia('(prefers-reduced-motion: reduce)')` giả lập (DevTools/`resize_window`) thì không có chuyển động;
-  - so với mockup A (nền xám nhạt, thẻ trắng bóng nhẹ, màu nhấn tím–chàm).
+- [ ] **Step 1: Write** `bin/ui-preview.sh` and run it. Expected: 6 files, `dist/ui-preview/{overview,content,strings,languages,settings,guide}.html`.
+- [ ] **Step 2: Check in a browser** (the app's browser pane, serving `dist/ui-preview` with `python3 -m http.server`) at widths of 1280px and 375px. Pass criteria:
+  - icons align with text in tabs, buttons, and chips;
+  - no page-level horizontal scrollbar at 375px;
+  - focus outlines are clearly visible when pressing Tab;
+  - toasts appear and auto-hide for success messages;
+  - emulating `matchMedia('(prefers-reduced-motion: reduce)')` (DevTools/`resize_window`) produces no motion;
+  - compare with mockup A (light gray background, white cards with subtle shadows, purple–indigo accents).
 
-  Chụp ảnh `scale 0.5` mỗi tab cho Tan xem.
-- [ ] **Step 3: Cập nhật i18n:** `/tmp/wpc.sh i18n make-pot …` (lệnh ở README), thêm bản dịch vi cho chuỗi mới ("Notifications" → "Thông báo", "Dismiss notification" → "Đóng thông báo"), `python3 bin/make-mo.py`.
-- [ ] **Step 4: Chạy toàn bộ kiểm tra:**
-  - `bash /private/tmp/lingolane-run/phpunit.sh` (PHP 8.2) và bản PHP 7.4 (`php74.sh` với `wp-tests-config-74.php`): tất cả đạt;
-  - `composer lint`: 0 lỗi;
-  - `bin/build.sh`: zip có `admin/class-lingolane-ui.php`, `assets/icons.php`, `assets/LICENSE-lucide.txt`, `assets/illustrations/*.svg`;
-  - Plugin Check: 0 lỗi.
-- [ ] **Step 5: Ghi nhật ký** vào RELEASE-PLAN (đã làm gì, số test, ảnh đã kiểm, điều chưa kiểm). README thêm dòng credit "Icons: Lucide (ISC)". Commit `chore(ui): i18n, xem trước giao diện và nhật ký P2`.
+  Capture a `scale 0.5` screenshot of each tab for the maintainer to review.
+- [ ] **Step 3: Update i18n:** `/tmp/wpc.sh i18n make-pot …` (command in the README), add vi translations for the new strings ("Notifications" → "Thông báo", "Dismiss notification" → "Đóng thông báo"), `python3 bin/make-mo.py`.
+- [ ] **Step 4: Run all checks:**
+  - `bash /private/tmp/lingolane-run/phpunit.sh` (PHP 8.2) and the PHP 7.4 version (`php74.sh` with `wp-tests-config-74.php`): all pass;
+  - `composer lint`: 0 errors;
+  - `bin/build.sh`: the zip contains `admin/class-lingolane-ui.php`, `assets/icons.php`, `assets/LICENSE-lucide.txt`, `assets/illustrations/*.svg`;
+  - Plugin Check: 0 errors.
+- [ ] **Step 5: Record the log** in RELEASE-PLAN (what was done, test count, screenshots checked, and anything not checked). Add the credit "Icons: Lucide (ISC)" to the README. Commit `chore(ui): i18n, UI preview and P2 log`.
