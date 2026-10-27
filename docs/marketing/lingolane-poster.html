@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lingolane poster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+	--ink: #1e1b4b;
+	--paper: #f5f6ff;
+	--indigo: #4f46e5;
+	--violet: #7c3aed;
+	--paint: #fde047;
+	--mist: #c7d2fe;
+	--muted: #4b4f6b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #d9dbe8; }
+body {
+	font-family: "Be Vietnam Pro", system-ui, sans-serif;
+	color: var(--ink);
+	-webkit-font-smoothing: antialiased;
+}
+.poster {
+	width: 1200px;
+	height: 1600px;
+	margin: 0 auto;
+	background: var(--paper);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	position: relative;
+}
+
+/* Head */
+.head { padding: 88px 88px 56px; }
+.wordmark {
+	font-weight: 800;
+	font-size: 156px;
+	line-height: .9;
+	letter-spacing: -.045em;
+	color: var(--ink);
+}
+.tagline {
+	margin-top: 28px;
+	max-width: 36ch;
+	text-wrap: balance;
+	font-size: 34px;
+	line-height: 1.3;
+	font-weight: 500;
+	color: var(--muted);
+	letter-spacing: -.01em;
+}
+
+/* The road: one lane per language */
+.road {
+	background: linear-gradient(100deg, var(--ink) 0%, #2e1f6b 60%, #3b1f7a 100%);
+	padding: 18px 0;
+	position: relative;
+}
+.lane {
+	height: 104px;
+	display: flex;
+	align-items: center;
+	gap: 28px;
+	padding-left: 88px;
+	position: relative;
+	white-space: nowrap;
+}
+.lane + .lane::before {
+	content: "";
+	position: absolute;
+	left: 0; right: 0; top: 0;
+	height: 4px;
+	background: repeating-linear-gradient(90deg, var(--paint) 0 56px, transparent 56px 96px);
+	opacity: .9;
+}
+.lane:nth-child(2) { padding-left: 148px; }
+.lane:nth-child(3) { padding-left: 116px; }
+.lane:nth-child(4) { padding-left: 180px; }
+.path {
+	font-weight: 700;
+	font-size: 20px;
+	color: var(--ink);
+	background: var(--mist);
+	border-radius: 999px;
+	padding: 8px 18px;
+	flex: none;
+}
+.lane:first-child .path { background: var(--paint); }
+.say {
+	font-size: 46px;
+	font-weight: 700;
+	letter-spacing: -.02em;
+	color: #fff;
+}
+.say[lang="ja"] { font-family: "Noto Sans JP", "Be Vietnam Pro", sans-serif; letter-spacing: 0; }
+
+/* Features */
+.features {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 48px;
+	padding: 64px 88px 40px;
+}
+.group h2 {
+	font-size: 26px;
+	font-weight: 800;
+	letter-spacing: -.015em;
+	padding-bottom: 14px;
+	margin-bottom: 22px;
+	border-bottom: 4px solid var(--indigo);
+}
+.group:nth-child(2) h2 { border-color: var(--violet); }
+.group:nth-child(3) h2 { border-color: var(--ink); }
+.group ul { list-style: none; display: grid; gap: 22px; }
+.group li strong {
+	display: block;
+	font-size: 21px;
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: -.01em;
+}
+.group li span {
+	display: block;
+	margin-top: 5px;
+	font-size: 17px;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+/* Foot */
+.foot {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 24px;
+	padding: 26px 88px;
+	border-top: 2px solid #e1e3f3;
+	font-size: 18px;
+	color: var(--muted);
+}
+.foot .facts { display: flex; gap: 28px; }
+.foot b { color: var(--ink); font-weight: 700; }
+.foot .url { font-weight: 700; color: var(--indigo); }
+</style>
+</head>
+<body>
+<main class="poster">
+	<header class="head">
+		<h1 class="wordmark">Lingolane</h1>
+		<p class="tagline" data-k="tagline"></p>
+	</header>
+
+	<section class="road" aria-label="Language lanes">
+		<div class="lane"><span class="path">example.com/</span><span class="say" lang="en">Your site, in every language.</span></div>
+		<div class="lane"><span class="path">/vi/</span><span class="say" lang="vi">Website của bạn, bằng mọi ngôn ngữ.</span></div>
+		<div class="lane"><span class="path">/fr/</span><span class="say" lang="fr">Votre site, dans toutes les langues.</span></div>
+		<div class="lane"><span class="path">/ja/</span><span class="say" lang="ja">あなたのサイトを、すべての言語で。</span></div>
+	</section>
+
+	<section class="features" id="features"></section>
+
+	<footer class="foot">
+		<div class="facts" id="facts"></div>
+		<div><span class="url">github.com/tanoucru/lingolane</span></div>
+	</footer>
+</main>
+
+<script>
+const COPY = {
+	en: {
+		tagline: 'A lightweight multilingual plugin for WordPress. Every language gets its own lane.',
+		groups: [
+			['Translate content', [
+				['One-click translation drafts', 'Content, images, custom fields and terms are copied to a new draft.'],
+				['Translate on the page', 'Switch on translation mode from the admin bar, click any text, type.'],
+				['On-device suggestions', 'Browsers with a built-in translator suggest wording. Text stays on your machine.'],
+				['Every interface string', 'Scan themes, plugins or a live page, grouped by where strings appear. CSV in and out.']
+			]],
+			['Get found everywhere', [
+				['Clean language URLs', 'The default language has no prefix. Others live under /vi/, /fr/ and so on.'],
+				['SEO handled for you', 'hreflang, x-default, canonical and html lang. Yoast SEO sitemaps and schema follow along.'],
+				['Links follow the reader', 'Internal links point to the matching translation.'],
+				['No dead ends', 'An untranslated page opens the original with a notice, never a 404.']
+			]],
+			['Light to run', [
+				['130+ languages', 'Only the languages you add are downloaded, and WordPress keeps them updated.'],
+				['A switcher anywhere', 'Block, shortcode, widget or menu item.'],
+				['Works with your theme', 'Reads wpml-config.xml and answers the multilingual hooks themes call.'],
+				['Nothing extra to load', 'No external fonts, no CDN, no tracking.']
+			]]
+		],
+		facts: [['WordPress', '6.2+'], ['PHP', '7.4+'], ['License', 'GPLv2'], ['Developed by', '@tannguyen']]
+	},
+	vi: {
+		tagline: 'Plugin đa ngôn ngữ nhẹ cho WordPress. Mỗi ngôn ngữ chạy trên một làn đường riêng.',
+		groups: [
+			['Dịch nội dung', [
+				['Bản nháp dịch một cú nhấp', 'Nội dung, hình ảnh, trường tùy biến và danh mục được chép sang bản nháp mới.'],
+				['Dịch ngay trên trang', 'Bật chế độ dịch từ thanh quản trị, nhấp vào chữ bất kỳ và gõ bản dịch.'],
+				['Gợi ý dịch trên thiết bị', 'Trình duyệt có bộ dịch sẵn sẽ gợi ý câu chữ. Văn bản không rời khỏi máy.'],
+				['Mọi chuỗi giao diện', 'Quét theme, plugin hoặc trang đang chạy, nhóm theo vị trí hiển thị. Nhập, xuất CSV.']
+			]],
+			['Được tìm thấy ở mọi nơi', [
+				['Đường dẫn gọn theo ngôn ngữ', 'Ngôn ngữ mặc định không có tiền tố. Ngôn ngữ khác nằm ở /vi/, /fr/…'],
+				['SEO tự động', 'hreflang, x-default, canonical và html lang. Sitemap, schema của Yoast SEO đi theo.'],
+				['Liên kết theo người đọc', 'Liên kết nội bộ trỏ tới đúng bản dịch tương ứng.'],
+				['Không có ngõ cụt', 'Trang chưa dịch mở bản gốc kèm thông báo, không bao giờ báo 404.']
+			]],
+			['Nhẹ khi vận hành', [
+				['Hơn 130 ngôn ngữ', 'Chỉ tải ngôn ngữ bạn thêm, WordPress tự cập nhật bản dịch.'],
+				['Nút chuyển ở mọi chỗ', 'Block, shortcode, widget hoặc mục menu.'],
+				['Hợp với theme sẵn có', 'Đọc wpml-config.xml và đáp ứng các hook đa ngôn ngữ mà theme gọi.'],
+				['Không tải thêm gì', 'Không font ngoài, không CDN, không theo dõi.']
+			]]
+		],
+		facts: [['WordPress', '6.2+'], ['PHP', '7.4+'], ['Giấy phép', 'GPLv2'], ['Phát triển bởi', '@tannguyen']]
+	}
+};
+
+const lang = new URLSearchParams(location.search).get('lang') === 'vi' ? 'vi' : 'en';
+const c = COPY[lang];
+const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+document.documentElement.lang = lang;
+document.querySelector('[data-k="tagline"]').textContent = c.tagline;
+document.getElementById('features').innerHTML = c.groups.map(([title, items]) =>
+	`<div class="group"><h2>${esc(title)}</h2><ul>${items.map(([t, d]) =>
+		`<li><strong>${esc(t)}</strong><span>${esc(d)}</span></li>`).join('')}</ul></div>`).join('');
+document.getElementById('facts').innerHTML = c.facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join('');
+</script>
+</body>
+</html>

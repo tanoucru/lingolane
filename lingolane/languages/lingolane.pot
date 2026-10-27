@@ -23,7 +23,7 @@ msgid "https://github.com/tanoucru/lingolane"
 msgstr ""
 
 #. Description of the plugin
-msgid "Lightweight multilingual for WordPress: translation groups for posts and pages, string translation, language URLs, hreflang and a language switcher."
+msgid "Run your WordPress site in many languages: one-click translation drafts, clean /vi/ URLs, automatic hreflang, string translation and a switcher."
 msgstr ""
 
 #. Author of the plugin

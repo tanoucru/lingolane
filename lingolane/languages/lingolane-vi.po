@@ -823,8 +823,8 @@ msgstr "xem song song"
 msgid "WordPress locale"
 msgstr "Locale WordPress"
 
-msgid "Lightweight multilingual for WordPress: translation groups for posts and pages, string translation, language URLs, hreflang and a language switcher."
-msgstr "Đa ngôn ngữ nhẹ cho WordPress: nhóm bản dịch cho bài viết và trang, dịch chuỗi giao diện, đường dẫn theo ngôn ngữ, hreflang và nút chuyển ngôn ngữ."
+msgid "Run your WordPress site in many languages: one-click translation drafts, clean /vi/ URLs, automatic hreflang, string translation and a switcher."
+msgstr "Chạy website WordPress bằng nhiều ngôn ngữ: tạo bản nháp dịch bằng một cú nhấp, đường dẫn /vi/ gọn, hreflang tự động, dịch chuỗi giao diện và nút chuyển ngôn ngữ."
 
 msgid "Locale"
 msgstr "Locale"

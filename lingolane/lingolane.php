@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Lingolane
  * Plugin URI: https://github.com/tanoucru/lingolane
- * Description: Lightweight multilingual for WordPress: translation groups for posts and pages, string translation, language URLs, hreflang and a language switcher.
+ * Description: Run your WordPress site in many languages: one-click translation drafts, clean /vi/ URLs, automatic hreflang, string translation and a switcher.
  * Version: 1.0.0
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html

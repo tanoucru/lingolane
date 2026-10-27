@@ -8,21 +8,39 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Lightweight multilingual: translate posts, pages and strings, with language URLs, hreflang and a language switcher.
+Run your WordPress site in many languages: one-click translation drafts, clean /vi/ URLs, automatic hreflang, string translation and a switcher.
 
 == Description ==
 
-Lingolane lets you run one WordPress site in several languages without a heavy toolchain.
+Lingolane turns one WordPress site into a multilingual site without a second install, a translation service or a heavy toolchain. Each language gets its own lane: its own URL, its own content and its own interface strings, all managed from the screens you already use.
 
-* Any of the 130+ languages WordPress is translated into. Only the languages you add are downloaded: their WordPress, theme and plugin translations, kept up to date by WordPress's translation updates.
-* Translation groups for posts, pages and terms. Create a translation with one click: content, images, custom fields and terms are copied to a new draft.
-* The default language has no URL prefix; other languages live in their own directory (for example /vi/).
-* Untranslated pages open the original with a notice instead of a 404.
-* hreflang, x-default, canonical and the html lang attribute are added automatically. Works with Yoast SEO.
-* Internal links inside content switch to the matching translation.
-* Interface strings: scan your theme and plugins, translate in a table, import and export CSV.
-* Language switcher: the [lingolane_switcher] shortcode, a widget, or a menu item.
-* Developer filters let you share pages, post types and taxonomies across all languages.
+= Translate content =
+
+* **One-click translation drafts.** Create a translation of any post or page. Content, images, custom fields and terms are copied to a new draft, ready to translate.
+* **Translation groups at a glance.** The Pages and Posts lists group each original with its translations, show progress and offer a row to create the ones that are missing.
+* **Translate on the page itself.** Turn on translation mode from the admin bar, click any text on the front end and type the translation in place.
+* **On-device suggestions.** In browsers that ship a built-in translator (such as recent Chrome), Lingolane suggests a translation locally. The text never leaves the browser.
+
+= Translate the rest of the site =
+
+* **Find every string.** Scan your theme and plugins, or scan a live page, to collect site title, menus, widgets, footer text and other interface strings.
+* **Grouped by where they appear.** Strings are sorted into Header, Menus, Footer, Widgets, Categories & Tags and other groups, so you translate what you can see.
+* **A fast translation table.** Edit inline with keyboard shortcuts, and import or export CSV to work with a translator.
+
+= Get found in every language =
+
+* **Clean language URLs.** The default language has no prefix; other languages live in their own directory, for example /vi/ or /fr/.
+* **SEO handled for you.** hreflang, x-default, canonical and the html lang attribute are added automatically. With Yoast SEO, canonicals, Open Graph, schema and sitemaps follow the language too.
+* **Links follow the reader.** Internal links inside content point to the matching translation.
+* **No dead ends.** A page that is not translated yet opens the original with a notice, never a 404.
+
+= Light to run =
+
+* **130+ languages.** Any language WordPress is translated into. Only the languages you add are downloaded, and WordPress keeps their translations up to date.
+* **A switcher anywhere.** Use the block, the [lingolane_switcher] shortcode, a widget or a menu item.
+* **Works with your theme.** Lingolane reads the wpml-config.xml files that many themes and plugins ship, and answers the common multilingual hooks they call.
+* **Nothing extra to load.** No external fonts, no CDN, no tracking. The only outside connection is to WordPress.org, for language packs.
+* **Built for developers too.** Filters let you choose translatable post types and share pages, post types and taxonomies across all languages.
 
 == Installation ==
 
