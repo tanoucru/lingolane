@@ -6,21 +6,28 @@
 <title>Lingolane poster</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
 <style>
+/* Road-sign palette: lanes on asphalt, green guide signs, yellow paint. */
 :root {
-	--ink: #1e1b4b;
-	--paper: #f5f6ff;
-	--indigo: #4f46e5;
-	--violet: #7c3aed;
-	--paint: #fde047;
-	--mist: #c7d2fe;
-	--muted: #4b4f6b;
+	--asphalt: #262b33;
+	--asphalt-2: #313741;
+	--sign: #0b7a53;
+	--sign-ink: #075c3e;
+	--sign-soft: #dcefe5;
+	--info: #1d63a8;
+	--info-soft: #dde9f5;
+	--paint: #ffc629;
+	--paint-soft: #fff1c7;
+	--paper: #f2f5f1;
+	--ink: #1d2329;
+	--muted: #4a5560;
+	--line: #dde3dc;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { background: #d9dbe8; }
+html, body { background: #cfd5ce; }
 body {
-	font-family: "Be Vietnam Pro", system-ui, sans-serif;
+	font-family: "Overpass", system-ui, sans-serif;
 	color: var(--ink);
 	-webkit-font-smoothing: antialiased;
 }
@@ -32,40 +39,78 @@ body {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	position: relative;
 }
+svg.i {
+	width: 24px; height: 24px;
+	fill: none; stroke: currentColor; stroke-width: 2;
+	stroke-linecap: round; stroke-linejoin: round;
+	flex: none;
+}
+.flag { display: block; border-radius: 4px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .12); flex: none; }
 
 /* Head */
-.head { padding: 88px 88px 56px; }
+.head {
+	padding: 72px 88px 44px;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	column-gap: 32px;
+	align-items: center;
+}
+.mark {
+	width: 132px; height: 132px;
+	border-radius: 22px;
+	background: var(--sign);
+	box-shadow: inset 0 0 0 6px var(--sign), inset 0 0 0 10px #fff;
+	color: #fff;
+	display: grid; place-items: center;
+}
+.mark svg.i { width: 72px; height: 72px; stroke-width: 2.2; }
 .wordmark {
-	font-weight: 800;
-	font-size: 156px;
-	line-height: .9;
-	letter-spacing: -.045em;
-	color: var(--ink);
+	font-weight: 900;
+	font-size: 138px;
+	line-height: .82;
+	letter-spacing: -.035em;
+	padding-top: 16px;
 }
 .tagline {
-	margin-top: 28px;
-	max-width: 36ch;
-	text-wrap: balance;
-	font-size: 34px;
+	grid-column: 1 / -1;
+	margin-top: 30px;
+	max-width: 40ch;
+	font-size: 31px;
 	line-height: 1.3;
 	font-weight: 500;
 	color: var(--muted);
-	letter-spacing: -.01em;
+}
+.tagline span { display: block; }
+.flags {
+	grid-column: 1 / -1;
+	margin-top: 26px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.flags .more {
+	margin-left: 6px;
+	font-weight: 800;
+	font-size: 19px;
+	color: var(--sign-ink);
+	background: var(--sign-soft);
+	border-radius: 999px;
+	padding: 6px 14px 4px;
 }
 
 /* The road: one lane per language */
 .road {
-	background: linear-gradient(100deg, var(--ink) 0%, #2e1f6b 60%, #3b1f7a 100%);
-	padding: 18px 0;
-	position: relative;
+	background: linear-gradient(180deg, var(--asphalt-2), var(--asphalt));
+	border-top: 6px solid var(--paint);
+	border-bottom: 6px solid var(--paint);
+	padding: 10px 0;
 }
 .lane {
-	height: 104px;
+	height: 102px;
 	display: flex;
 	align-items: center;
-	gap: 28px;
+	gap: 22px;
 	padding-left: 88px;
 	position: relative;
 	white-space: nowrap;
@@ -75,61 +120,80 @@ body {
 	position: absolute;
 	left: 0; right: 0; top: 0;
 	height: 4px;
-	background: repeating-linear-gradient(90deg, var(--paint) 0 56px, transparent 56px 96px);
-	opacity: .9;
+	background: repeating-linear-gradient(90deg, #f4f6f8 0 52px, transparent 52px 92px);
+	opacity: .85;
 }
-.lane:nth-child(2) { padding-left: 148px; }
-.lane:nth-child(3) { padding-left: 116px; }
-.lane:nth-child(4) { padding-left: 180px; }
-.path {
-	font-weight: 700;
-	font-size: 20px;
-	color: var(--ink);
-	background: var(--mist);
-	border-radius: 999px;
-	padding: 8px 18px;
+.lane:nth-child(2) { padding-left: 150px; }
+.lane:nth-child(3) { padding-left: 118px; }
+.lane:nth-child(4) { padding-left: 182px; }
+.plate {
+	display: flex;
+	align-items: center;
+	gap: 12px;
 	flex: none;
-}
-.lane:first-child .path { background: var(--paint); }
-.say {
-	font-size: 46px;
-	font-weight: 700;
-	letter-spacing: -.02em;
+	background: var(--sign);
 	color: #fff;
+	border-radius: 9px;
+	box-shadow: inset 0 0 0 3px var(--sign), inset 0 0 0 5px #fff;
+	padding: 10px 18px 8px 12px;
+	font-weight: 800;
+	font-size: 22px;
 }
-.say[lang="ja"] { font-family: "Noto Sans JP", "Be Vietnam Pro", sans-serif; letter-spacing: 0; }
+.plate .flag { box-shadow: none; border-radius: 3px; }
+.say {
+	font-size: 44px;
+	font-weight: 800;
+	letter-spacing: -.015em;
+	color: #fff;
+	padding-top: 6px;
+}
+.say[lang="ja"] { font-family: "Noto Sans JP", "Overpass", sans-serif; letter-spacing: 0; padding-top: 0; }
 
 /* Features */
 .features {
 	flex: 1;
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	gap: 48px;
-	padding: 64px 88px 40px;
+	gap: 40px;
+	padding: 52px 88px 28px;
 }
+.group { --c: var(--sign); --soft: var(--sign-soft); }
+.group:nth-child(2) { --c: var(--info); --soft: var(--info-soft); }
+.group:nth-child(3) { --c: #8a5a00; --soft: var(--paint-soft); }
 .group h2 {
-	font-size: 26px;
-	font-weight: 800;
-	letter-spacing: -.015em;
-	padding-bottom: 14px;
-	margin-bottom: 22px;
-	border-bottom: 4px solid var(--indigo);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 25px;
+	font-weight: 900;
+	letter-spacing: -.01em;
+	padding-bottom: 12px;
+	margin-bottom: 20px;
+	border-bottom: 4px solid var(--c);
 }
-.group:nth-child(2) h2 { border-color: var(--violet); }
-.group:nth-child(3) h2 { border-color: var(--ink); }
-.group ul { list-style: none; display: grid; gap: 22px; }
+.group:nth-child(3) h2 { border-color: var(--paint); }
+.group h2 svg.i { color: var(--c); width: 26px; height: 26px; }
+.group ul { list-style: none; display: grid; gap: 18px; }
+.group li { display: grid; grid-template-columns: 42px 1fr; column-gap: 14px; }
+.tile {
+	width: 42px; height: 42px;
+	border-radius: 11px;
+	background: var(--soft);
+	color: var(--c);
+	display: grid; place-items: center;
+}
+.tile svg.i { width: 22px; height: 22px; }
 .group li strong {
 	display: block;
-	font-size: 21px;
-	font-weight: 700;
-	line-height: 1.25;
-	letter-spacing: -.01em;
+	font-size: 20px;
+	font-weight: 800;
+	line-height: 1.2;
+	padding-top: 3px;
 }
-.group li span {
-	display: block;
-	margin-top: 5px;
-	font-size: 17px;
-	line-height: 1.45;
+.group li .desc {
+	margin-top: 4px;
+	font-size: 16.5px;
+	line-height: 1.42;
 	color: var(--muted);
 }
 
@@ -139,84 +203,111 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	gap: 24px;
-	padding: 26px 88px;
-	border-top: 2px solid #e1e3f3;
+	padding: 24px 88px;
+	background: var(--asphalt);
+	color: #c5ccd3;
 	font-size: 18px;
-	color: var(--muted);
 }
-.foot .facts { display: flex; gap: 28px; }
-.foot b { color: var(--ink); font-weight: 700; }
-.foot .url { font-weight: 700; color: var(--indigo); }
+.foot .facts { display: flex; gap: 26px; }
+.foot b { color: #fff; font-weight: 800; }
+.foot .url { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--paint); }
+.foot .url svg.i { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
 <main class="poster">
 	<header class="head">
+		<div class="mark" data-icon="languages"></div>
 		<h1 class="wordmark">Lingolane</h1>
 		<p class="tagline" data-k="tagline"></p>
+		<div class="flags" id="flags"></div>
 	</header>
 
 	<section class="road" aria-label="Language lanes">
-		<div class="lane"><span class="path">example.com/</span><span class="say" lang="en">Your site, in every language.</span></div>
-		<div class="lane"><span class="path">/vi/</span><span class="say" lang="vi">Website của bạn, bằng mọi ngôn ngữ.</span></div>
-		<div class="lane"><span class="path">/fr/</span><span class="say" lang="fr">Votre site, dans toutes les langues.</span></div>
-		<div class="lane"><span class="path">/ja/</span><span class="say" lang="ja">あなたのサイトを、すべての言語で。</span></div>
+		<div class="lane"><span class="plate" data-flag="gb">example.com/</span><span class="say" lang="en">Your site, in every language.</span></div>
+		<div class="lane"><span class="plate" data-flag="vn">/vi/</span><span class="say" lang="vi">Website của bạn, bằng mọi ngôn ngữ.</span></div>
+		<div class="lane"><span class="plate" data-flag="fr">/fr/</span><span class="say" lang="fr">Votre site, dans toutes les langues.</span></div>
+		<div class="lane"><span class="plate" data-flag="jp">/ja/</span><span class="say" lang="ja">あなたのサイトを、すべての言語で。</span></div>
 	</section>
 
 	<section class="features" id="features"></section>
 
 	<footer class="foot">
 		<div class="facts" id="facts"></div>
-		<div><span class="url">github.com/tanoucru/lingolane</span></div>
+		<div class="url"><span data-icon="globe"></span>github.com/tanoucru/lingolane</div>
 	</footer>
 </main>
 
 <script>
+/* Flags: copied from Lingolane_Flags::vectors() so the poster matches the plugin. */
+const FLAGS = {"gb": "<rect width=\"640\" height=\"480\" fill=\"#012169\"/><path d=\"M0,0 L640,480 M640,0 L0,480\" stroke=\"#fff\" stroke-width=\"60\"/><path d=\"M0,0 L320,240 M640,480 L320,240\" stroke=\"#c8102e\" stroke-width=\"20\" stroke-linecap=\"square\"/><path d=\"M640,0 L320,240 M0,480 L320,240\" stroke=\"#c8102e\" stroke-width=\"20\" stroke-linecap=\"square\"/><path d=\"M320,0 V480 M0,240 H640\" stroke=\"#fff\" stroke-width=\"100\"/><path d=\"M320,0 V480 M0,240 H640\" stroke=\"#c8102e\" stroke-width=\"60\"/>", "vn": "<rect width=\"640\" height=\"480\" fill=\"#da251d\"/><polygon points=\"320,84 357,198 477,198 380,268 417,382 320,312 223,382 260,268 163,198 283,198\" fill=\"#ff0\"/>", "fr": "<rect width=\"213.3\" height=\"480\" fill=\"#002654\"/><rect x=\"213.3\" width=\"213.4\" height=\"480\" fill=\"#fff\"/><rect x=\"426.7\" width=\"213.3\" height=\"480\" fill=\"#ed2939\"/>", "jp": "<rect width=\"640\" height=\"480\" fill=\"#fff\"/><circle cx=\"320\" cy=\"240\" r=\"144\" fill=\"#bc002d\"/>", "de": "<rect width=\"640\" height=\"160\" fill=\"#000\"/><rect y=\"160\" width=\"640\" height=\"160\" fill=\"#d00\"/><rect y=\"320\" width=\"640\" height=\"160\" fill=\"#ffce00\"/>", "es": "<rect width=\"640\" height=\"120\" fill=\"#c60b1e\"/><rect y=\"120\" width=\"640\" height=\"240\" fill=\"#ffc400\"/><rect y=\"360\" width=\"640\" height=\"120\" fill=\"#c60b1e\"/>", "kr": "<rect width=\"640\" height=\"480\" fill=\"#fff\"/><g transform=\"translate(320,240)\"><path d=\"M-120,0 A120,120 0 0,1 120,0 A60,60 0 0,1 0,0 A60,60 0 0,0 -120,0 Z\" fill=\"#cd2e3a\"/><path d=\"M120,0 A120,120 0 0,1 -120,0 A60,60 0 0,1 0,0 A60,60 0 0,0 120,0 Z\" fill=\"#0047a0\"/><g fill=\"#000\"><rect x=\"-210\" y=\"-140\" width=\"16\" height=\"70\" rx=\"3\"/><rect x=\"-185\" y=\"-140\" width=\"16\" height=\"70\" rx=\"3\"/><rect x=\"-160\" y=\"-140\" width=\"16\" height=\"70\" rx=\"3\"/><rect x=\"160\" y=\"70\" width=\"16\" height=\"70\" rx=\"3\"/><rect x=\"185\" y=\"70\" width=\"16\" height=\"70\" rx=\"3\"/><rect x=\"210\" y=\"70\" width=\"16\" height=\"70\" rx=\"3\"/></g></g>", "cn": "<rect width=\"640\" height=\"480\" fill=\"#de2910\"/><g fill=\"#ffde00\"><polygon points=\"128,48 143,94 191,94 152,122 167,168 128,140 89,168 104,122 65,94 113,94\"/><polygon points=\"213,24 220,38 235,38 223,47 227,61 213,52 201,61 205,47 193,38 208,38\"/><polygon points=\"256,64 263,78 278,78 266,87 270,101 256,92 244,101 248,87 236,78 251,78\"/><polygon points=\"256,128 263,142 278,142 266,151 270,165 256,156 244,165 248,151 236,142 251,142\"/><polygon points=\"213,168 220,182 235,182 223,191 227,205 213,196 201,205 205,191 193,182 208,182\"/></g>", "th": "<rect width=\"640\" height=\"80\" fill=\"#a51931\"/><rect y=\"80\" width=\"640\" height=\"80\" fill=\"#f4f5f8\"/><rect y=\"160\" width=\"640\" height=\"160\" fill=\"#2d2a4a\"/><rect y=\"320\" width=\"640\" height=\"80\" fill=\"#f4f5f8\"/><rect y=\"400\" width=\"640\" height=\"80\" fill=\"#a51931\"/>", "it": "<rect width=\"213.3\" height=\"480\" fill=\"#009246\"/><rect x=\"213.3\" width=\"213.4\" height=\"480\" fill=\"#fff\"/><rect x=\"426.7\" width=\"213.3\" height=\"480\" fill=\"#ce2b37\"/>", "br": "<rect width=\"640\" height=\"480\" fill=\"#009739\"/><polygon points=\"320,40 590,240 320,440 50,240\" fill=\"#fed100\"/><circle cx=\"320\" cy=\"240\" r=\"110\" fill=\"#002776\"/><path d=\"M215,225 Q320,290 425,225\" stroke=\"#fff\" stroke-width=\"14\" fill=\"none\"/>", "id": "<rect width=\"640\" height=\"240\" fill=\"#e70011\"/><rect y=\"240\" width=\"640\" height=\"240\" fill=\"#fff\"/>"};
+
+/* Icons: Lucide (ISC), the same set the plugin admin uses. */
+const ICONS = {
+	languages: '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
+	globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+	search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+	sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+	copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+	pointer: '<path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>',
+	laptop: '<path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>',
+	scan: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8h8"/><path d="M7 12h10"/><path d="M7 16h6"/>',
+	link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+	trending: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+	route: '<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
+	signpost: '<path d="M12 3v3"/><path d="M18.5 13h-13L2 9.5 5.5 6h13L22 9.5Z"/><path d="M12 13v8"/>',
+	swap: '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+	plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+	feather: '<path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/><path d="M16 8 2 22"/><path d="M17.5 15H9"/>'
+};
+
 const COPY = {
 	en: {
 		tagline: 'A lightweight multilingual plugin for WordPress. Every language gets its own lane.',
+		more: '130+ languages',
 		groups: [
-			['Translate content', [
-				['One-click translation drafts', 'Content, images, custom fields and terms are copied to a new draft.'],
-				['Translate on the page', 'Switch on translation mode from the admin bar, click any text, type.'],
-				['On-device suggestions', 'Browsers with a built-in translator suggest wording. Text stays on your machine.'],
-				['Every interface string', 'Scan themes, plugins or a live page, grouped by where strings appear. CSV in and out.']
+			['languages', 'Translate content', [
+				['copy', 'One-click translation drafts', 'Content, images, custom fields and terms are copied to a new draft.'],
+				['pointer', 'Translate on the page', 'Switch on translation mode from the admin bar, click any text, type.'],
+				['laptop', 'On-device suggestions', 'Browsers with a built-in translator suggest wording. Text stays on your machine.'],
+				['scan', 'Every interface string', 'Scan themes, plugins or a live page, grouped by where strings appear. CSV in and out.']
 			]],
-			['Get found everywhere', [
-				['Clean language URLs', 'The default language has no prefix. Others live under /vi/, /fr/ and so on.'],
-				['SEO handled for you', 'hreflang, x-default, canonical and html lang. Yoast SEO sitemaps and schema follow along.'],
-				['Links follow the reader', 'Internal links point to the matching translation.'],
-				['No dead ends', 'An untranslated page opens the original with a notice, never a 404.']
+			['search', 'Get found everywhere', [
+				['link', 'Clean language URLs', 'The default language has no prefix. Others live under /vi/, /fr/ and so on.'],
+				['trending', 'SEO handled for you', 'hreflang, x-default, canonical and html lang. Yoast SEO sitemaps and schema follow along.'],
+				['route', 'Links follow the reader', 'Internal links point to the matching translation.'],
+				['signpost', 'No dead ends', 'An untranslated page opens the original with a notice, never a 404.']
 			]],
-			['Light to run', [
-				['130+ languages', 'Only the languages you add are downloaded, and WordPress keeps them updated.'],
-				['A switcher anywhere', 'Block, shortcode, widget or menu item.'],
-				['Works with your theme', 'Reads wpml-config.xml and answers the multilingual hooks themes call.'],
-				['Nothing extra to load', 'No external fonts, no CDN, no tracking.']
+			['feather', 'Light to run', [
+				['globe', '130+ languages', 'Only the languages you add are downloaded, and WordPress keeps them updated.'],
+				['swap', 'A switcher anywhere', 'Block, shortcode, widget or menu item, with flags.'],
+				['plug', 'Works with your theme', 'Reads wpml-config.xml and answers the multilingual hooks themes call.'],
+				['sparkles', 'Nothing extra to load', 'No external fonts, no CDN, no tracking.']
 			]]
 		],
 		facts: [['WordPress', '6.2+'], ['PHP', '7.4+'], ['License', 'GPLv2'], ['Developed by', '@tannguyen']]
 	},
 	vi: {
 		tagline: 'Plugin đa ngôn ngữ nhẹ cho WordPress. Mỗi ngôn ngữ chạy trên một làn đường riêng.',
+		more: '130+ ngôn ngữ',
 		groups: [
-			['Dịch nội dung', [
-				['Bản nháp dịch một cú nhấp', 'Nội dung, hình ảnh, trường tùy biến và danh mục được chép sang bản nháp mới.'],
-				['Dịch ngay trên trang', 'Bật chế độ dịch từ thanh quản trị, nhấp vào chữ bất kỳ và gõ bản dịch.'],
-				['Gợi ý dịch trên thiết bị', 'Trình duyệt có bộ dịch sẵn sẽ gợi ý câu chữ. Văn bản không rời khỏi máy.'],
-				['Mọi chuỗi giao diện', 'Quét theme, plugin hoặc trang đang chạy, nhóm theo vị trí hiển thị. Nhập, xuất CSV.']
+			['languages', 'Dịch nội dung', [
+				['copy', 'Bản nháp dịch một cú nhấp', 'Nội dung, hình ảnh, trường tùy biến và danh mục được chép sang bản nháp mới.'],
+				['pointer', 'Dịch ngay trên trang', 'Bật chế độ dịch từ thanh quản trị, nhấp vào chữ bất kỳ và gõ bản dịch.'],
+				['laptop', 'Gợi ý dịch trên thiết bị', 'Trình duyệt có bộ dịch sẵn sẽ gợi ý câu chữ. Văn bản không rời khỏi máy.'],
+				['scan', 'Mọi chuỗi giao diện', 'Quét theme, plugin hoặc trang đang chạy, nhóm theo vị trí hiển thị. Nhập, xuất CSV.']
 			]],
-			['Được tìm thấy ở mọi nơi', [
-				['Đường dẫn gọn theo ngôn ngữ', 'Ngôn ngữ mặc định không có tiền tố. Ngôn ngữ khác nằm ở /vi/, /fr/…'],
-				['SEO tự động', 'hreflang, x-default, canonical và html lang. Sitemap, schema của Yoast SEO đi theo.'],
-				['Liên kết theo người đọc', 'Liên kết nội bộ trỏ tới đúng bản dịch tương ứng.'],
-				['Không có ngõ cụt', 'Trang chưa dịch mở bản gốc kèm thông báo, không bao giờ báo 404.']
+			['search', 'Dễ được tìm thấy', [
+				['link', 'URL gọn theo ngôn ngữ', 'Ngôn ngữ mặc định không có tiền tố. Ngôn ngữ khác nằm ở /vi/, /fr/…'],
+				['trending', 'SEO tự động', 'hreflang, x-default, canonical và html lang. Sitemap, schema của Yoast SEO đi theo.'],
+				['route', 'Liên kết theo người đọc', 'Liên kết nội bộ trỏ tới đúng bản dịch tương ứng.'],
+				['signpost', 'Không có ngõ cụt', 'Trang chưa dịch mở bản gốc kèm thông báo, không bao giờ báo 404.']
 			]],
-			['Nhẹ khi vận hành', [
-				['Hơn 130 ngôn ngữ', 'Chỉ tải ngôn ngữ bạn thêm, WordPress tự cập nhật bản dịch.'],
-				['Nút chuyển ở mọi chỗ', 'Block, shortcode, widget hoặc mục menu.'],
-				['Hợp với theme sẵn có', 'Đọc wpml-config.xml và đáp ứng các hook đa ngôn ngữ mà theme gọi.'],
-				['Không tải thêm gì', 'Không font ngoài, không CDN, không theo dõi.']
+			['feather', 'Nhẹ khi vận hành', [
+				['globe', 'Hơn 130 ngôn ngữ', 'Chỉ tải ngôn ngữ bạn thêm, WordPress tự cập nhật bản dịch.'],
+				['swap', 'Nút chuyển ở mọi chỗ', 'Block, shortcode, widget hoặc mục menu, kèm cờ.'],
+				['plug', 'Hợp với theme sẵn có', 'Đọc wpml-config.xml và đáp ứng các hook đa ngôn ngữ mà theme gọi.'],
+				['sparkles', 'Không tải thêm gì', 'Không font ngoài, không CDN, không theo dõi.']
 			]]
 		],
 		facts: [['WordPress', '6.2+'], ['PHP', '7.4+'], ['Giấy phép', 'GPLv2'], ['Phát triển bởi', '@tannguyen']]
@@ -226,11 +317,19 @@ const COPY = {
 const lang = new URLSearchParams(location.search).get('lang') === 'vi' ? 'vi' : 'en';
 const c = COPY[lang];
 const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const icon = name => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+const flag = (code, w, h) => `<svg class="flag" width="${w}" height="${h}" viewBox="0 0 640 480" aria-hidden="true">${FLAGS[code]}</svg>`;
+
 document.documentElement.lang = lang;
-document.querySelector('[data-k="tagline"]').textContent = c.tagline;
-document.getElementById('features').innerHTML = c.groups.map(([title, items]) =>
-	`<div class="group"><h2>${esc(title)}</h2><ul>${items.map(([t, d]) =>
-		`<li><strong>${esc(t)}</strong><span>${esc(d)}</span></li>`).join('')}</ul></div>`).join('');
+document.querySelector('[data-k="tagline"]').innerHTML = c.tagline.split(/(?<=\.) /).map(s => `<span>${esc(s)}</span>`).join(' ');
+document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', icon(el.dataset.icon)); });
+document.querySelectorAll('[data-flag]').forEach(el => { el.insertAdjacentHTML('afterbegin', flag(el.dataset.flag, 36, 27)); });
+document.getElementById('flags').innerHTML =
+	['gb', 'vn', 'fr', 'jp', 'de', 'es', 'kr', 'cn', 'th', 'it', 'br', 'id'].map(f => flag(f, 44, 33)).join('') +
+	`<span class="more">${esc(c.more)}</span>`;
+document.getElementById('features').innerHTML = c.groups.map(([gi, title, items]) =>
+	`<div class="group"><h2>${icon(gi)}${esc(title)}</h2><ul>${items.map(([ii, t, d]) =>
+		`<li><span class="tile">${icon(ii)}</span><div><strong>${esc(t)}</strong><p class="desc">${esc(d)}</p></div></li>`).join('')}</ul></div>`).join('');
 document.getElementById('facts').innerHTML = c.facts.map(([k, v]) => `<span>${esc(k)} <b>${esc(v)}</b></span>`).join('');
 </script>
 </body>
