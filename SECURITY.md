@@ -8,7 +8,7 @@ Only the latest release of Lingolane receives security fixes.
 
 Please do not report security problems in the public support forum or in public issues.
 
-Report them privately by email to **tan.oucru@gmail.com** with the subject line `[Lingolane Security] Vulnerability Report`.
+Report them privately through GitHub: open https://github.com/tanoucru/lingolane/security/advisories/new (Security > Report a vulnerability). Only the maintainer can see the report.
 Include the Lingolane version, the steps to reproduce and the impact you observed.
 
 The same action is provided in the WordPress admin under Multilingual > Support > "Report privately".

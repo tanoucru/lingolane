@@ -7,8 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  */
 class Lingolane_Support {
     const FORUM          = 'https://wordpress.org/support/plugin/lingolane/';
-    const SECURITY_EMAIL = 'tan.oucru@gmail.com';
-    const SECURITY       = 'mailto:tan.oucru@gmail.com?subject=%5BLingolane%20Security%5D%20Vulnerability%20Report';
+    const SECURITY       = 'https://github.com/tanoucru/lingolane/security/advisories/new';
 
     /** Plugin folders known to clash with Lingolane: folder => [name, multilingual|cache]. */
     const KNOWN = array(
@@ -280,13 +279,6 @@ class Lingolane_Support {
                     <p class="lingolane-hint"><?php esc_html_e( 'Do not post security problems in the public forum. Report them privately so they can be fixed before details are shared.', 'lingolane' ); ?></p>
                     <?php $sec_url = self::security_url(); ?>
                     <a class="button" href="<?php echo esc_url( $sec_url ); ?>"<?php echo 0 === strpos( $sec_url, 'http' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php esc_html_e( 'Report privately', 'lingolane' ); ?><?php if ( 0 === strpos( $sec_url, 'http' ) ) : ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'lingolane' ); ?></span><?php endif; ?></a>
-                    <p class="lingolane-hint lingolane-support__inline">
-                        <?php
-                        $obfuscated_email = function_exists( 'antispambot' ) ? antispambot( self::SECURITY_EMAIL ) : esc_html( self::SECURITY_EMAIL );
-                        /* translators: %s: obfuscated security contact email address */
-                        printf( esc_html__( 'Contact: %s', 'lingolane' ), $obfuscated_email ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- antispambot() outputs safe HTML entities
-                        ?>
-                    </p>
                 </section>
             </aside>
         </div>
