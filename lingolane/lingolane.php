@@ -3,7 +3,7 @@
  * Plugin Name: Lingolane
  * Plugin URI: https://github.com/tanoucru/lingolane
  * Description: Run your WordPress site in many languages: one-click translation drafts, clean /vi/ URLs, automatic hreflang, string translation and a switcher.
- * Version: 1.0.0
+ * Version: 1.0.1
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: @tannguyen
@@ -15,14 +15,10 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'LINGOLANE_VERSION', '1.0.0' );
+define( 'LINGOLANE_VERSION', '1.0.1' );
 define( 'LINGOLANE_FILE', __FILE__ );
 define( 'LINGOLANE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LINGOLANE_URL', plugin_dir_url( __FILE__ ) );
-
-add_action( 'init', function () {
-    load_plugin_textdomain( 'lingolane', false, dirname( plugin_basename( LINGOLANE_FILE ) ) . '/languages' );
-}, 0 );
 
 require_once LINGOLANE_DIR . 'includes/class-lingolane-languages.php';
 require_once LINGOLANE_DIR . 'includes/class-lingolane-catalog.php';

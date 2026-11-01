@@ -134,7 +134,86 @@ class Lingolane_Flags {
             );
         }
 
-        return apply_filters( 'lingolane_flag_svg', $svg, $country, $width, $height );
+        $filtered = apply_filters( 'lingolane_flag_svg', $svg, $country, $width, $height );
+        return self::sanitize_svg( $filtered );
+    }
+
+    /**
+     * Sanitize SVG markup to prevent XSS (late escaping / sanitization).
+     *
+     * @param string $svg Raw or filtered SVG markup.
+     * @return string Sanitized SVG markup safe for HTML output.
+     */
+    public static function sanitize_svg( $svg ) {
+        if ( ! is_string( $svg ) || '' === trim( $svg ) ) {
+            return '';
+        }
+        $allowed = array(
+            'svg'      => array(
+                'class'           => true,
+                'width'           => true,
+                'height'          => true,
+                'viewbox'         => true,
+                'aria-hidden'     => true,
+                'focusable'       => true,
+                'role'            => true,
+                'xmlns'           => true,
+            ),
+            'g'        => array(
+                'fill'            => true,
+                'stroke'          => true,
+                'stroke-width'    => true,
+                'transform'       => true,
+                'clip-path'       => true,
+            ),
+            'path'     => array(
+                'd'               => true,
+                'fill'            => true,
+                'stroke'          => true,
+                'stroke-width'    => true,
+                'stroke-linecap'  => true,
+                'stroke-linejoin' => true,
+            ),
+            'rect'     => array(
+                'x'               => true,
+                'y'               => true,
+                'width'           => true,
+                'height'          => true,
+                'rx'              => true,
+                'ry'              => true,
+                'fill'            => true,
+                'stroke'          => true,
+            ),
+            'circle'   => array(
+                'cx'              => true,
+                'cy'              => true,
+                'r'               => true,
+                'fill'            => true,
+                'stroke'          => true,
+            ),
+            'polygon'  => array(
+                'points'          => true,
+                'fill'            => true,
+                'stroke'          => true,
+            ),
+            'text'     => array(
+                'x'                 => true,
+                'y'                 => true,
+                'fill'              => true,
+                'dominant-baseline' => true,
+                'text-anchor'       => true,
+                'font-family'       => true,
+                'font-weight'       => true,
+                'font-size'         => true,
+                'letter-spacing'    => true,
+            ),
+            'title'    => array(),
+            'defs'     => array(),
+            'clipPath' => array(
+                'id' => true,
+            ),
+        );
+        return wp_kses( $svg, $allowed );
     }
 
     /**

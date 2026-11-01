@@ -12,7 +12,7 @@ fi
 python3 bin/make-mo.py >/dev/null
 find lingolane -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
 stage=$(mktemp -d)
-rsync -a --exclude 'tests' --exclude '.DS_Store' lingolane "$stage/"
+rsync -a --exclude 'tests' --exclude '.DS_Store' --exclude 'languages/*.po' --exclude 'languages/*.mo' lingolane "$stage/"
 if [ -f LICENSE ]; then
   cp LICENSE "$stage/lingolane/LICENSE.txt"
 fi

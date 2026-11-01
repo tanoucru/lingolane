@@ -172,5 +172,14 @@ function lingolane_register_string( $domain, $source, $context = '' ) {
 }
 
 function lingolane__( $source, $domain ) {
-    return __( $source, $domain ); // phpcs:ignore WordPress.WP.I18n
+    $current = class_exists( 'Lingolane_Languages' ) ? Lingolane_Languages::current() : null;
+    $target  = $current ? $current['code'] : '';
+    if ( $target && class_exists( 'Lingolane_Strings' ) ) {
+        $trans = Lingolane_Strings::get( $domain, $source, '', $target );
+        if ( '' !== $trans ) {
+            return $trans;
+        }
+    }
+    // Fall back to WordPress translation without using gettext scanner triggers on variable domains.
+    return function_exists( 'translate' ) ? translate( $source, $domain ) : $source;
 }

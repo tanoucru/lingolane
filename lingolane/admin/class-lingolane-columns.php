@@ -120,7 +120,7 @@ class Lingolane_Columns {
                 /* translators: 1: language name, 2: uppercase code */
                 $title     = sprintf( __( 'Written in %1$s (%2$s)', 'lingolane' ), $lang_name, strtoupper( $current ) );
                 echo '<span class="lingolane-tree-flag" title="' . esc_attr( $title ) . '">';
-                echo $flag_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG vector flag.
+                echo Lingolane_Flags::sanitize_svg( $flag_svg );
                 echo '<span class="lingolane-tree-flag__name">' . esc_html( $lang_name ) . '</span>';
                 echo '</span>';
 
