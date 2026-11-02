@@ -175,7 +175,7 @@ class Lingolane_AI {
 			wp_send_json_error( array( 'message' => __( 'Invalid security token.', 'lingolane' ) ), 403 );
 		}
 
-		$text        = isset( $_POST['text'] ) ? wp_unslash( $_POST['text'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$text        = isset( $_POST['text'] ) && is_string( $_POST['text'] ) ? wp_kses_post( wp_unslash( $_POST['text'] ) ) : '';
 		$source_lang = isset( $_POST['source_lang'] ) ? sanitize_key( wp_unslash( $_POST['source_lang'] ) ) : 'auto';
 		$target_lang = isset( $_POST['target_lang'] ) ? sanitize_key( wp_unslash( $_POST['target_lang'] ) ) : 'vi';
 		$context     = isset( $_POST['context'] ) ? sanitize_text_field( wp_unslash( $_POST['context'] ) ) : '';

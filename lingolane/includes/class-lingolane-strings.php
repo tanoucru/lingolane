@@ -109,6 +109,17 @@ class Lingolane_Strings {
         return is_string( $text ) && $text !== $source ? $text : '';
     }
 
+    /**
+     * Source string from a request. It is an exact gettext lookup key (markup and whitespace
+     * included), so it is validated rather than rewritten: '' unless valid UTF-8 without NUL bytes.
+     */
+    public static function clean_source( $raw ) {
+        if ( ! is_string( $raw ) || wp_check_invalid_utf8( $raw ) !== $raw || false !== strpos( $raw, "\0" ) ) {
+            return '';
+        }
+        return $raw;
+    }
+
     public static function save( $domain, $source, $context, $language, $translation, $register = false ) {
         global $wpdb;
         if ( ! is_string( $domain ) || ! is_string( $source ) || ! is_string( $context ) || ! is_string( $translation ) || ! Lingolane_Languages::is_valid( $language ) ) {
@@ -171,15 +182,12 @@ function lingolane_register_string( $domain, $source, $context = '' ) {
     return true;
 }
 
+/**
+ * Translate a string registered with lingolane_register_string(). The text is dynamic
+ * (stored by the site owner), so it is looked up in the domain's loaded catalog and in
+ * the Lingolane string table instead of going through a gettext call.
+ */
 function lingolane__( $source, $domain ) {
-    $current = class_exists( 'Lingolane_Languages' ) ? Lingolane_Languages::current() : null;
-    $target  = $current ? $current['code'] : '';
-    if ( $target && class_exists( 'Lingolane_Strings' ) ) {
-        $trans = Lingolane_Strings::get( $domain, $source, '', $target );
-        if ( '' !== $trans ) {
-            return $trans;
-        }
-    }
-    // Fall back to WordPress translation without using gettext scanner triggers on variable domains.
-    return function_exists( 'translate' ) ? translate( $source, $domain ) : $source;
+    $catalog = get_translations_for_domain( (string) $domain )->translate( (string) $source );
+    return Lingolane_Strings::translate( $catalog, (string) $source, (string) $domain );
 }

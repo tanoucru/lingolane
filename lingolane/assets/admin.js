@@ -4,6 +4,14 @@
 	var cfg = window.lingolaneAdmin || { i18n: {}, presets: {} };
 	var t = function ( key ) { return cfg.i18n[ key ] || key; };
 
+	// Submit the surrounding form when an auto-submit control changes (e.g. the target language).
+	document.addEventListener( 'change', function ( event ) {
+		var field = event.target;
+		if ( field.matches && field.matches( '[data-lingolane-autosubmit]' ) && field.form ) {
+			field.form.submit();
+		}
+	} );
+
 	// Confirm before consequential actions (default language, removing a language).
 	document.addEventListener( 'submit', function ( event ) {
 		var form = event.target;

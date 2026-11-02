@@ -276,6 +276,12 @@ class Lingolane_Tree {
     }
 
     /** Whether a translation may be shown or counted for the current user: core hides only private statuses it cannot read. */
+    /** Open the hidden row template for a group; returns true so callers can latch it. */
+    private static function open_template( $leader ) {
+        echo '<template class="lingolane-tree-tpl" data-lingolane-leader="' . esc_attr( $leader ) . '">';
+        return true;
+    }
+
     private static function readable_member( $post ) {
         if ( ! $post || in_array( $post->post_status, array( 'trash', 'auto-draft' ), true ) ) { return false; }
         $status = get_post_status_object( $post->post_status );
@@ -316,13 +322,14 @@ class Lingolane_Tree {
             foreach ( self::$remembered as $leader ) {
                 $group = self::group( $leader );
                 if ( ! $group ) { continue; }
-                ob_start();
+                $opened = false;
                 foreach ( $languages as $language ) {
                     if ( ! isset( $group['members'][ $language['code'] ] ) || isset( $shown[ $group['members'][ $language['code'] ] ] ) ) { continue; }
                     $member = get_post( $group['members'][ $language['code'] ] );
                     if ( ! self::readable_member( $member ) ) { continue; }
                     if ( $statuses && ! in_array( 'any', $statuses, true ) && ! in_array( $member->post_status, $statuses, true ) ) { continue; }
                     $shown[ $member->ID ] = true;
+                    $opened = $opened || self::open_template( $leader );
                     $table->single_row( $member, 0 );
                 }
                 $source = get_post( $leader );
@@ -332,13 +339,12 @@ class Lingolane_Tree {
                         /* translators: %s: language name */
                         $label    = sprintf( __( '%s: not translated yet', 'lingolane' ), Lingolane_Languages::name( $code ) );
                         $flag_svg = class_exists( 'Lingolane_Flags' ) ? Lingolane_Flags::get_flag_svg( $code, 18, 13, 'lingolane-flag--shadow' ) . ' ' : '';
-                        $flag_out = Lingolane_Flags::sanitize_svg( $flag_svg );
-                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange column-title" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . $flag_out . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 16 ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>';
+                        $opened   = $opened || self::open_template( $leader );
+                        echo '<tr class="lingolane-tree-missing" data-lingolane-lang="' . esc_attr( $code ) . '"><td class="check-column"></td><td class="colspanchange column-title" colspan="' . esc_attr( max( 1, $table->get_column_count() - 1 ) ) . '">' . wp_kses( $flag_svg, Lingolane_Kses::svg() ) . esc_html( $label ) . ' <a href="' . esc_url( Lingolane_Admin::translate_url( $leader, $code ) ) . '">' . wp_kses( Lingolane_UI::icon( 'plus', 16 ), Lingolane_Kses::svg() ) . ' ' . esc_html__( 'Create', 'lingolane' ) . '</a></td></tr>';
                     }
                 }
-                $rows = ob_get_clean();
-                if ( '' !== $rows ) {
-                    echo '<template class="lingolane-tree-tpl" data-lingolane-leader="' . esc_attr( $leader ) . '">' . $rows . '</template>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $rows holds the list table's own rows and the escaped markup above.
+                if ( $opened ) {
+                    echo '</template>';
                 }
             }
         } finally {

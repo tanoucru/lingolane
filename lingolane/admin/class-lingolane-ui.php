@@ -62,7 +62,7 @@ class Lingolane_UI {
 
     /** Print the footer sprite and clear its references. */
     public static function print_sprite() {
-        echo self::sprite(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Trusted bundled SVG; names escaped in sprite().
+        echo wp_kses( self::sprite(), Lingolane_Kses::svg() );
         self::reset();
     }
 

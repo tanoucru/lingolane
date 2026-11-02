@@ -18,7 +18,7 @@ class Lingolane_Metabox {
 
     public static function notices() {
         // phpcs:disable WordPress.Security.NonceVerification
-        if ( isset( $_GET['lingolane_duplicated'] ) && '1' === $_GET['lingolane_duplicated'] ) {
+        if ( isset( $_GET['lingolane_duplicated'] ) && '1' === sanitize_key( wp_unslash( $_GET['lingolane_duplicated'] ) ) ) {
             echo '<div class="notice notice-success is-dismissible"><p><strong>' . esc_html__( 'Draft translation created.', 'lingolane' ) . '</strong> ' . esc_html__( 'Content, images and terms were copied from the original. Translate the title, content and slug, then click Publish.', 'lingolane' ) . '</p></div>';
         }
         // phpcs:enable
@@ -78,22 +78,22 @@ class Lingolane_Metabox {
                     $id = Lingolane_Elements::get_translation( $type, $post->ID, $code );
                     ?>
                     <li>
-                        <span class="lingolane-box__lang"><?php echo Lingolane_Admin::code( $code ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $language['name'] ); ?></span>
+                        <span class="lingolane-box__lang"><?php echo wp_kses( Lingolane_Admin::code( $code ), Lingolane_Kses::ui() ); ?> <?php echo esc_html( $language['name'] ); ?></span>
                         <?php if ( $id && current_user_can( 'edit_post', $id ) ) :
                             $status = get_post_status( $id );
                             $is_ai  = (bool) get_post_meta( $id, '_lingolane_machine_translated', true ); ?>
                             <span class="lingolane-box__action">
                                 <?php if ( $is_ai ) : ?>
-                                    <?php echo Lingolane_Admin::chip( __( 'Machine translated', 'lingolane' ), 'neutral', __( 'Machine translation – needs review', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php echo wp_kses( Lingolane_Admin::chip( __( 'Machine translated', 'lingolane' ), 'neutral', __( 'Machine translation – needs review', 'lingolane' ) ), Lingolane_Kses::ui() ); ?>
                                 <?php endif; ?>
-                                <?php echo Lingolane_Admin::chip( Lingolane_Admin::status_label( $status ), 'publish' === $status ? 'ok' : 'warn' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                <?php echo wp_kses( Lingolane_Admin::chip( Lingolane_Admin::status_label( $status ), 'publish' === $status ? 'ok' : 'warn' ), Lingolane_Kses::ui() ); ?>
                                 <a href="<?php echo esc_url( get_edit_post_link( $id, 'raw' ) ); ?>"><?php esc_html_e( 'Edit', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
                             </span>
                         <?php elseif ( ! $id && 'auto-draft' !== $post->post_status ) : ?>
                             <div style="display:inline-flex; gap:6px; align-items:center;">
                                 <a class="button button-small" href="<?php echo esc_url( Lingolane_Admin::translate_url( $post->ID, $code ) ); ?>"><?php esc_html_e( 'Create translation', 'lingolane' ); ?><span class="screen-reader-text"> <?php echo esc_html( $language['name'] ); ?></span></a>
                                 <a class="button button-small button-secondary" href="<?php echo esc_url( Lingolane_AI_Post::action_url( $post->ID, $code ) ); ?>" style="display:inline-flex; align-items:center; gap:4px;" title="<?php esc_attr_e( 'Translate the whole post with AI', 'lingolane' ); ?>">
-                                    <?php echo Lingolane_UI::icon( 'sparkles', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php echo wp_kses( Lingolane_UI::icon( 'sparkles', 12 ), Lingolane_Kses::svg() ); ?>
                                     <?php esc_html_e( 'Translate with AI', 'lingolane' ); ?>
                                 </a>
                             </div>

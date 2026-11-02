@@ -272,10 +272,10 @@ class Lingolane_Incontext {
 
 		$payload = array(
 			'domain'        => isset( $_POST['domain'] ) ? sanitize_key( wp_unslash( $_POST['domain'] ) ) : 'lingolane',
-			'source'        => isset( $_POST['source'] ) ? wp_unslash( $_POST['source'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			'source'        => isset( $_POST['source'] ) ? Lingolane_Strings::clean_source( wp_unslash( $_POST['source'] ) ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- exact lookup key, validated by clean_source().
 			'context'       => isset( $_POST['context'] ) ? sanitize_text_field( wp_unslash( $_POST['context'] ) ) : '',
 			'language_code' => isset( $_POST['language_code'] ) ? sanitize_key( wp_unslash( $_POST['language_code'] ) ) : '',
-			'translation'   => isset( $_POST['translation'] ) ? wp_unslash( $_POST['translation'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			'translation'   => isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_kses_post( wp_unslash( $_POST['translation'] ) ) : '',
 			'group_key'     => isset( $_POST['group_key'] ) ? sanitize_key( wp_unslash( $_POST['group_key'] ) ) : 'other',
 			'page_path'     => isset( $_POST['page_path'] ) ? sanitize_text_field( wp_unslash( $_POST['page_path'] ) ) : '/',
 			'locator'       => isset( $_POST['locator'] ) ? sanitize_text_field( wp_unslash( $_POST['locator'] ) ) : '',

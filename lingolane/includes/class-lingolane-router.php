@@ -30,6 +30,11 @@ class Lingolane_Router {
         if ( ! current_user_can( 'manage_options' ) ) {
             return;
         }
+        // Only where the warning can be acted on: the plugin list, permalink settings and Lingolane's own screens.
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        if ( ! $screen || ( ! in_array( $screen->id, array( 'plugins', 'options-permalink' ), true ) && false === strpos( $screen->id, Lingolane_Admin::PAGE ) ) ) {
+            return;
+        }
         if ( self::is_conflicted() ) {
             echo '<div class="notice notice-warning is-dismissible"><p><strong>' .
                  esc_html__( 'Lingolane: another multilingual plugin (Polylang or WPML) is active.', 'lingolane' ) .

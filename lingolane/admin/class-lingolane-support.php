@@ -171,28 +171,28 @@ class Lingolane_Support {
                 <section class="lingolane-card" aria-labelledby="lingolane-support-before">
                     <h2 class="lingolane-card__title" id="lingolane-support-before"><?php esc_html_e( 'Before you open a ticket', 'lingolane' ); ?></h2>
                     <?php if ( $multilingual ) : ?>
-                        <p class="lingolane-banner lingolane-banner--warn"><?php echo Lingolane_UI::icon( 'triangle-alert' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <p class="lingolane-banner lingolane-banner--warn"><?php echo wp_kses( Lingolane_UI::icon( 'triangle-alert' ), Lingolane_Kses::svg() ); ?>
                             <span><?php /* translators: %s: plugin names */ echo esc_html( sprintf( __( 'Also active: %s. Running two multilingual plugins at once is not supported; deactivate one and test again.', 'lingolane' ), implode( ', ', $multilingual ) ) ); ?></span>
                         </p>
                     <?php endif; ?>
                     <?php if ( $cache ) : ?>
-                        <p class="lingolane-banner"><?php echo Lingolane_UI::icon( 'info' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <p class="lingolane-banner"><?php echo wp_kses( Lingolane_UI::icon( 'info' ), Lingolane_Kses::svg() ); ?>
                             <span><?php /* translators: %s: plugin names */ echo esc_html( sprintf( __( 'Page cache detected (%s). Purge it after changing languages or translations, then check again.', 'lingolane' ), implode( ', ', $cache ) ) ); ?></span>
                         </p>
                     <?php endif; ?>
                     <ul class="lingolane-checklist">
-                        <li class="is-info"><?php echo Lingolane_UI::icon( 'info' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <li class="is-info"><?php echo wp_kses( Lingolane_UI::icon( 'info' ), Lingolane_Kses::svg() ); ?>
                             <div><strong><?php esc_html_e( 'Read the guide', 'lingolane' ); ?></strong><span><?php echo wp_kses( sprintf( /* translators: %s: link */ __( 'Most questions are answered in the %s.', 'lingolane' ), '<a href="' . esc_url( Lingolane_Admin::url( 'guide' ) ) . '">' . esc_html__( 'Guide tab', 'lingolane' ) . '</a>' ), array( 'a' => array( 'href' => true ) ) ); ?></span></div>
                         </li>
-                        <li class="is-info"><?php echo Lingolane_UI::icon( 'info' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <li class="is-info"><?php echo wp_kses( Lingolane_UI::icon( 'info' ), Lingolane_Kses::svg() ); ?>
                             <div><strong><?php esc_html_e( 'Update to the latest version', 'lingolane' ); ?></strong><span><?php /* translators: %s: version */ echo esc_html( sprintf( __( 'You are running Lingolane %s. The problem may already be fixed.', 'lingolane' ), LINGOLANE_VERSION ) ); ?></span></div>
                         </li>
-                        <li class="is-info"><?php echo Lingolane_UI::icon( 'info' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <li class="is-info"><?php echo wp_kses( Lingolane_UI::icon( 'info' ), Lingolane_Kses::svg() ); ?>
                             <div><strong><?php esc_html_e( 'Clear the Lingolane cache', 'lingolane' ); ?></strong><span><?php esc_html_e( 'Translations are cached; clearing makes the site read them again.', 'lingolane' ); ?></span>
                                 <a class="button lingolane-support__inline" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=lingolane_flush_cache' ), 'lingolane_flush_cache' ) ); ?>"><?php esc_html_e( 'Clear cache', 'lingolane' ); ?></a>
                             </div>
                         </li>
-                        <li class="is-info"><?php echo Lingolane_UI::icon( 'info' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <li class="is-info"><?php echo wp_kses( Lingolane_UI::icon( 'info' ), Lingolane_Kses::svg() ); ?>
                             <div><strong><?php esc_html_e( 'Rule out a conflict', 'lingolane' ); ?></strong><span><?php esc_html_e( 'If possible, switch to a default theme and deactivate other plugins on a staging copy. Say in the ticket whether the problem remains.', 'lingolane' ); ?></span></div>
                         </li>
                     </ul>
@@ -242,7 +242,7 @@ class Lingolane_Support {
                         <div class="lingolane-support__actions">
                             <button type="button" class="button" data-lingolane-copy="lingolane-ticket-preview"><?php esc_html_e( 'Copy ticket', 'lingolane' ); ?></button>
                             <a class="button button-primary" href="<?php echo esc_url( self::forum_url() ); ?>" target="_blank" rel="noopener noreferrer" data-lingolane-forum>
-                                <?php esc_html_e( 'Copy and open the support forum', 'lingolane' ); ?><?php echo Lingolane_UI::icon( 'external-link', 16, __( '(opens in a new tab)', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                                <?php esc_html_e( 'Copy and open the support forum', 'lingolane' ); ?><?php echo wp_kses( Lingolane_UI::icon( 'external-link', 16, __( '(opens in a new tab)', 'lingolane' ) ), Lingolane_Kses::svg() ); ?>
                             </a>
                         </div>
                         <p class="lingolane-hint"><?php esc_html_e( 'In the forum, choose “Create Topic”: paste the title into the Title field and the copied text into the message. Nothing is sent from this site.', 'lingolane' ); ?></p>
@@ -255,7 +255,7 @@ class Lingolane_Support {
                     <textarea id="lingolane-report" class="lingolane-support__code" rows="14" readonly><?php echo esc_textarea( self::report() ); ?></textarea>
                     <div class="lingolane-support__actions">
                         <button type="button" class="button" data-lingolane-copy="lingolane-report"><?php esc_html_e( 'Copy report', 'lingolane' ); ?></button>
-                        <button type="button" class="button" data-lingolane-download="lingolane-report"><?php echo Lingolane_UI::icon( 'download', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Download .txt', 'lingolane' ); ?></button>
+                        <button type="button" class="button" data-lingolane-download="lingolane-report"><?php echo wp_kses( Lingolane_UI::icon( 'download', 16 ), Lingolane_Kses::svg() ); ?><?php esc_html_e( 'Download .txt', 'lingolane' ); ?></button>
                     </div>
                     <p class="lingolane-hint"><?php esc_html_e( 'Includes versions, theme, active plugins and Lingolane settings. It does not collect passwords, user names or your site address, and masks email addresses and links. Read it before posting: the forum is public.', 'lingolane' ); ?></p>
                 </section>
@@ -265,10 +265,10 @@ class Lingolane_Support {
                 <section class="lingolane-card" aria-labelledby="lingolane-support-channels">
                     <h2 class="lingolane-card__title" id="lingolane-support-channels"><?php esc_html_e( 'Support channels', 'lingolane' ); ?></h2>
                     <ul class="lingolane-support__links">
-                        <li><?php echo Lingolane_UI::icon( 'users', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <li><?php echo wp_kses( Lingolane_UI::icon( 'users', 16 ), Lingolane_Kses::svg() ); ?>
                             <a href="<?php echo esc_url( self::forum_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Support forum on WordPress.org', 'lingolane' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'lingolane' ); ?></span></a>
                         </li>
-                        <li><?php echo Lingolane_UI::icon( 'life-buoy', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                        <li><?php echo wp_kses( Lingolane_UI::icon( 'life-buoy', 16 ), Lingolane_Kses::svg() ); ?>
                             <a href="<?php echo esc_url( Lingolane_Admin::url( 'guide' ) ); ?>"><?php esc_html_e( 'Guide', 'lingolane' ); ?></a>
                         </li>
                     </ul>

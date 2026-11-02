@@ -68,6 +68,13 @@ Translation relationships and settings are kept so nothing is lost by accident.
 
 == Changelog ==
 
+= 1.0.1 =
+* Security: SVG flags, icons and the language switcher are escaped with wp_kses() where they are printed; request input is sanitized when it is read.
+* The switcher stylesheet and script are enqueued instead of printed inline; inline event handlers moved into the bundled scripts.
+* Translations are delivered through translate.wordpress.org: bundled .po/.mo files and load_plugin_textdomain() removed.
+* lingolane__() no longer calls gettext with a dynamic string.
+* Plugin notices only show on the Plugins, Permalinks and Lingolane screens.
+
 = 1.0.0 =
 * Location-based string translation: 10 logical location groups (Site Info, Header, Menus, Footer, Widgets, Theme, Plugins, Categories & Tags, Media, Other) for intuitive string discovery.
 * Frontend page scan mode: automatically discover translatable strings and record exact locations on live pages.

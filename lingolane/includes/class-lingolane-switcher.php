@@ -6,9 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  * customizable flag/text layouts, and graceful untranslated notice modal.
  */
 class Lingolane_Switcher {
-    /** True once the switcher assets have been enqueued/printed. */
-    private static $assets_printed = false;
-
     /** True once the dialog markup has been queued/printed. */
     private static $dialog_printed = false;
 
@@ -230,7 +227,7 @@ class Lingolane_Switcher {
         // 1. SELECT STYLE
         if ( 'select' === $style ) {
             $html .= '<div class="' . esc_attr( $wrapper_classes ) . '">';
-            $html .= '<select class="lingolane-switcher__select" onchange="if(this.value){window.location.href=this.value;}" aria-label="' . esc_attr__( 'Select language', 'lingolane' ) . '">';
+            $html .= '<select class="lingolane-switcher__select" aria-label="' . esc_attr__( 'Select language', 'lingolane' ) . '">';
             foreach ( $items as $it ) {
                 $html .= '<option value="' . esc_url( $it['url'] ) . '"' . ( $it['is_current'] ? ' selected' : '' ) . '>';
                 $html .= esc_html( 'code' === $show ? strtoupper( $it['code'] ) : $it['name'] );
@@ -375,7 +372,7 @@ function lingolane_switcher( $args = array() ) {
     $echo = ! isset( $args['echo'] ) || (bool) $args['echo'];
     $html = Lingolane_Switcher::render( $args );
     if ( $echo ) {
-        echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo wp_kses( $html, Lingolane_Kses::switcher() );
     } else {
         return $html;
     }
@@ -401,16 +398,16 @@ class Lingolane_Switcher_Widget extends WP_Widget {
     }
 
     public function widget( $args, $instance ) {
-        echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo wp_kses_post( $args['before_widget'] );
         if ( ! empty( $instance['title'] ) ) {
-            echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo wp_kses_post( $args['before_title'] ) . esc_html( apply_filters( 'widget_title', $instance['title'] ) ) . wp_kses_post( $args['after_title'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core widget filter.
         }
         $switcher_args = array(
             'style' => ! empty( $instance['style'] ) ? $instance['style'] : 'list',
             'show'  => ! empty( $instance['show'] ) ? $instance['show'] : 'flag_name',
         );
-        echo Lingolane_Switcher::render( $switcher_args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        echo $args['after_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo wp_kses( Lingolane_Switcher::render( $switcher_args ), Lingolane_Kses::switcher() );
+        echo wp_kses_post( $args['after_widget'] );
     }
 
     public function form( $instance ) {

@@ -5,6 +5,13 @@
     'use strict';
 
     function initSwitcher() {
+        document.addEventListener( 'change', function ( e ) {
+            var select = e.target.closest( '.lingolane-switcher__select' );
+            if ( select && select.value ) {
+                window.location.href = select.value;
+            }
+        } );
+
         var switchers = document.querySelectorAll( '.lingolane-switcher--dropdown' );
         switchers.forEach( function ( switcher ) {
             var toggle = switcher.querySelector( '.lingolane-switcher__toggle' );

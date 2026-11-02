@@ -448,10 +448,10 @@ class Lingolane_Admin {
         }
         $settings['allowed_domains'] = array_values( array_unique( $domains ) );
 
-        $types = isset( $_POST['post_types'] ) && is_array( $_POST['post_types'] ) ? wp_unslash( $_POST['post_types'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
-        $types = array_values( array_filter( array_map( 'sanitize_key', array_filter( $types, 'is_string' ) ), 'post_type_exists' ) );
-        $taxonomies = isset( $_POST['taxonomies'] ) && is_array( $_POST['taxonomies'] ) ? wp_unslash( $_POST['taxonomies'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
-        $taxonomies = array_values( array_filter( array_map( 'sanitize_key', array_filter( $taxonomies, 'is_string' ) ), 'taxonomy_exists' ) );
+        $types = isset( $_POST['post_types'] ) && is_array( $_POST['post_types'] ) ? array_map( 'sanitize_key', wp_unslash( $_POST['post_types'] ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification -- verified by guard() above.
+        $types = array_values( array_filter( $types, 'post_type_exists' ) );
+        $taxonomies = isset( $_POST['taxonomies'] ) && is_array( $_POST['taxonomies'] ) ? array_map( 'sanitize_key', wp_unslash( $_POST['taxonomies'] ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification -- verified by guard() above.
+        $taxonomies = array_values( array_filter( $taxonomies, 'taxonomy_exists' ) );
         if ( ! $types ) {
             self::flash( 'error', __( 'Select at least one content type to translate. No changes were saved.', 'lingolane' ) );
             self::redirect( 'settings' );
@@ -546,7 +546,7 @@ class Lingolane_Admin {
         <div class="wrap lingolane-wrap">
             <header class="lingolane-header">
                 <div class="lingolane-header__title">
-                    <span class="lingolane-logo"><?php echo Lingolane_UI::icon( 'globe', 22 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></span>
+                    <span class="lingolane-logo"><?php echo wp_kses( Lingolane_UI::icon( 'globe', 22 ), Lingolane_Kses::svg() ); ?></span>
                     <div>
                         <h1><?php esc_html_e( 'Multilingual', 'lingolane' ); ?></h1>
                         <p><?php esc_html_e( 'Translate posts, pages and interface text.', 'lingolane' ); ?></p>
@@ -555,7 +555,7 @@ class Lingolane_Admin {
                 <div class="lingolane-header__langs" aria-label="<?php esc_attr_e( 'Enabled languages', 'lingolane' ); ?>">
                     <?php foreach ( Lingolane_Languages::all() as $language ) : ?>
                         <a class="lingolane-langpill<?php echo $language['code'] === Lingolane_Languages::default_code() ? ' is-default' : ''; ?>" href="<?php echo esc_url( Lingolane_Urls::home( $language['code'] ) ); ?>" target="_blank" rel="noopener" title="<?php echo esc_attr( sprintf( /* translators: %s: language */ __( 'Open the %s home page', 'lingolane' ), $language['name'] ) ); ?>">
-                            <?php echo self::code( $language['code'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php echo wp_kses( self::code( $language['code'] ), Lingolane_Kses::ui() ); ?>
                             <span><?php echo esc_html( $language['name'] ); ?></span>
                         </a>
                     <?php endforeach; ?>
@@ -567,7 +567,7 @@ class Lingolane_Admin {
             <nav class="lingolane-tabs" aria-label="<?php esc_attr_e( 'Management items', 'lingolane' ); ?>">
                 <?php foreach ( self::tabs() as $key => $meta ) : ?>
                     <a href="<?php echo esc_url( self::url( $key ) ); ?>" class="lingolane-tabs__item<?php echo $key === $tab ? ' is-active' : ''; ?>"<?php echo $key === $tab ? ' aria-current="page"' : ''; ?>>
-                        <?php echo Lingolane_UI::icon( $meta[1] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php echo esc_html( $meta[0] ); ?>
+                        <?php echo wp_kses( Lingolane_UI::icon( $meta[1] ), Lingolane_Kses::svg() ); ?><?php echo esc_html( $meta[0] ); ?>
                     </a>
                 <?php endforeach; ?>
             </nav>
@@ -603,9 +603,9 @@ class Lingolane_Admin {
         ?>
         <div class="lingolane-toasts" role="region" aria-label="<?php esc_attr_e( 'Notifications', 'lingolane' ); ?>">
             <div class="lingolane-toast lingolane-toast--<?php echo esc_attr( $type ); ?>" role="<?php echo $sticky ? 'alert' : 'status'; ?>" data-autohide="<?php echo $sticky ? 0 : 5000; ?>">
-                <?php echo $icons[ $type ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                <?php echo wp_kses( $icons[ $type ], Lingolane_Kses::svg() ); ?>
                 <p><?php echo esc_html( $notice['message'] ); ?></p>
-                <button type="button" class="lingolane-toast__close" hidden aria-label="<?php esc_attr_e( 'Dismiss notification', 'lingolane' ); ?>"><?php echo $icons['close']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></button>
+                <button type="button" class="lingolane-toast__close" hidden aria-label="<?php esc_attr_e( 'Dismiss notification', 'lingolane' ); ?>"><?php echo wp_kses( $icons['close'], Lingolane_Kses::svg() ); ?></button>
             </div>
         </div>
         <?php
@@ -635,7 +635,7 @@ class Lingolane_Admin {
         ?>
         <?php if ( $all_done ) : ?>
             <section class="lingolane-card lingolane-empty lingolane-empty--done">
-                <?php echo Lingolane_UI::illustration( 'all-done' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
+                <?php echo wp_kses( Lingolane_UI::illustration( 'all-done' ), Lingolane_Kses::illustration() ); ?>
                 <h2><?php esc_html_e( 'Everything is translated', 'lingolane' ); ?></h2>
                 <p><?php esc_html_e( 'Every page and interface string is published in all your languages. New content will show up here when it needs translating.', 'lingolane' ); ?></p>
                 <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Add another language', 'lingolane' ); ?></a>
@@ -643,7 +643,7 @@ class Lingolane_Admin {
         <?php endif; ?>
         <?php if ( ! $others ) : ?>
             <section class="lingolane-card lingolane-empty">
-                <?php echo Lingolane_UI::illustration( 'empty-languages' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
+                <?php echo wp_kses( Lingolane_UI::illustration( 'empty-languages' ), Lingolane_Kses::illustration() ); ?>
                 <h2><?php esc_html_e( 'Your site has only one language', 'lingolane' ); ?></h2>
                 <p><?php esc_html_e( 'Add a second language to start translating posts and your interface.', 'lingolane' ); ?></p>
                 <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Add a language', 'lingolane' ); ?></a>
@@ -658,8 +658,8 @@ class Lingolane_Admin {
                 ?>
                 <section class="lingolane-card lingolane-langcard">
                     <header class="lingolane-langcard__head">
-                        <h2><?php echo self::code( $code ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $language['name'] ); ?></h2>
-                        <a href="<?php echo esc_url( Lingolane_Urls::home( $code ) ); ?>" target="_blank" rel="noopener" class="lingolane-link-muted"><?php echo esc_html( wp_parse_url( Lingolane_Urls::home( $code ), PHP_URL_PATH ) ); ?> <?php echo Lingolane_UI::icon( 'external-link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?></a>
+                        <h2><?php echo wp_kses( self::code( $code ), Lingolane_Kses::ui() ); ?> <?php echo esc_html( $language['name'] ); ?></h2>
+                        <a href="<?php echo esc_url( Lingolane_Urls::home( $code ) ); ?>" target="_blank" rel="noopener" class="lingolane-link-muted"><?php echo esc_html( wp_parse_url( Lingolane_Urls::home( $code ), PHP_URL_PATH ) ); ?> <?php echo wp_kses( Lingolane_UI::icon( 'external-link', 14 ), Lingolane_Kses::svg() ); ?></a>
                     </header>
 
                     <div class="lingolane-kpis">
@@ -668,7 +668,7 @@ class Lingolane_Admin {
                                 <span class="lingolane-kpi__label"><?php esc_html_e( 'Posts & pages', 'lingolane' ); ?></span>
                                 <strong class="lingolane-kpi__value"><?php echo esc_html( $percent ); ?>%</strong>
                             </div>
-                            <?php echo self::progress( $percent, __( 'Post and page translation progress', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php echo wp_kses( self::progress( $percent, __( 'Post and page translation progress', 'lingolane' ) ), Lingolane_Kses::ui() ); ?>
                             <p class="lingolane-kpi__note">
                                 <?php
                                 /* translators: 1: published translations, 2: total source items */
@@ -686,7 +686,7 @@ class Lingolane_Admin {
                                 <span class="lingolane-kpi__label"><?php esc_html_e( 'Interface strings', 'lingolane' ); ?></span>
                                 <strong class="lingolane-kpi__value"><?php echo esc_html( $s_pct ); ?>%</strong>
                             </div>
-                            <?php echo self::progress( $s_pct, __( 'Interface string translation progress', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php echo wp_kses( self::progress( $s_pct, __( 'Interface string translation progress', 'lingolane' ) ), Lingolane_Kses::ui() ); ?>
                             <p class="lingolane-kpi__note">
                                 <?php
                                 /* translators: 1: translated, 2: total */
@@ -710,7 +710,7 @@ class Lingolane_Admin {
                                 <?php /* translators: %s: count */ echo esc_html( sprintf( __( 'Publish %s drafts', 'lingolane' ), number_format_i18n( $content['drafts'] ) ) ); ?>
                             </a>
                         <?php else : ?>
-                            <span class="lingolane-done"><?php echo Lingolane_UI::icon( 'circle-check' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'All posts & pages are translated', 'lingolane' ); ?></span>
+                            <span class="lingolane-done"><?php echo wp_kses( Lingolane_UI::icon( 'circle-check' ), Lingolane_Kses::svg() ); ?><?php esc_html_e( 'All posts & pages are translated', 'lingolane' ); ?></span>
                         <?php endif; ?>
                         <?php if ( $s['missing'] ) : ?>
                             <a class="button" href="<?php echo esc_url( self::url( 'strings', array( 'status' => 'missing', 'language' => $code ) ) ); ?>">
@@ -726,7 +726,7 @@ class Lingolane_Admin {
                 <ul class="lingolane-checklist">
                     <?php foreach ( self::health() as $item ) : ?>
                         <li class="is-<?php echo esc_attr( $item[0] ); ?>">
-                            <?php echo Lingolane_UI::icon( 'ok' === $item[0] ? 'circle-check' : ( 'warn' === $item[0] ? 'triangle-alert' : 'info' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?>
+                            <?php echo wp_kses( Lingolane_UI::icon( 'ok' === $item[0] ? 'circle-check' : ( 'warn' === $item[0] ? 'triangle-alert' : 'info' ) ), Lingolane_Kses::svg() ); ?>
                             <div><strong><?php echo esc_html( $item[1] ); ?></strong><span><?php echo wp_kses( $item[2], array( 'a' => array( 'href' => true ), 'code' => array() ) ); ?></span></div>
                         </li>
                     <?php endforeach; ?>
@@ -793,9 +793,9 @@ class Lingolane_Admin {
             <ul class="lingolane-recent">
                 <?php foreach ( $rows as $row ) : ?>
                     <li>
-                        <?php echo self::code( $row->language_code ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                        <?php echo wp_kses( self::code( $row->language_code ), Lingolane_Kses::ui() ); ?>
                         <a href="<?php echo esc_url( get_edit_post_link( (int) $row->ID, 'raw' ) ); ?>"><?php echo esc_html( $row->post_title ? $row->post_title : __( '(No title)', 'lingolane' ) ); ?></a>
-                        <?php echo self::chip( self::status_label( $row->post_status ), 'publish' === $row->post_status ? 'ok' : 'warn' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                        <?php echo wp_kses( self::chip( self::status_label( $row->post_status ), 'publish' === $row->post_status ? 'ok' : 'warn' ), Lingolane_Kses::ui() ); ?>
                         <time datetime="<?php echo esc_attr( mysql2date( 'c', $row->post_modified ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: human time */ __( '%s ago', 'lingolane' ), human_time_diff( strtotime( $row->post_modified ), current_time( 'timestamp' ) ) ) ); ?></time>
                     </li>
                 <?php endforeach; ?>
@@ -916,7 +916,7 @@ class Lingolane_Admin {
             </form>
 
             <?php if ( $is_shared_view ) : ?>
-                <p class="lingolane-banner"><?php echo Lingolane_UI::icon( 'users' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Items of this type are shared across all languages: visitors in other languages still see the original. Only create a separate version when the content must be completely different.', 'lingolane' ); ?></p>
+                <p class="lingolane-banner"><?php echo wp_kses( Lingolane_UI::icon( 'users' ), Lingolane_Kses::svg() ); ?><?php esc_html_e( 'Items of this type are shared across all languages: visitors in other languages still see the original. Only create a separate version when the content must be completely different.', 'lingolane' ); ?></p>
             <?php endif; ?>
 
             <div class="lingolane-table-wrap">
@@ -925,7 +925,7 @@ class Lingolane_Admin {
                         <tr>
                             <th scope="col"><?php esc_html_e( 'Original content', 'lingolane' ); ?></th>
                             <?php foreach ( $languages as $language ) : ?>
-                                <th scope="col" class="lingolane-matrix__lang"><?php echo self::code( $language['code'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <span><?php echo esc_html( $language['name'] ); ?></span></th>
+                                <th scope="col" class="lingolane-matrix__lang"><?php echo wp_kses( self::code( $language['code'] ), Lingolane_Kses::ui() ); ?> <span><?php echo esc_html( $language['name'] ); ?></span></th>
                             <?php endforeach; ?>
                         </tr>
                     </thead>
@@ -934,7 +934,7 @@ class Lingolane_Admin {
                         <tr><td colspan="<?php echo esc_attr( count( $languages ) + 1 ); ?>" class="lingolane-table__empty">
                             <?php
                             if ( 'missing' === $status ) {
-                                echo Lingolane_UI::icon( 'circle-check' ) . ' ' . esc_html__( 'Great, nothing is missing a translation.', 'lingolane' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list
+                                echo wp_kses( Lingolane_UI::icon( 'circle-check' ), Lingolane_Kses::svg() ) . ' ' . esc_html__( 'Great, nothing is missing a translation.', 'lingolane' );
                             } else {
                                 esc_html_e( 'No items match the filter.', 'lingolane' );
                             }
@@ -956,21 +956,21 @@ class Lingolane_Admin {
                                 <td class="lingolane-matrix__cell">
                                     <?php
                                     if ( $code === $default ) {
-                                        echo self::chip( self::status_label( $row->post_status ), 'publish' === $row->post_status ? 'ok' : 'warn' ); // phpcs:ignore WordPress.Security.EscapeOutput
+                                        echo wp_kses( self::chip( self::status_label( $row->post_status ), 'publish' === $row->post_status ? 'ok' : 'warn' ), Lingolane_Kses::ui() );
                                         if ( 'publish' === $row->post_status ) {
-                                            echo ' <a class="lingolane-icon-link" href="' . esc_url( get_permalink( $id ) ) . '" target="_blank" rel="noopener" title="' . esc_attr__( 'View page', 'lingolane' ) . '">' . Lingolane_UI::icon( 'eye', 16 ) . '<span class="screen-reader-text">' . esc_html__( 'View page', 'lingolane' ) . '</span></a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list
+                                            echo ' <a class="lingolane-icon-link" href="' . esc_url( get_permalink( $id ) ) . '" target="_blank" rel="noopener" title="' . esc_attr__( 'View page', 'lingolane' ) . '">' . wp_kses( Lingolane_UI::icon( 'eye', 16 ), Lingolane_Kses::svg() ) . '<span class="screen-reader-text">' . esc_html__( 'View page', 'lingolane' ) . '</span></a>';
                                         }
                                     } elseif ( isset( $group[ $code ] ) ) {
                                         $tid = $group[ $code ];
                                         $tstatus = get_post_status( $tid );
-                                        echo '<a class="lingolane-cell-link" href="' . esc_url( get_edit_post_link( $tid, 'raw' ) ) . '">' . self::chip( self::status_label( $tstatus ), 'publish' === $tstatus ? 'ok' : 'warn' ) . '<span class="lingolane-cell-link__edit">' . esc_html__( 'Edit', 'lingolane' ) . '</span></a>'; // phpcs:ignore WordPress.Security.EscapeOutput
+                                        echo '<a class="lingolane-cell-link" href="' . esc_url( get_edit_post_link( $tid, 'raw' ) ) . '">' . wp_kses( self::chip( self::status_label( $tstatus ), 'publish' === $tstatus ? 'ok' : 'warn' ), Lingolane_Kses::ui() ) . '<span class="lingolane-cell-link__edit">' . esc_html__( 'Edit', 'lingolane' ) . '</span></a>';
                                         if ( 'publish' === $tstatus ) {
-                                            echo ' <a class="lingolane-icon-link" href="' . esc_url( get_permalink( $tid ) ) . '" target="_blank" rel="noopener" title="' . esc_attr__( 'View translation', 'lingolane' ) . '">' . Lingolane_UI::icon( 'eye', 16 ) . '<span class="screen-reader-text">' . esc_html__( 'View translation', 'lingolane' ) . '</span></a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list
+                                            echo ' <a class="lingolane-icon-link" href="' . esc_url( get_permalink( $tid ) ) . '" target="_blank" rel="noopener" title="' . esc_attr__( 'View translation', 'lingolane' ) . '">' . wp_kses( Lingolane_UI::icon( 'eye', 16 ), Lingolane_Kses::svg() ) . '<span class="screen-reader-text">' . esc_html__( 'View translation', 'lingolane' ) . '</span></a>';
                                         }
                                     } elseif ( $shared ) {
-                                        echo self::chip( __( 'Shared', 'lingolane' ), 'muted', __( 'Show the original in every language', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+                                        echo wp_kses( self::chip( __( 'Shared', 'lingolane' ), 'muted', __( 'Show the original in every language', 'lingolane' ) ), Lingolane_Kses::ui() );
                                     } else {
-                                        echo '<a class="button button-small lingolane-add" href="' . esc_url( self::translate_url( $id, $code ) ) . '">' . Lingolane_UI::icon( 'plus', 14 ) . esc_html__( 'Create translation', 'lingolane' ) . '<span class="screen-reader-text"> ' . esc_html( $language['name'] ) . '</span></a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list
+                                        echo '<a class="button button-small lingolane-add" href="' . esc_url( self::translate_url( $id, $code ) ) . '">' . wp_kses( Lingolane_UI::icon( 'plus', 14 ), Lingolane_Kses::svg() ) . esc_html__( 'Create translation', 'lingolane' ) . '<span class="screen-reader-text"> ' . esc_html( $language['name'] ) . '</span></a>';
                                     }
                                     ?>
                                 </td>
@@ -1032,20 +1032,20 @@ class Lingolane_Admin {
                         ?>
                         <tr>
                             <td>
-                                <?php echo self::code( $code ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                <?php echo wp_kses( self::code( $code ), Lingolane_Kses::ui() ); ?>
                                 <strong><?php echo esc_html( $language['name'] ); ?></strong>
-                                <?php if ( $is_default ) { echo ' ' . self::chip( __( 'Default', 'lingolane' ), 'brand', __( 'URLs have no language prefix', 'lingolane' ) ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
-                                <?php if ( $code === Lingolane_Languages::source_code() ) { echo ' ' . self::chip( __( 'Source language', 'lingolane' ), 'info', __( 'The language your content and interface text are written in', 'lingolane' ) ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                <?php if ( $is_default ) { echo ' ' . wp_kses( self::chip( __( 'Default', 'lingolane' ), 'brand', __( 'URLs have no language prefix', 'lingolane' ) ), Lingolane_Kses::ui() ); } ?>
+                                <?php if ( $code === Lingolane_Languages::source_code() ) { echo ' ' . wp_kses( self::chip( __( 'Source language', 'lingolane' ), 'info', __( 'The language your content and interface text are written in', 'lingolane' ) ), Lingolane_Kses::ui() ); } ?>
                             </td>
                             <td><code><?php echo esc_html( $is_default ? '/' : '/' . $code . '/' ); ?></code></td>
                             <td><code><?php echo esc_html( $language['locale'] ); ?></code></td>
                             <td><?php echo esc_html( number_format_i18n( $count ) ); ?></td>
                             <td>
                                 <?php if ( 'en_US' === $language['locale'] ) : ?>
-                                    <?php echo self::chip( __( 'Built in', 'lingolane' ), 'ok', __( 'WordPress is written in English; nothing to download', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php echo wp_kses( self::chip( __( 'Built in', 'lingolane' ), 'ok', __( 'WordPress is written in English; nothing to download', 'lingolane' ) ), Lingolane_Kses::ui() ); ?>
                                 <?php else :
                                     $installed = Lingolane_Packs::installed( $language['locale'] ); ?>
-                                    <?php echo $installed ? self::chip( __( 'Installed', 'lingolane' ), 'ok' ) : self::chip( __( 'Not installed', 'lingolane' ), 'warn', __( 'WordPress, theme and plugin text shows in English for this language', 'lingolane' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php echo $installed ? wp_kses( self::chip( __( 'Installed', 'lingolane' ), 'ok' ), Lingolane_Kses::ui() ) : wp_kses( self::chip( __( 'Not installed', 'lingolane' ), 'warn', __( 'WordPress, theme and plugin text shows in English for this language', 'lingolane' ) ), Lingolane_Kses::ui() ); ?>
                                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="lingolane-inline-form">
                                         <input type="hidden" name="action" value="lingolane_install_pack">
                                         <input type="hidden" name="lang_code" value="<?php echo esc_attr( $code ); ?>">
@@ -1308,10 +1308,10 @@ class Lingolane_Admin {
             $html = '<label><input type="checkbox" name="' . esc_attr( $name ) . '[]" value="' . esc_attr( $object->name ) . '" ' . checked( in_array( $object->name, $selected, true ), true, false ) . '> ' . esc_html( $object->labels->name ) . ( 'post_types' === $name && Lingolane_Shared::post_type( $object->name ) ? ' <em>' . esc_html__( 'shared', 'lingolane' ) . '</em>' : '' ) . '</label>';
             if ( $relevant ) { $main[] = $html; } else { $more[] = $html; }
         }
-        echo '<fieldset><legend>' . esc_html( $legend ) . '</legend><div class="lingolane-checks">' . implode( '', $main ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+        echo '<fieldset><legend>' . esc_html( $legend ) . '</legend><div class="lingolane-checks">' . wp_kses( implode( '', $main ), Lingolane_Kses::ui() ) . '</div>';
         if ( $more ) {
             /* translators: %d: count */
-            echo '<details class="lingolane-more"><summary>' . esc_html( sprintf( __( 'Other, rarely used types (%d)', 'lingolane' ), count( $more ) ) ) . '</summary><div class="lingolane-checks">' . implode( '', $more ) . '</div></details>'; // phpcs:ignore WordPress.Security.EscapeOutput
+            echo '<details class="lingolane-more"><summary>' . esc_html( sprintf( __( 'Other, rarely used types (%d)', 'lingolane' ), count( $more ) ) ) . '</summary><div class="lingolane-checks">' . wp_kses( implode( '', $more ), Lingolane_Kses::ui() ) . '</div></details>';
         }
         echo '</fieldset>';
     }
@@ -1325,7 +1325,7 @@ class Lingolane_Admin {
         ?>
         <?php if ( ! Lingolane_Stats::other_languages() ) : ?>
         <section class="lingolane-card lingolane-empty lingolane-welcome">
-            <?php echo Lingolane_UI::illustration( 'welcome' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list ?>
+            <?php echo wp_kses( Lingolane_UI::illustration( 'welcome' ), Lingolane_Kses::illustration() ); ?>
             <h2><?php esc_html_e( 'Welcome to Lingolane', 'lingolane' ); ?></h2>
             <p><?php esc_html_e( 'Translate pages, menus and interface text in a few steps. Start with the guide below or add your languages first.', 'lingolane' ); ?></p>
             <a class="button button-primary" href="<?php echo esc_url( self::url( 'languages' ) ); ?>"><?php esc_html_e( 'Set up languages', 'lingolane' ); ?></a>
@@ -1420,7 +1420,7 @@ class Lingolane_Admin {
                 <section class="lingolane-card" id="ai-chrome">
                     <div class="lingolane-card__head" style="display:flex; justify-content:space-between; align-items:center;">
                         <h2 class="lingolane-card__title" style="margin:0; display:flex; align-items:center; gap:8px;">
-                            <?php echo Lingolane_UI::icon( 'sparkles', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php echo wp_kses( Lingolane_UI::icon( 'sparkles', 20 ), Lingolane_Kses::svg() ); ?>
                             <?php esc_html_e( '1. In-browser translation (Chrome Translator API)', 'lingolane' ); ?>
                         </h2>
                         <span id="lingolane-chrome-ai-badge" class="lingolane-chip lingolane-chip--neutral"><?php esc_html_e( 'Checking…', 'lingolane' ); ?></span>
@@ -1435,7 +1435,7 @@ class Lingolane_Admin {
                 <section class="lingolane-card" id="ai-gemini">
                     <div class="lingolane-card__head">
                         <h2 class="lingolane-card__title" style="display:flex; align-items:center; gap:8px;">
-                            <?php echo Lingolane_UI::icon( 'sparkles', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php echo wp_kses( Lingolane_UI::icon( 'sparkles', 20 ), Lingolane_Kses::svg() ); ?>
                             <?php esc_html_e( '2. Cloud translation (Google Gemini API)', 'lingolane' ); ?>
                         </h2>
                     </div>

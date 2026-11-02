@@ -38,10 +38,10 @@ class Lingolane_Strings_Admin {
         }
         check_admin_referer( 'lingolane_strings_save_identity' );
         $domain      = self::input( $_POST, 'domain' );
-        $source      = isset( $_POST['source'] ) ? wp_unslash( (string) $_POST['source'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+        $source      = isset( $_POST['source'] ) ? Lingolane_Strings::clean_source( wp_unslash( $_POST['source'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- exact lookup key, validated by clean_source().
         $context     = self::input( $_POST, 'context' );
         $lang_code   = self::input( $_POST, 'language_code' );
-        $translation = isset( $_POST['translation'] ) ? wp_unslash( (string) $_POST['translation'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+        $translation = isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_kses_post( wp_unslash( $_POST['translation'] ) ) : '';
 
         $result = self::save_identity( $domain, $source, $context, $lang_code, $translation );
         if ( is_wp_error( $result ) ) {
@@ -214,7 +214,7 @@ class Lingolane_Strings_Admin {
             if ( $delete && ! current_user_can( 'manage_options' ) ) {
                 wp_die( esc_html__( 'You do not have permission to delete strings.', 'lingolane' ), '', array( 'response' => 403 ) );
             }
-            $result = $delete ? self::delete_row( $id ) : self::save_row( $id, isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_unslash( $_POST['translation'] ) : null ); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
+            $result = $delete ? self::delete_row( $id ) : self::save_row( $id, isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_kses_post( wp_unslash( $_POST['translation'] ) ) : null ); // phpcs:ignore WordPress.Security.NonceVerification -- verified above by check_admin_referer()..NonceVerification,WordPress.Security.ValidatedSanitizedInput
             if ( is_wp_error( $result ) ) {
                 Lingolane_Admin::flash( 'error', $result->get_error_message() );
             } else {
@@ -277,14 +277,14 @@ class Lingolane_Strings_Admin {
 
     public static function ajax_save() {
         self::ajax_guard( 'lingolane_translate' );
-        $translation = isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_unslash( $_POST['translation'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
+        $translation = isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_kses_post( wp_unslash( $_POST['translation'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification
         if ( null === $translation ) {
             wp_send_json_error( array( 'message' => __( 'Missing translation.', 'lingolane' ) ), 400 );
         }
 
         if ( isset( $_POST['domain'], $_POST['source'], $_POST['language_code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $domain   = sanitize_text_field( wp_unslash( (string) $_POST['domain'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
-            $source   = wp_unslash( (string) $_POST['source'] ); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput
+            $source   = Lingolane_Strings::clean_source( wp_unslash( $_POST['source'] ) ); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- exact lookup key, validated by clean_source().
             $context  = isset( $_POST['context'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['context'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
             $language = sanitize_key( wp_unslash( (string) $_POST['language_code'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
             $result   = self::save_identity( $domain, $source, $context, $language, $translation );
@@ -315,9 +315,9 @@ class Lingolane_Strings_Admin {
             wp_send_json_error( array( 'message' => __( 'Your session has expired. Reload the page.', 'lingolane' ) ), 403 );
         }
 
-        $translation = isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_unslash( $_POST['translation'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput
+        $translation = isset( $_POST['translation'] ) && is_string( $_POST['translation'] ) ? wp_kses_post( wp_unslash( $_POST['translation'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $domain      = self::input( $_POST, 'domain' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-        $source      = isset( $_POST['source'] ) ? wp_unslash( (string) $_POST['source'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput
+        $source      = isset( $_POST['source'] ) ? Lingolane_Strings::clean_source( wp_unslash( $_POST['source'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- exact lookup key, validated by clean_source().
         $context     = self::input( $_POST, 'context' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $lang_code   = self::input( $_POST, 'language_code' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
@@ -494,7 +494,7 @@ class Lingolane_Strings_Admin {
         if ( ! Lingolane_Admin::can_translate() ) { return; }
         $others = Lingolane_Stats::other_languages();
         if ( ! $others ) {
-            echo '<section class="lingolane-card lingolane-empty">' . Lingolane_UI::illustration( 'empty-languages' ) . '<h2>' . esc_html__( 'No language to translate into yet', 'lingolane' ) . '</h2><p>' . esc_html__( 'Add a second language in the Languages tab.', 'lingolane' ) . '</p><a class="button button-primary" href="' . esc_url( Lingolane_Admin::url( 'languages' ) ) . '">' . esc_html__( 'Add a language', 'lingolane' ) . '</a></section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled SVG from a fixed list
+            echo '<section class="lingolane-card lingolane-empty">' . wp_kses( Lingolane_UI::illustration( 'empty-languages' ), Lingolane_Kses::illustration() ) . '<h2>' . esc_html__( 'No language to translate into yet', 'lingolane' ) . '</h2><p>' . esc_html__( 'Add a second language in the Languages tab.', 'lingolane' ) . '</p><a class="button button-primary" href="' . esc_url( Lingolane_Admin::url( 'languages' ) ) . '">' . esc_html__( 'Add a language', 'lingolane' ) . '</a></section>';
             return;
         }
         // phpcs:disable WordPress.Security.NonceVerification
@@ -560,7 +560,7 @@ class Lingolane_Strings_Admin {
                         <h3 class="lingolane-sidebar-title"><?php esc_html_e( 'Location groups', 'lingolane' ); ?></h3>
                         <div class="lingolane-sidebar-actions">
                             <button type="button" class="button button-small button-primary lingolane-scan-pages-btn" title="<?php esc_attr_e( 'Scan frontend pages to discover strings and positions', 'lingolane' ); ?>">
-                                <?php echo Lingolane_UI::icon( 'eye', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                <?php echo wp_kses( Lingolane_UI::icon( 'eye', 14 ), Lingolane_Kses::svg() ); ?>
                                 <?php esc_html_e( 'Scan pages', 'lingolane' ); ?>
                             </button>
                             <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=lingolane_scan_theme_strings' ), 'lingolane_scan_theme_strings' ) ); ?>" class="button button-small" title="<?php esc_attr_e( 'Scan active theme code for gettext calls', 'lingolane' ); ?>">
@@ -579,7 +579,7 @@ class Lingolane_Strings_Admin {
                             ?>
                                 <li class="lingolane-group-item<?php echo $is_active ? ' is-active' : ''; ?><?php echo 0 === (int) $g_stats['total'] ? ' is-empty' : ''; ?>">
                                     <a href="<?php echo esc_url( $g_url ); ?>" class="lingolane-group-link">
-                                        <span class="lingolane-group-icon"><?php echo Lingolane_UI::icon( $icon_name, 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+                                        <span class="lingolane-group-icon"><?php echo wp_kses( Lingolane_UI::icon( $icon_name, 16 ), Lingolane_Kses::svg() ); ?></span>
                                         <span class="lingolane-group-label"><?php echo esc_html( $g_label ); ?></span>
                                         <span class="lingolane-group-count"><?php echo (int) $g_stats['own']; ?>/<?php echo (int) $g_stats['total']; ?></span>
                                     </a>
@@ -659,7 +659,7 @@ class Lingolane_Strings_Admin {
                                     <input type="hidden" name="subgroup" value="<?php echo esc_attr( $subgroup ); ?>">
                                 <?php endif; ?>
                                 <label for="lingolane-target-lang"><?php esc_html_e( 'Target language:', 'lingolane' ); ?></label>
-                                <select id="lingolane-target-lang" name="language" onchange="this.form.submit()">
+                                <select id="lingolane-target-lang" name="language" data-lingolane-autosubmit>
                                     <?php foreach ( $others as $item ) : ?>
                                         <option value="<?php echo esc_attr( $item['code'] ); ?>" <?php selected( $language, $item['code'] ); ?>>
                                             <?php echo esc_html( $item['name'] ); ?>
@@ -714,7 +714,7 @@ class Lingolane_Strings_Admin {
                             <input type="search" name="keyword" value="<?php echo esc_attr( $keyword ); ?>" placeholder="<?php esc_attr_e( 'Search source or translation…', 'lingolane' ); ?>">
                             <button type="submit" class="button"><?php esc_html_e( 'Search', 'lingolane' ); ?></button>
                             <button type="button" class="button button-secondary lingolane-batch-ai-btn" style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;" title="<?php esc_attr_e( 'Draft AI translations for every untranslated string on this page', 'lingolane' ); ?>">
-                                <?php echo Lingolane_UI::icon( 'sparkles', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                <?php echo wp_kses( Lingolane_UI::icon( 'sparkles', 14 ), Lingolane_Kses::svg() ); ?>
                                 <?php esc_html_e( 'AI-translate missing', 'lingolane' ); ?>
                             </button>
                             <?php if ( '' !== $keyword ) : ?>
@@ -756,7 +756,7 @@ class Lingolane_Strings_Admin {
                             <h3><?php esc_html_e( 'No strings found in this group', 'lingolane' ); ?></h3>
                             <p><?php esc_html_e( 'Scan frontend pages or your active theme to automatically discover translatable strings.', 'lingolane' ); ?></p>
                             <button type="button" class="button button-primary lingolane-scan-pages-btn">
-                                <?php echo Lingolane_UI::icon( 'eye', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                <?php echo wp_kses( Lingolane_UI::icon( 'eye', 16 ), Lingolane_Kses::svg() ); ?>
                                 <?php esc_html_e( 'Scan pages now', 'lingolane' ); ?>
                             </button>
                         </div>
@@ -795,7 +795,7 @@ class Lingolane_Strings_Admin {
                                                         $prev_url  = ! empty( $first_occ['id'] ) ? Lingolane_String_Scan::preview_url( (int) $first_occ['id'] ) : '';
                                                         if ( $prev_url && ! is_wp_error( $prev_url ) ) : ?>
                                                             <a href="<?php echo esc_url( $prev_url ); ?>" target="_blank" class="button button-small lingolane-preview-btn" title="<?php esc_attr_e( 'Highlight on frontend page', 'lingolane' ); ?>">
-                                                                <?php echo Lingolane_UI::icon( 'eye', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                                                <?php echo wp_kses( Lingolane_UI::icon( 'eye', 12 ), Lingolane_Kses::svg() ); ?>
                                                                 <?php esc_html_e( 'View location', 'lingolane' ); ?>
                                                             </a>
                                                         <?php else : ?>
@@ -838,7 +838,7 @@ class Lingolane_Strings_Admin {
                                 <div class="lingolane-row-actions">
                                                                     <button type="submit" class="button button-small button-primary lingolane-save-term-btn"><?php esc_html_e( 'Save', 'lingolane' ); ?></button>
                                                                     <button type="button" class="button button-small lingolane-ai-term-btn" title="<?php esc_attr_e( 'Suggest a translation with AI', 'lingolane' ); ?>">
-                                                                        <?php echo Lingolane_UI::icon( 'sparkles', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                                                        <?php echo wp_kses( Lingolane_UI::icon( 'sparkles', 14 ), Lingolane_Kses::svg() ); ?>
                                                                         <?php esc_html_e( 'AI', 'lingolane' ); ?>
                                                                     </button>
                                                                     <span class="lingolane-save-status" aria-live="polite"></span>
@@ -863,7 +863,7 @@ class Lingolane_Strings_Admin {
                                                                 <div class="lingolane-row-actions">
                                                                     <button type="submit" class="button button-small button-primary lingolane-save-btn"><?php esc_html_e( 'Save', 'lingolane' ); ?></button>
                                                                     <button type="button" class="button button-small lingolane-ai-btn" title="<?php esc_attr_e( 'Suggest a translation with AI', 'lingolane' ); ?>">
-                                                                        <?php echo Lingolane_UI::icon( 'sparkles', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                                                        <?php echo wp_kses( Lingolane_UI::icon( 'sparkles', 14 ), Lingolane_Kses::svg() ); ?>
                                                                         <?php esc_html_e( 'AI', 'lingolane' ); ?>
                                                                     </button>
                                                                     <span class="lingolane-save-status" aria-live="polite"></span>
@@ -889,7 +889,7 @@ class Lingolane_Strings_Admin {
                 <div class="lingolane-modal-header">
                     <h2 id="lingolane-scan-title"><?php esc_html_e( 'Scan frontend pages', 'lingolane' ); ?></h2>
                     <button type="button" class="lingolane-modal-close" id="lingolane-modal-close-btn" aria-label="<?php esc_attr_e( 'Close', 'lingolane' ); ?>">
-                        <?php echo Lingolane_UI::icon( 'x', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo wp_kses( Lingolane_UI::icon( 'x', 20 ), Lingolane_Kses::svg() ); ?>
                     </button>
                 </div>
                 <div class="lingolane-modal-body">
@@ -929,7 +929,7 @@ class Lingolane_Strings_Admin {
                 <div class="lingolane-modal-footer">
                     <button type="button" class="button" id="lingolane-scan-cancel-btn"><?php esc_html_e( 'Cancel', 'lingolane' ); ?></button>
                     <button type="button" class="button button-primary" id="lingolane-start-scan-btn">
-                        <?php echo Lingolane_UI::icon( 'eye', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo wp_kses( Lingolane_UI::icon( 'eye', 16 ), Lingolane_Kses::svg() ); ?>
                         <?php esc_html_e( 'Start scan', 'lingolane' ); ?>
                     </button>
                     <button type="button" class="button button-primary" id="lingolane-scan-done-btn" style="display:none;">
@@ -946,7 +946,7 @@ class Lingolane_Strings_Admin {
                     <h3><?php esc_html_e( '1. Export file', 'lingolane' ); ?></h3>
                     <p><?php esc_html_e( 'Download all strings and existing translations, then open them in Google Sheets or Excel to translate.', 'lingolane' ); ?></p>
                     <?php self::form( 'export' ); ?>
-                        <button type="submit" class="button"><?php echo Lingolane_UI::icon( 'download', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Download CSV', 'lingolane' ); ?></button>
+                        <button type="submit" class="button"><?php echo wp_kses( Lingolane_UI::icon( 'download', 16 ), Lingolane_Kses::svg() ); ?><?php esc_html_e( 'Download CSV', 'lingolane' ); ?></button>
                     </form>
                 </div>
                 <div class="lingolane-subcard">
@@ -957,7 +957,7 @@ class Lingolane_Strings_Admin {
                             <input id="lingolane-csv" type="file" name="csv" accept=".csv,text/csv" required>
                         </div>
                         <p class="lingolane-hint"><?php esc_html_e( 'Use the file exported in step 1 (columns domain, context, source, language, translation).', 'lingolane' ); ?></p>
-                        <button type="submit" class="button button-primary"><?php echo Lingolane_UI::icon( 'upload', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from a fixed list ?><?php esc_html_e( 'Import translations', 'lingolane' ); ?></button>
+                        <button type="submit" class="button button-primary"><?php echo wp_kses( Lingolane_UI::icon( 'upload', 16 ), Lingolane_Kses::svg() ); ?><?php esc_html_e( 'Import translations', 'lingolane' ); ?></button>
                         <p class="lingolane-hint"><?php esc_html_e( 'The file is validated before anything is written; if one row is invalid, no row is saved.', 'lingolane' ); ?></p>
                     </form>
                 </div>

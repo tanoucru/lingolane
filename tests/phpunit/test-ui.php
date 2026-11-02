@@ -52,7 +52,8 @@ class Test_Lingolane_UI extends Lingolane_TestCase {
 		$this->assertSame( 1, has_action( 'admin_footer', array( 'Lingolane_UI', 'print_sprite' ) ) );
 		ob_start();
 		Lingolane_UI::print_sprite();
-		$this->assertSame( $sprite, ob_get_clean() );
+		// Printed through wp_kses(), which lower-cases attribute names; the HTML parser restores viewBox on SVG elements.
+		$this->assertSame( wp_kses( $sprite, Lingolane_Kses::svg() ), ob_get_clean() );
 		$this->assertSame( '', Lingolane_UI::sprite() );
 	}
 
