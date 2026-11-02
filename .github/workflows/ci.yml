@@ -99,8 +99,10 @@ jobs:
       - name: Check zip contents
         run: |
           unzip -l dist/lingolane-*.zip | grep -q 'lingolane/lingolane.php'
-          unzip -l dist/lingolane-*.zip | grep -q 'lingolane/languages/lingolane-vi.mo'
+          unzip -l dist/lingolane-*.zip | grep -q 'lingolane/languages/lingolane.pot'
           if unzip -l dist/lingolane-*.zip | grep -E '/tests/|\.DS_Store|/vendor/'; then echo 'Unexpected dev files in zip' >&2; exit 1; fi
+          # WordPress.org package: translations come from translate.wordpress.org, legacy tml_ aliases stay on GitHub.
+          if unzip -l dist/lingolane-*.zip | grep -E '\.po$|\.mo$|compat-legacy\.php'; then echo 'Files that must not ship to WordPress.org' >&2; exit 1; fi
       - uses: actions/upload-artifact@v4
         with:
           name: lingolane-zip
