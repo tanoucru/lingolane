@@ -67,7 +67,8 @@ Lingolane_WPML_Shim::init();
 Lingolane_WPML_Config::init();
 Lingolane_Packs::init();
 
-if ( ! defined( 'LINGOLANE_NO_LEGACY' ) ) { require_once LINGOLANE_DIR . 'includes/compat-legacy.php'; }
+// Teachme pre-release aliases (tml_*). Only in the GitHub build; the WordPress.org package leaves the file out.
+if ( ! defined( 'LINGOLANE_NO_LEGACY' ) && file_exists( LINGOLANE_DIR . 'includes/compat-legacy.php' ) ) { require_once LINGOLANE_DIR . 'includes/compat-legacy.php'; }
 
 if ( is_admin() ) {
     require_once LINGOLANE_DIR . 'admin/class-lingolane-stats.php';

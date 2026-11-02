@@ -12,11 +12,12 @@ fi
 python3 bin/make-mo.py >/dev/null
 find lingolane -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
 stage=$(mktemp -d)
-rsync -a --exclude 'tests' --exclude '.DS_Store' --exclude 'languages/*.po' --exclude 'languages/*.mo' lingolane "$stage/"
+rsync -a --exclude 'tests' --exclude '.DS_Store' --exclude 'languages/*.po' --exclude 'languages/*.mo' --exclude 'includes/compat-legacy.php' lingolane "$stage/"
 if [ -f LICENSE ]; then
   cp LICENSE "$stage/lingolane/LICENSE.txt"
 fi
 mkdir -p dist
 out="$PWD/dist/lingolane-$version.zip"
+rm -f "$out"  # zip -r only adds to an existing archive; start clean so removed files do not linger.
 (cd "$stage" && zip -qr "$out" lingolane)
 echo "$out"

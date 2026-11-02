@@ -40,7 +40,7 @@ python3 -m http.server 8765 --directory dist/ui-preview   # view without logging
 ```
 
 ## Upgrading from the `tml_` pre-release (Teachme)
-On activation the plugin renames the `tml_translations`/`tml_strings` tables and copies the `tml_settings` option to the new name (no data loss). `includes/compat-legacy.php` keeps the `TML_*` aliases, `tml_get_translation_url()`, the `[tml_switcher]` shortcode and the `#tml-switcher`/`{{tml}}` menu items so the Teachme theme and plugins keep working; turn it off with `define( 'LINGOLANE_NO_LEGACY', true )`. **Deactivate the old plugin before activating the new one** (the two cannot run side by side).
+On activation the plugin renames the `tml_translations`/`tml_strings` tables and copies the `tml_settings` option to the new name (no data loss). `includes/compat-legacy.php` (GitHub build only; `bin/build.sh` leaves it out of the WordPress.org package) keeps the `TML_*` aliases, `tml_get_translation_url()`, the `[tml_switcher]` shortcode and the `#tml-switcher`/`{{tml}}` menu items so the Teachme theme and plugins keep working; turn it off with `define( 'LINGOLANE_NO_LEGACY', true )`. **Deactivate the old plugin before activating the new one** (the two cannot run side by side).
 
 Teachme mu-plugin (replaces the lists that used to be hard-coded):
 ```php
